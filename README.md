@@ -21,7 +21,7 @@
 
 2. 安装所需依赖：
 ```bash
-pip install openai rich prompt_toolkit
+pip install openai rich prompt_toolkit httpx-socks
 ```
 
 ## 配置
