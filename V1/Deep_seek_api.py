@@ -69,7 +69,7 @@ class ChatUI:
         
     def display_prompt(self) -> str:
         session = PromptSession()
-        return session.prompt("\n您: ").strip()
+        return session.prompt("\nUser: ").strip()
         
     def display_welcome(self, model: str):
         welcome_text = f"""
@@ -134,7 +134,7 @@ class ChatApp:
                     continue
                 
                 self.history.add_message("user", user_input)
-                self.ui.display_message("\n助手: ", style="bold blue", end="")
+                self.ui.display_message("\nMortis: ", style="bold blue", end="")
                 
                 response = self.model.get_response(self.history.messages)
                 full_response = ""
