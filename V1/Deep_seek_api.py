@@ -37,26 +37,37 @@ class ChatModel:
                 stream=True
             )
         except Exception as e:
-            raise Exception(f"API错误: {str(e)}")
+            raise Exception(f"API Error: {str(e)}")
 
 class ChatHistory:
     def __init__(self):
         self.messages = [{"role": "system", "content": "You are a helpful assistant"}]
+        self.reasoning_history = []
         
-    def add_message(self, role: str, content: str):
+    def add_message(self, role: str, content: str, reasoning_content: str = None):
         self.messages.append({"role": role, "content": content})
+        if reasoning_content:
+            # Store reasoning chain without adding to messages to avoid API errors
+            self.reasoning_history.append({"role": role, "reasoning_content": reasoning_content})
         
     def clear(self):
         self.messages = [{"role": "system", "content": "You are a helpful assistant"}]
+        self.reasoning_history = []
         
     def save(self, filename: str):
+        data = {
+            "messages": self.messages,
+            "reasoning_history": self.reasoning_history
+        }
         with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(self.messages, f, ensure_ascii=False, indent=2)
+            json.dump(data, f, ensure_ascii=False, indent=2)
             
     def load(self, filename: str):
         if os.path.exists(filename):
             with open(filename, 'r', encoding='utf-8') as f:
-                self.messages = json.load(f)
+                data = json.load(f)
+                self.messages = data.get("messages", [])
+                self.reasoning_history = data.get("reasoning_history", [])
                 return True
         return False
 
@@ -67,21 +78,25 @@ class ChatUI:
     def display_message(self, content: str, style: str = None, end="\n"):
         self.console.print(content, style=style, end=end)
         
+    def display_reasoning(self, content: str):
+        self.console.print("\n[Reasoning Chain]", style="bold yellow")
+        self.console.print(Panel.fit(content, border_style="yellow"))
+        
     def display_prompt(self) -> str:
         session = PromptSession()
         return session.prompt("\nUser: ").strip()
         
     def display_welcome(self, model: str):
         welcome_text = f"""
-        DeepSeek Chat CLI (模型: {model})
-        输入 'q' 或 'exit' 退出
-        命令:
-         - /clear : 清除对话历史
-         - /save  : 保存对话历史
-         - /load  : 加载对话历史
-         - /help  : 显示帮助
+        DeepSeek Chat CLI (Model: {model})
+        Enter 'q' or 'exit' to quit
+        Commands:
+         - /clear : Clear chat history
+         - /save  : Save chat history
+         - /load  : Load chat history
+         - /help  : Show help
         """
-        self.console.print(Panel.fit(welcome_text, title="欢迎", border_style="blue"))
+        self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
 
 class ChatApp:
     def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None):
@@ -91,7 +106,7 @@ class ChatApp:
         signal.signal(signal.SIGINT, self._handle_interrupt)
         
     def _handle_interrupt(self, signum, frame):
-        self.ui.display_message("\n\n会话已终止", style="yellow")
+        self.ui.display_message("\n\nSession terminated", style="yellow")
         exit(0)
         
     def handle_user_input(self, user_input: str) -> bool:
@@ -99,17 +114,17 @@ class ChatApp:
             cmd = user_input[1:]
             if cmd == "clear":
                 self.history.clear()
-                self.ui.display_message("已清除对话历史", style="yellow")
+                self.ui.display_message("Chat history cleared", style="yellow")
             elif cmd.startswith("save"):
                 filename = cmd.split(maxsplit=1)[1] if len(cmd.split()) > 1 else "chat_history.json"
                 self.history.save(filename)
-                self.ui.display_message(f"对话已保存至 {filename}", style="green")
+                self.ui.display_message(f"Chat saved to {filename}", style="green")
             elif cmd.startswith("load"):
                 filename = cmd.split(maxsplit=1)[1] if len(cmd.split()) > 1 else "chat_history.json"
                 if self.history.load(filename):
-                    self.ui.display_message("已加载对话历史", style="green")
+                    self.ui.display_message("Chat history loaded", style="green")
                 else:
-                    self.ui.display_message(f"找不到文件: {filename}", style="red")
+                    self.ui.display_message(f"File not found: {filename}", style="red")
             elif cmd == "help":
                 self.ui.display_welcome(self.model.model)
             return True
@@ -122,8 +137,8 @@ class ChatApp:
                 user_input = self.ui.display_prompt()
                 
                 if user_input.lower() in ['q', 'quit', 'exit']:
-                    if Prompt.ask("确定要退出吗? (y/n)", choices=["y", "n"], default="n") == "y":
-                        self.ui.display_message("\n再见!", style="yellow")
+                    if Prompt.ask("Are you sure you want to quit? (y/n)", choices=["y", "n"], default="n") == "y":
+                        self.ui.display_message("\nGoodbye!", style="yellow")
                         break
                     continue
                 
@@ -134,31 +149,40 @@ class ChatApp:
                     continue
                 
                 self.history.add_message("user", user_input)
-                self.ui.display_message("\nChat: ", style="bold blue", end="")
                 
                 response = self.model.get_response(self.history.messages)
                 full_response = ""
+                reasoning_content = ""
                 
+                # Collect all content first
                 for chunk in response:
-                    if chunk.choices[0].delta.content:
-                        content = chunk.choices[0].delta.content
-                        self.ui.display_message(content, end="")
-                        full_response += content
+                    if chunk.choices[0].delta.reasoning_content:
+                        reasoning_content += chunk.choices[0].delta.reasoning_content
+                    elif chunk.choices[0].delta.content:
+                        full_response += chunk.choices[0].delta.content
+                
+                # Display reasoning chain first
+                if reasoning_content:
+                    self.ui.display_reasoning(reasoning_content)
+                
+                # Then display the response
+                self.ui.display_message("\nChat: ", style="bold blue", end="")
+                self.ui.display_message(full_response, end="")
                 
                 if full_response:
-                    self.history.add_message("assistant", full_response)
+                    self.history.add_message("assistant", full_response, reasoning_content)
                     self.ui.display_message("")
                 else:
-                    self.ui.display_message("错误: 未收到响应", style="red")
+                    self.ui.display_message("Error: No response received", style="red")
                     
             except Exception as e:
-                self.ui.display_message(f"\n错误: {str(e)}", style="red")
+                self.ui.display_message(f"\nError: {str(e)}", style="red")
 
 def main():
     parser = argparse.ArgumentParser(description="DeepSeek Chat CLI")
-    parser.add_argument("--api-key", required=True, help="DeepSeek API密钥")
-    parser.add_argument("--model", default="deepseek-reasoner", help="使用的模型")
-    parser.add_argument("--proxy", help="代理服务器地址 (例如: socks5://127.0.0.1:7890)")
+    parser.add_argument("--api-key", required=True, help="DeepSeek API key")
+    parser.add_argument("--model", default="deepseek-reasoner", help="Model to use")
+    parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
     args = parser.parse_args()
     
     app = ChatApp(api_key=args.api_key, model=args.model, proxy=args.proxy)
