@@ -11,6 +11,28 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 import httpx
 from httpx_socks import SyncProxyTransport
+from pathlib import Path
+
+class APIKeyManager:
+    def __init__(self):
+        self.api_key_file = Path.home() / '.api_key'
+    
+    def save_api_key(self, api_key: str) -> None:
+        """Save API key to hidden file in user's home directory"""
+        try:
+            self.api_key_file.write_text(api_key)
+            self.api_key_file.chmod(0o600)  # Set file permissions to owner read/write only
+        except Exception as e:
+            raise Exception(f"Failed to save API key: {str(e)}")
+    
+    def load_api_key(self) -> Optional[str]:
+        """Load API key from hidden file"""
+        try:
+            if self.api_key_file.exists():
+                return self.api_key_file.read_text().strip()
+            return None
+        except Exception as e:
+            raise Exception(f"Failed to load API key: {str(e)}")
 
 class ChatModel:
     def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None):
@@ -99,7 +121,19 @@ class ChatUI:
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
 
 class ChatApp:
-    def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None):
+        self.key_manager = APIKeyManager()
+        
+        if api_key is None:
+            api_key = self.key_manager.load_api_key()
+            if api_key is None:
+                console = Console()
+                api_key = Prompt.ask("Please enter your DeepSeek API key")
+                self.key_manager.save_api_key(api_key)
+                console.print("API key saved successfully!", style="green")
+        else:
+            self.key_manager.save_api_key(api_key)
+        
         self.model = ChatModel(api_key, model, proxy)
         self.history = ChatHistory()
         self.ui = ChatUI()
@@ -180,7 +214,7 @@ class ChatApp:
 
 def main():
     parser = argparse.ArgumentParser(description="DeepSeek Chat CLI")
-    parser.add_argument("--api-key", required=True, help="DeepSeek API key")
+    parser.add_argument("--api-key", help="DeepSeek API key (optional if already saved)")
     parser.add_argument("--model", default="deepseek-reasoner", help="Model to use")
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
     args = parser.parse_args()
