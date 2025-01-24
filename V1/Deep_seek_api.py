@@ -185,27 +185,32 @@ class ChatApp:
                 full_response = ""
                 reasoning_content = ""
                 
-                # Display assistant prompt first
-                self.ui.display_message("\nChat: ", style="bold blue", end="")
-                
-                # Stream the response
+                # First, collect and display reasoning content
                 for chunk in response:
                     if chunk.choices[0].delta.reasoning_content:
-                        reasoning_content += chunk.choices[0].delta.reasoning_content
+                        content = chunk.choices[0].delta.reasoning_content
+                        reasoning_content += content
+                        if len(reasoning_content) == len(content):  # First chunk
+                            self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
+                        self.ui.display_message(content, end="", flush=True)
                     elif chunk.choices[0].delta.content:
+                        break
+                
+                if reasoning_content:
+                    self.ui.display_message("\n")  # Add a newline after reasoning
+                
+                # Then display and collect the response
+                self.ui.display_message("\nChat: ", style="bold blue", end="")
+                
+                for chunk in response:
+                    if chunk.choices[0].delta.content:
                         content = chunk.choices[0].delta.content
                         full_response += content
-                        # Immediately display each chunk
                         self.ui.display_message(content, end="", flush=True)
-                
-                # Display reasoning chain after the full response
-                if reasoning_content:
-                    self.ui.display_message("\n")  # Add a newline
-                    self.ui.display_reasoning(reasoning_content)
                 
                 if full_response:
                     self.history.add_message("assistant", full_response, reasoning_content)
-                    self.ui.display_message("")  # Add a final newline
+                    self.ui.display_message("")
                 else:
                     self.ui.display_message("\nError: No response received", style="red")
                     
