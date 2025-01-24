@@ -108,8 +108,13 @@ class ChatUI:
     def __init__(self):
         self.console = Console()
         
-    def display_message(self, content: str, style: str = None, end="\n"):
-        self.console.print(content, style=style, end=end)
+    def display_message(self, content: str, style: str = None, end="\n", flush=False):
+        if flush:
+            # Use print for immediate flushing of small chunks
+            print(content, end=end, flush=True)
+        else:
+            # Use rich console for styled output
+            self.console.print(content, style=style, end=end)
         
     def display_reasoning(self, content: str):
         self.console.print("\n[Reasoning Chain]", style="bold yellow")
@@ -155,31 +160,6 @@ class ChatApp:
         self.history = ChatHistory()
         self.ui = ChatUI()
         signal.signal(signal.SIGINT, self._handle_interrupt)
-        
-    def _handle_interrupt(self, signum, frame):
-        self.ui.display_message("\n\nSession terminated", style="yellow")
-        exit(0)
-        
-    def handle_user_input(self, user_input: str) -> bool:
-        if user_input.startswith("/"):
-            cmd = user_input[1:]
-            if cmd == "clear":
-                self.history.clear()
-                self.ui.display_message("Chat history cleared", style="yellow")
-            elif cmd.startswith("save"):
-                filename = cmd.split(maxsplit=1)[1] if len(cmd.split()) > 1 else "chat_history.json"
-                self.history.save(filename)
-                self.ui.display_message(f"Chat saved to {filename}", style="green")
-            elif cmd.startswith("load"):
-                filename = cmd.split(maxsplit=1)[1] if len(cmd.split()) > 1 else "chat_history.json"
-                if self.history.load(filename):
-                    self.ui.display_message("Chat history loaded", style="green")
-                else:
-                    self.ui.display_message(f"File not found: {filename}", style="red")
-            elif cmd == "help":
-                self.ui.display_welcome(self.model.model)
-            return True
-        return False
 
     def chat(self):
         self.ui.display_welcome(self.model.model)
@@ -205,29 +185,58 @@ class ChatApp:
                 full_response = ""
                 reasoning_content = ""
                 
-                # Collect all content first
+                # Display assistant prompt first
+                self.ui.display_message("\nChat: ", style="bold blue", end="")
+                
+                # Stream the response
                 for chunk in response:
                     if chunk.choices[0].delta.reasoning_content:
                         reasoning_content += chunk.choices[0].delta.reasoning_content
                     elif chunk.choices[0].delta.content:
-                        full_response += chunk.choices[0].delta.content
+                        content = chunk.choices[0].delta.content
+                        full_response += content
+                        # Immediately display each chunk
+                        self.ui.display_message(content, end="", flush=True)
                 
-                # Display reasoning chain first
+                # Display reasoning chain after the full response
                 if reasoning_content:
+                    self.ui.display_message("\n")  # Add a newline
                     self.ui.display_reasoning(reasoning_content)
-                
-                # Then display the response
-                self.ui.display_message("\nChat: ", style="bold blue", end="")
-                self.ui.display_message(full_response, end="")
                 
                 if full_response:
                     self.history.add_message("assistant", full_response, reasoning_content)
-                    self.ui.display_message("")
+                    self.ui.display_message("")  # Add a final newline
                 else:
-                    self.ui.display_message("Error: No response received", style="red")
+                    self.ui.display_message("\nError: No response received", style="red")
                     
             except Exception as e:
                 self.ui.display_message(f"\nError: {str(e)}", style="red")
+                
+    def _handle_interrupt(self, signum, frame):
+        self.ui.display_message("\n\nSession terminated", style="yellow")
+        exit(0)
+        
+    def handle_user_input(self, user_input: str) -> bool:
+        if user_input.startswith("/"):
+            cmd = user_input[1:]
+            if cmd == "clear":
+                self.history.clear()
+                self.ui.display_message("Chat history cleared", style="yellow")
+            elif cmd.startswith("save"):
+                filename = cmd.split(maxsplit=1)[1] if len(cmd.split()) > 1 else "chat_history.json"
+                self.history.save(filename)
+                self.ui.display_message(f"Chat saved to {filename}", style="green")
+            elif cmd.startswith("load"):
+                filename = cmd.split(maxsplit=1)[1] if len(cmd.split()) > 1 else "chat_history.json"
+                if self.history.load(filename):
+                    self.ui.display_message("Chat history loaded", style="green")
+                else:
+                    self.ui.display_message(f"File not found: {filename}", style="red")
+            elif cmd == "help":
+                self.ui.display_welcome(self.model.model)
+            return True
+        return False
+
 
 def main():
     parser = argparse.ArgumentParser(description="DeepSeek Chat CLI")
