@@ -13,27 +13,38 @@ import httpx
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
 
-class APIKeyManager:
+class ConfigManager:
     def __init__(self):
-        self.api_key_file = Path.home() / '.api_key'
+        self.config_file = Path.home() / '.deepseek_config'
+        self.default_config = {
+            "api_key": "",
+            "proxy": None
+        }
     
-    def save_api_key(self, api_key: str) -> None:
-        """Save API key to hidden file in user's home directory"""
+    def save_config(self, api_key: str = None, proxy: str = None) -> None:
+        """Save configuration to hidden file in user's home directory"""
         try:
-            self.api_key_file.write_text(api_key)
-            self.api_key_file.chmod(0o600)  # Set file permissions to owner read/write only
+            config = self.load_config()
+            if api_key is not None:
+                config["api_key"] = api_key
+            if proxy is not None:
+                config["proxy"] = proxy
+                
+            self.config_file.write_text(json.dumps(config))
+            self.config_file.chmod(0o600)  # Set file permissions to owner read/write only
         except Exception as e:
-            raise Exception(f"Failed to save API key: {str(e)}")
+            raise Exception(f"Failed to save config: {str(e)}")
     
-    def load_api_key(self) -> Optional[str]:
-        """Load API key from hidden file"""
+    def load_config(self) -> dict:
+        """Load configuration from hidden file"""
         try:
-            if self.api_key_file.exists():
-                return self.api_key_file.read_text().strip()
-            return None
+            if self.config_file.exists():
+                config = json.loads(self.config_file.read_text())
+                return {**self.default_config, **config}
+            return self.default_config.copy()
         except Exception as e:
-            raise Exception(f"Failed to load API key: {str(e)}")
-
+            raise Exception(f"Failed to load config: {str(e)}")
+            
 class ChatModel:
     def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None):
         if proxy and proxy.startswith('socks'):
@@ -122,17 +133,23 @@ class ChatUI:
 
 class ChatApp:
     def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None):
-        self.key_manager = APIKeyManager()
+        self.config_manager = ConfigManager()
+        config = self.config_manager.load_config()
         
         if api_key is None:
-            api_key = self.key_manager.load_api_key()
-            if api_key is None:
+            api_key = config["api_key"]
+            if not api_key:
                 console = Console()
                 api_key = Prompt.ask("Please enter your DeepSeek API key")
-                self.key_manager.save_api_key(api_key)
+                self.config_manager.save_config(api_key=api_key)
                 console.print("API key saved successfully!", style="green")
         else:
-            self.key_manager.save_api_key(api_key)
+            self.config_manager.save_config(api_key=api_key)
+            
+        if proxy is None:
+            proxy = config["proxy"]
+        else:
+            self.config_manager.save_config(proxy=proxy)
         
         self.model = ChatModel(api_key, model, proxy)
         self.history = ChatHistory()
