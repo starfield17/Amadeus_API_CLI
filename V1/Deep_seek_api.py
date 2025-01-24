@@ -134,7 +134,7 @@ class ChatApp:
                     continue
                 
                 self.history.add_message("user", user_input)
-                self.ui.display_message("\nMortis: ", style="bold blue", end="")
+                self.ui.display_message("\nChat: ", style="bold blue", end="")
                 
                 response = self.model.get_response(self.history.messages)
                 full_response = ""
