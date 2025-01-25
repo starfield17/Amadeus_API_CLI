@@ -109,21 +109,19 @@ class ChatHistory:
 class ChatUI:
     def __init__(self):
         self.console = Console()
-        # 添加按键绑定
+
         self._init_key_bindings()
 
     def _init_key_bindings(self):
-        from prompt_toolkit.keys import Keys
         from prompt_toolkit.key_binding import KeyBindings
         self.kb = KeyBindings()
+    
 
-        # 绑定Shift+Enter插入换行
         @self.kb.add(Keys.Enter, filter=True)
         def _(event):
-            # 如果按的是Shift+Enter（即换行）
-            if event.current_buffer.document.current_line_ending == '\n':
+
+            if event.input_processor.shift_pressed:
                 event.current_buffer.insert_text('\n')
-            # 否则提交输入
             else:
                 event.current_buffer.validate_and_handle()
 
@@ -143,7 +141,7 @@ class ChatUI:
 
         session = PromptSession(
             key_bindings=self.kb,
-            multiline=True,  # 启用多行模式
+            multiline=True,  
             prompt_continuation=lambda width, lineno, is_soft_wrap: HTML('<style fg="#888888">... </style>')
         )
         return session.prompt(HTML('<b>User:</b> ')).strip()
