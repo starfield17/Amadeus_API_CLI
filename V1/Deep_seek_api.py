@@ -45,20 +45,22 @@ class ChatUI:
             print(content, end=end, flush=True)
         else:
             self.console.print(content, style=style, end=end)
-
+            
     def display_reasoning(self, content: str):
         self.console.print("\n[Reasoning Chain]", style="bold yellow")
         self.console.print(Panel.fit(content, border_style="yellow"))
-
+        
     def highlight_code(self, code: str, language: str = 'python') -> str:
         try:
             lexer = get_lexer_by_name(language)
             return highlight(code, lexer, Terminal256Formatter())
         except:
             return code
-
+            
     def display_prompt(self) -> str:
         self.buffer = []
+        in_multiline = False
+        
         while True:
             try:
                 if not self.buffer:
@@ -68,8 +70,15 @@ class ChatUI:
                     
                 if line.endswith('\x1b[13;2u'):  # Shift+Enter
                     self.buffer.append(line[:-8])
+                    in_multiline = True
                     continue
                     
+                if in_multiline:
+                    if not line.strip():  # Empty line ends multiline input
+                        break
+                    self.buffer.append(line)
+                    continue
+                
                 self.buffer.append(line)
                 
                 # Code block handling
@@ -83,8 +92,10 @@ class ChatUI:
                         code_buffer.append(code_line)
                     highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
                     self.buffer.extend([highlighted_code, '```'])
-                break
                 
+                if not in_multiline:
+                    break
+                    
             except EOFError:
                 return "exit"
             except KeyboardInterrupt:
