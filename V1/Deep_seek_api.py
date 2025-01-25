@@ -16,29 +16,24 @@ import readline
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-import pyperclip
 
 class ChatUI:
     def __init__(self):
         self.console = Console()
         self.buffer = []
-        self.history = []
-        self.history_index = 0
-        self.temp_buffer = ""
         
-        # 初始化readline
+        # Initialize readline
         if 'libedit' in readline.__doc__:
             readline.parse_and_bind("bind ^I rl_complete")
         else:
             readline.parse_and_bind("tab: complete")
         
-        # 设置命令历史文件
+        # Setup history file
         self.history_file = os.path.expanduser('~/.chat_history')
         if os.path.exists(self.history_file):
             readline.read_history_file(self.history_file)
             
     def __del__(self):
-        # 保存命令历史
         readline.write_history_file(self.history_file)
         
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
@@ -58,25 +53,6 @@ class ChatUI:
         except:
             return code
 
-    def handle_input(self, key: str) -> str:
-        if key == '\x1a':  # Ctrl+Z
-            if self.buffer:
-                self.buffer.pop()
-                return '\n'.join(self.buffer)
-            return ''
-        elif key == '\x03':  # Ctrl+C
-            if self.buffer:
-                pyperclip.copy('\n'.join(self.buffer))
-            return ''
-        elif key == '\x16':  # Ctrl+V
-            try:
-                pasted = pyperclip.paste()
-                self.buffer.append(pasted)
-                return '\n'.join(self.buffer)
-            except:
-                return ''
-        return key
-
     def display_prompt(self) -> str:
         self.buffer = []
         while True:
@@ -85,11 +61,6 @@ class ChatUI:
                     line = input("User: ")
                 else:
                     line = input("... ")
-                
-                # 处理特殊按键
-                result = self.handle_input(line)
-                if result != line:
-                    return result
                     
                 if line.endswith('\x1b[13;2u'):  # Shift+Enter
                     self.buffer.append(line[:-8])
@@ -97,7 +68,7 @@ class ChatUI:
                     
                 self.buffer.append(line)
                 
-                # 检测代码块
+                # Code block handling
                 if line.startswith('```'):
                     lang = line[3:].strip()
                     code_buffer = []
@@ -108,12 +79,6 @@ class ChatUI:
                         code_buffer.append(code_line)
                     highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
                     self.buffer.extend([highlighted_code, '```'])
-                
-                # 添加到历史记录
-                if line and line not in self.history:
-                    self.history.append(line)
-                    self.history_index = len(self.history)
-                
                 break
                 
             except EOFError:
@@ -136,9 +101,6 @@ class ChatUI:
          - /help  : Show help
         Shortcuts:
          - Shift+Enter: New line
-         - Ctrl+Z: Undo
-         - Ctrl+C: Copy
-         - Ctrl+V: Paste
          - Up/Down: Navigate history
         """
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
