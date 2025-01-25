@@ -118,7 +118,7 @@ class ChatUI:
         @self.kb.add(Keys.Enter)
         def _(event):
             # 检查shift键是否被按下
-            shift_pressed = event.key_sequence[0].data.shift
+            shift_pressed = bool(event.data.modifiers & 1)
             
             if shift_pressed:
                 # 如果按下shift键，插入换行符
