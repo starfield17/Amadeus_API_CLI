@@ -12,74 +12,81 @@ from prompt_toolkit.completion import WordCompleter
 import httpx
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
-import keyboard
-import time
+from pynput import keyboard
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-
 class ChatUI:
     def __init__(self):
         self.console = Console()
         self.buffer = []
         self.history_file = os.path.expanduser('~/.chat_history')
-        keyboard.on_press(self._handle_key_press)
         self._current_input = ""
         self._cursor_pos = 0
         self._history_index = -1
         self._input_history = []
+        self._shift_pressed = False
+        self._listener = keyboard.Listener(on_press=self._on_press, on_release=self._on_release)
+        self._listener.start()
         
         if os.path.exists(self.history_file):
             with open(self.history_file, 'r', encoding='utf-8') as f:
                 self._input_history = f.read().splitlines()
     
     def __del__(self):
-        with open(self.history_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(self._input_history))
-    
-    def _handle_key_press(self, event):
-        if event.name == 'up':
-            if self._history_index < len(self._input_history) - 1:
-                self._history_index += 1
-                self._current_input = self._input_history[-1-self._history_index]
+        if hasattr(self, '_input_history'):
+            with open(self.history_file, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(self._input_history))
+        if hasattr(self, '_listener'):
+            self._listener.stop()
+
+    def _on_press(self, key):
+        try:
+            if key == keyboard.Key.shift:
+                self._shift_pressed = True
+            elif key == keyboard.Key.up:
+                if self._history_index < len(self._input_history) - 1:
+                    self._history_index += 1
+                    self._current_input = self._input_history[-1-self._history_index]
+                    self._cursor_pos = len(self._current_input)
+                    self._refresh_input_line()
+            elif key == keyboard.Key.down:
+                if self._history_index > 0:
+                    self._history_index -= 1
+                    self._current_input = self._input_history[-1-self._history_index]
+                else:
+                    self._history_index = -1
+                    self._current_input = ""
                 self._cursor_pos = len(self._current_input)
                 self._refresh_input_line()
-        
-        elif event.name == 'down':
-            if self._history_index > 0:
-                self._history_index -= 1
-                self._current_input = self._input_history[-1-self._history_index]
-            else:
-                self._history_index = -1
-                self._current_input = ""
-            self._cursor_pos = len(self._current_input)
-            self._refresh_input_line()
-                
-        elif event.name == 'left' and self._cursor_pos > 0:
-            self._cursor_pos -= 1
-            self._refresh_input_line()
-            
-        elif event.name == 'right' and self._cursor_pos < len(self._current_input):
-            self._cursor_pos += 1
-            self._refresh_input_line()
-            
-        elif event.name == 'backspace' and self._cursor_pos > 0:
-            self._current_input = (self._current_input[:self._cursor_pos-1] + 
-                                 self._current_input[self._cursor_pos:])
-            self._cursor_pos -= 1
-            self._refresh_input_line()
-            
-        elif len(event.name) == 1:  # Regular character input
-            self._current_input = (self._current_input[:self._cursor_pos] + 
-                                 event.name + 
-                                 self._current_input[self._cursor_pos:])
-            self._cursor_pos += 1
-            self._refresh_input_line()
-    
+            elif key == keyboard.Key.left and self._cursor_pos > 0:
+                self._cursor_pos -= 1
+                self._refresh_input_line()
+            elif key == keyboard.Key.right and self._cursor_pos < len(self._current_input):
+                self._cursor_pos += 1
+                self._refresh_input_line()
+            elif key == keyboard.Key.backspace and self._cursor_pos > 0:
+                self._current_input = (self._current_input[:self._cursor_pos-1] + 
+                                     self._current_input[self._cursor_pos:])
+                self._cursor_pos -= 1
+                self._refresh_input_line()
+            elif hasattr(key, 'char'):  # Regular character input
+                self._current_input = (self._current_input[:self._cursor_pos] + 
+                                     key.char + 
+                                     self._current_input[self._cursor_pos:])
+                self._cursor_pos += 1
+                self._refresh_input_line()
+        except AttributeError:
+            pass
+
+    def _on_release(self, key):
+        if key == keyboard.Key.shift:
+            self._shift_pressed = False
+
     def _refresh_input_line(self):
         print(f'\rUser: {self._current_input}', end=' '*20)
         print(f'\rUser: {self._current_input[:self._cursor_pos]}', end='')
-    
+
     def display_prompt(self) -> str:
         self.buffer = []
         self._current_input = ""
@@ -87,40 +94,43 @@ class ChatUI:
         print("User: ", end='', flush=True)
         
         while True:
-            if keyboard.is_pressed('enter'):
-                if self._current_input.strip():
-                    self._input_history.append(self._current_input)
-                    self._history_index = -1
-                    return self._current_input
-                
-            elif keyboard.is_pressed('ctrl+c'):
-                self.buffer = []
-                self._current_input = ""
-                self._cursor_pos = 0
-                print("\n")
-                return ""
-            
-            elif keyboard.is_pressed('shift+enter'):
-                self.buffer.append(self._current_input)
-                self._current_input = ""
-                self._cursor_pos = 0
-                print("\n... ", end='', flush=True)
-                continue
-                
-            elif self._current_input.startswith('```'):
-                code_buffer = []
-                while True:
-                    if keyboard.is_pressed('enter'):
-                        if self._current_input.strip() == '```':
+            with keyboard.Events() as events:
+                event = events.get(1.0)
+                if event is None:
+                    continue
+                    
+                if event.key == keyboard.Key.enter:
+                    if self._shift_pressed:
+                        self.buffer.append(self._current_input)
+                        self._current_input = ""
+                        self._cursor_pos = 0
+                        print("\n... ", end='', flush=True)
+                        continue
+                    elif self._current_input.strip():
+                        if not self._current_input.startswith('```'):
+                            self._input_history.append(self._current_input)
+                            self._history_index = -1
+                            print()
+                            return self._current_input
+                        else:
+                            code_buffer = []
+                            while True:
+                                event = events.get(1.0)
+                                if event and event.key == keyboard.Key.enter:
+                                    if self._current_input.strip() == '```':
+                                        break
+                                    code_buffer.append(self._current_input)
+                            highlighted_code = self.highlight_code('\n'.join(code_buffer))
+                            self.buffer.extend([highlighted_code, '```'])
                             break
-                        code_buffer.append(self._current_input)
-                    time.sleep(0.01)
-                highlighted_code = self.highlight_code('\n'.join(code_buffer))
-                self.buffer.extend([highlighted_code, '```'])
-                break
+                
+                elif event.key == keyboard.Key.ctrl_c:
+                    self.buffer = []
+                    self._current_input = ""
+                    self._cursor_pos = 0
+                    print("\n")
+                    return ""
 
-            time.sleep(0.01)  # Prevent high CPU usage
-            
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
             print(content, end=end, flush=True)
