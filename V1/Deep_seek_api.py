@@ -8,7 +8,6 @@ from rich.prompt import Prompt
 from rich.panel import Panel
 import signal
 import httpx
-import readline
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
 from pygments import highlight
@@ -30,6 +29,7 @@ class ChatUI:
         })
         self.history_file = os.path.expanduser('~/.chat_history')
         self.session = self._create_session()
+        self.console = Console()
         
     def _create_session(self):
         """创建带有多行支持的提示会话"""
