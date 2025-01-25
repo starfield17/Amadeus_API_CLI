@@ -14,7 +14,6 @@ from httpx_socks import SyncProxyTransport
 from pathlib import Path
 from prompt_toolkit.keys import Keys
 
-
 class ConfigManager:
     def __init__(self):
         self.config_file = Path.home() / '.deepseek_config'
@@ -113,16 +112,18 @@ class ChatUI:
 
     def _init_key_bindings(self):
         from prompt_toolkit.key_binding import KeyBindings
+        from prompt_toolkit.filters import shift
+
         self.kb = KeyBindings()
-    
         @self.kb.add('enter')
         def _(event):
             event.current_buffer.validate_and_handle()
-    
-        @self.kb.add('shift+enter')
+
+        # Shift+Enter
+        @self.kb.add('enter', filter=shift)
         def _(event):
             event.current_buffer.insert_text('\n')
-
+            
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
             print(content, end=end, flush=True)
