@@ -109,20 +109,22 @@ class ChatHistory:
 class ChatUI:
     def __init__(self):
         self.console = Console()
-
         self._init_key_bindings()
 
     def _init_key_bindings(self):
         from prompt_toolkit.key_binding import KeyBindings
         self.kb = KeyBindings()
-    
 
-        @self.kb.add(Keys.Enter, filter=True)
+        @self.kb.add(Keys.Enter)
         def _(event):
-
-            if event.input_processor.shift_pressed:
+            # 检查shift键是否被按下
+            shift_pressed = event.key_sequence[0].data.shift
+            
+            if shift_pressed:
+                # 如果按下shift键，插入换行符
                 event.current_buffer.insert_text('\n')
             else:
+                # 否则提交输入
                 event.current_buffer.validate_and_handle()
 
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
