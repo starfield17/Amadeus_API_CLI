@@ -60,28 +60,20 @@ class ChatUI:
             
     def display_prompt(self) -> str:
         self.buffer = []
-        in_multiline = False
+        multiline_mode = False
         
         while True:
             try:
-                if not self.buffer:
-                    line = input("User: ")
-                else:
-                    line = input("... ")
-                    
-                if line.endswith('\x1b[13;2u'):  # Shift+Enter
-                    self.buffer.append(line[:-8])  # Remove Shift+Enter sequence
-                    continue
-                elif not line and in_multiline:  # Empty line in multiline mode
-                    break
-                elif in_multiline:
-                    self.buffer.append(line)
-                    continue
+                # 显示适当的提示符
+                prompt = "... " if len(self.buffer) > 0 else "User: "
+                line = input(prompt)
                 
-                self.buffer.append(line)
+                # 检查是否为退出命令
+                if line.lower() in ['q', 'quit', 'exit'] and not multiline_mode:
+                    return line
                 
-                # Code block handling
-                if line.startswith('```'):
+                # 处理代码块
+                if line.startswith('```') and not multiline_mode:
                     lang = line[3:].strip()
                     code_buffer = []
                     while True:
@@ -90,9 +82,25 @@ class ChatUI:
                             break
                         code_buffer.append(code_line)
                     highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
-                    self.buffer.extend([highlighted_code, '```'])
+                    self.buffer.extend([line, highlighted_code, '```'])
+                    break
                 
-                if not in_multiline:
+                # Shift+Enter 处理
+                if line.endswith('\x1b[13;2u'):
+                    self.buffer.append(line[:-8])  # 移除 Shift+Enter 序列
+                    multiline_mode = True
+                    continue
+                
+                # 处理多行模式
+                if multiline_mode:
+                    if not line:  # 空行结束多行输入
+                        break
+                    self.buffer.append(line)
+                    continue
+                
+                # 单行模式
+                self.buffer.append(line)
+                if not multiline_mode:
                     break
                     
             except EOFError:
@@ -102,7 +110,7 @@ class ChatUI:
                 print("\n")
                 continue
         
-        return '\n'.join(self.buffer)
+        return '\n'.join(filter(None, self.buffer))
 
     def display_welcome(self, model: str):
         welcome_text = f"""
@@ -118,6 +126,7 @@ class ChatUI:
          - Up/Down: Navigate history
         """
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
+        
 class ConfigManager:
     def __init__(self):
         self.config_file = Path.home() / '.deepseek_config'
