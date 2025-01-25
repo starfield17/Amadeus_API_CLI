@@ -114,12 +114,12 @@ class ChatUI:
     def _init_key_bindings(self):
         from prompt_toolkit.key_binding import KeyBindings
         self.kb = KeyBindings()
-
+    
         @self.kb.add('enter')
         def _(event):
             event.current_buffer.validate_and_handle()
-
-        @self.kb.add('shift-enter')
+    
+        @self.kb.add('shift+enter')
         def _(event):
             event.current_buffer.insert_text('\n')
 
