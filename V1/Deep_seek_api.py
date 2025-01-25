@@ -17,20 +17,20 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
 from enum import Enum, auto
-
 class InputState(Enum):
-    NORMAL = auto()
-    MULTILINE = auto()
-    CODE_BLOCK = auto()
-    PASTE = auto()
+    NORMAL = auto()      # 普通输入状态
+    MULTILINE = auto()   # 多行输入状态（通过Shift+Enter触发）
+    CODE_BLOCK = auto()  # 代码块状态（被```包围）
+    PASTE = auto()       # 粘贴状态（通过ctrl+v/cmd+v触发）
 
 class InputEvent(Enum):
-    ENTER = auto()
-    SHIFT_ENTER = auto()
-    PASTE_START = auto()
-    PASTE_END = auto()
-    CODE_START = auto()
-    CODE_END = auto()
+    ENTER = auto()       # 回车键
+    SHIFT_ENTER = auto() # Shift+Enter组合键
+    PASTE_START = auto() # 开始粘贴
+    PASTE_END = auto()   # 结束粘贴
+    CODE_START = auto()  # 代码块开始
+    CODE_END = auto()    # 代码块结束
+    EMPTY = auto()       # 空行输入
 
 class InputHandler:
     def __init__(self):
@@ -39,52 +39,91 @@ class InputHandler:
         self.code_lang = None
         
     def handle_input(self, line: str) -> tuple[bool, str]:
-        """返回(是否发送消息, 处理后的输入)"""
-        event = self._detect_event(line)
-        return self._process_event(event, line)
+        """处理输入并决定是否应该发送消息
+        Args:
+            line: 输入的文本行
+        Returns:
+            (should_send, processed_line): should_send表示是否应该发送消息，
+            processed_line是处理后的文本行
+        """
+        events = self._detect_events(line)
+        return self._process_events(events, line)
     
-    def _detect_event(self, line: str) -> InputEvent:
+    def _detect_events(self, line: str) -> list[InputEvent]:
+        """检测输入行中的所有事件
+        可能同时存在多个事件，如粘贴的内容中包含代码块
+        """
+        events = []
+        
+        # 检测粘贴事件
         if '\x1b[200~' in line:
-            return InputEvent.PASTE_START
+            events.append(InputEvent.PASTE_START)
         if '\x1b[201~' in line:
-            return InputEvent.PASTE_END
-        if line.endswith('\x1b[13;2u'):  # Shift+Enter
-            return InputEvent.SHIFT_ENTER
-        if line.startswith('```'):
-            return InputEvent.CODE_START if self.state != InputState.CODE_BLOCK else InputEvent.CODE_END
-        return InputEvent.ENTER
+            events.append(InputEvent.PASTE_END)
+            
+        # 检测Shift+Enter
+        if line.endswith('\x1b[13;2u'):
+            events.append(InputEvent.SHIFT_ENTER)
+            
+        # 检测代码块
+        if line.strip().startswith('```'):
+            events.append(InputEvent.CODE_START if self.state != InputState.CODE_BLOCK 
+                        else InputEvent.CODE_END)
+            
+        # 检测空行
+        if not line.strip():
+            events.append(InputEvent.EMPTY)
+        else:
+            events.append(InputEvent.ENTER)
+            
+        return events
     
-    def _process_event(self, event: InputEvent, line: str) -> tuple[bool, str]:
-        if self.state == InputState.NORMAL:
-            if event == InputEvent.SHIFT_ENTER:
-                self.state = InputState.MULTILINE
-                return False, line[:-8]  # 移除Shift+Enter标记
-            if event == InputEvent.CODE_START:
-                self.state = InputState.CODE_BLOCK
-                self.code_lang = line[3:].strip()
-                return False, line
+    def _process_events(self, events: list[InputEvent], line: str) -> tuple[bool, str]:
+        """根据当前状态和触发的事件决定行为"""
+        processed_line = line
+        should_send = False
+        
+        for event in events:
             if event == InputEvent.PASTE_START:
                 self.state = InputState.PASTE
-                return False, line[6:]  # 移除粘贴开始标记
-            if event == InputEvent.ENTER and line.strip():
-                return True, line
+                processed_line = line.replace('\x1b[200~', '')
+                continue
                 
-        elif self.state == InputState.MULTILINE:
-            if event == InputEvent.ENTER and not line.strip():
-                self.state = InputState.NORMAL
-                return True, line
-                
-        elif self.state == InputState.CODE_BLOCK:
-            if event == InputEvent.CODE_END:
-                self.state = InputState.NORMAL
-                return False, line
-                
-        elif self.state == InputState.PASTE:
             if event == InputEvent.PASTE_END:
                 self.state = InputState.NORMAL
-                return True, line.replace('\x1b[201~', '')
+                processed_line = processed_line.replace('\x1b[201~', '')
+                # 粘贴结束不自动发送，等待用户确认
+                continue
                 
-        return False, line
+            if event == InputEvent.SHIFT_ENTER:
+                if self.state == InputState.NORMAL:
+                    self.state = InputState.MULTILINE
+                processed_line = processed_line[:-8]  # 移除Shift+Enter标记
+                continue
+                
+            if event == InputEvent.CODE_START:
+                self.state = InputState.CODE_BLOCK
+                self.code_lang = processed_line[3:].strip()
+                continue
+                
+            if event == InputEvent.CODE_END:
+                self.state = InputState.NORMAL
+                continue
+                
+            # 空行处理
+            if event == InputEvent.EMPTY:
+                if self.state == InputState.MULTILINE:
+                    should_send = True
+                elif len(self.buffer) > 0:  # 有之前的输入
+                    should_send = True
+                continue
+                
+            # 普通回车处理
+            if event == InputEvent.ENTER:
+                if self.state == InputState.NORMAL and processed_line.strip():
+                    should_send = True
+                    
+        return should_send, processed_line
 
 class ChatUI:
     def __init__(self):
@@ -108,9 +147,11 @@ class ChatUI:
                 line = input(prompt)
                 
                 should_send, processed_line = self.input_handler.handle_input(line)
-                self.buffer.append(processed_line)
                 
-                if should_send:
+                if processed_line.strip() or self.input_handler.state != InputState.NORMAL:
+                    self.buffer.append(processed_line)
+                
+                if should_send and self.buffer:  # 只有buffer非空时才发送
                     break
                     
             except EOFError:
@@ -122,7 +163,8 @@ class ChatUI:
                 continue
                 
         return '\n'.join(filter(None, self.buffer))
-        
+
+    
     def __del__(self):
         readline.write_history_file(self.history_file)
         
