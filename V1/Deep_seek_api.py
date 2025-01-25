@@ -116,7 +116,7 @@ class ChatUI:
     
         @self.kb.add('enter')
         def _(event):
-            if event.key.shift_pressed:
+            if event.shift_pressed:
                 event.current_buffer.insert_text('\n')
             else:
                 event.current_buffer.validate_and_handle()
