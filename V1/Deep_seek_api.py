@@ -12,8 +12,9 @@ from prompt_toolkit.completion import WordCompleter
 import httpx
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
-from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding.key_processor import KeyPressEvent
 
 class ConfigManager:
     def __init__(self):
@@ -115,14 +116,14 @@ class ChatUI:
         def _(event):
             event.current_buffer.validate_and_handle()
             
-        @self.kb.add(Keys.Shift, Keys.Enter)
+        @self.kb.add('escape', 'enter')  # Alt+Enter
         def _(event):
             event.current_buffer.insert_text('\n')
     
     def display_prompt(self) -> str:
         session = PromptSession(key_bindings=self.kb)
         return session.prompt("\nUser: ").strip()
-
+        
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
             print(content, end=end, flush=True)
