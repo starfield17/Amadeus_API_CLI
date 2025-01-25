@@ -16,196 +16,93 @@ import readline
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-from enum import Enum, auto
+import blessed
 
-
-
-class InputState(Enum):
-    NORMAL = auto()      # 普通输入状态
-    MULTILINE = auto()   # 多行输入状态（通过Shift+Enter触发）
-    CODE_BLOCK = auto()  # 代码块状态（被```包围）
-    PASTE = auto()       # 粘贴状态（通过ctrl+v/cmd+v触发）
-
-class InputEvent(Enum):
-    ENTER = auto()       # 回车键
-    SHIFT_ENTER = auto() # Shift+Enter组合键
-    PASTE_START = auto() # 开始粘贴
-    PASTE_END = auto()   # 结束粘贴
-    CODE_START = auto()  # 代码块开始
-    CODE_END = auto()    # 代码块结束
-    EMPTY = auto()       # 空行输入
-
-class InputHandler:
-    def __init__(self):
-        self.state = InputState.NORMAL
-        self.buffer = []
-        self.code_lang = None
-        
-    def handle_input(self, line: str) -> tuple[bool, str]:
-        """处理输入并决定是否应该发送消息
-        Args:
-            line: 输入的文本行
-        Returns:
-            (should_send, processed_line): should_send表示是否应该发送消息，
-            processed_line是处理后的文本行
-        """
-        events = self._detect_events(line)
-        return self._process_events(events, line)
-    
-    def _detect_events(self, line: str) -> list[InputEvent]:
-        """检测输入行中的所有事件
-        可能同时存在多个事件，如粘贴的内容中包含代码块
-        """
-        events = []
-        
-        # 检测粘贴事件
-        if '\x1b[200~' in line:
-            events.append(InputEvent.PASTE_START)
-        if '\x1b[201~' in line:
-            events.append(InputEvent.PASTE_END)
-            
-        # 检测Shift+Enter
-        if line.endswith('\x1b[13;2u'):
-            events.append(InputEvent.SHIFT_ENTER)
-            
-        # 检测代码块
-        if line.strip().startswith('```'):
-            events.append(InputEvent.CODE_START if self.state != InputState.CODE_BLOCK 
-                        else InputEvent.CODE_END)
-            
-        # 检测空行
-        if not line.strip():
-            events.append(InputEvent.EMPTY)
-        else:
-            events.append(InputEvent.ENTER)
-            
-        return events
-    
-    def _process_events(self, events: list[InputEvent], line: str) -> tuple[bool, str]:
-        """根据当前状态和触发的事件决定行为"""
-        processed_line = line
-        should_send = False
-        
-        for event in events:
-            if event == InputEvent.PASTE_START:
-                self.state = InputState.PASTE
-                processed_line = line.replace('\x1b[200~', '')
-                continue
-                
-            if event == InputEvent.PASTE_END:
-                self.state = InputState.NORMAL
-                processed_line = processed_line.replace('\x1b[201~', '')
-                # 粘贴结束不自动发送，等待用户确认
-                continue
-                
-            if event == InputEvent.SHIFT_ENTER:
-                if self.state == InputState.NORMAL:
-                    self.state = InputState.MULTILINE
-                processed_line = processed_line[:-8]  # 移除Shift+Enter标记
-                continue
-                
-            if event == InputEvent.CODE_START:
-                self.state = InputState.CODE_BLOCK
-                self.code_lang = processed_line[3:].strip()
-                continue
-                
-            if event == InputEvent.CODE_END:
-                self.state = InputState.NORMAL
-                continue
-                
-            # 空行处理
-            if event == InputEvent.EMPTY:
-                if self.state == InputState.MULTILINE:
-                    should_send = True
-                elif len(self.buffer) > 0:  # 有之前的输入
-                    should_send = True
-                continue
-                
-            # 普通回车处理
-            if event == InputEvent.ENTER:
-                # 只有在Normal状态且没有特殊按键（如Shift+Enter）时才考虑发送
-                if (self.state == InputState.NORMAL and 
-                    processed_line.strip() and 
-                    InputEvent.SHIFT_ENTER not in events):
-                    should_send = True
-                    
-        return should_send, processed_line
 
 class ChatUI:
     def __init__(self):
+        self.term = blessed.Terminal()
         self.console = Console()
         self.buffer = []
-        self.input_handler = InputHandler()
+        self.cursor_pos = 0
+        self.current_line = ""
+        self.history = []
+        self.history_pos = 0
         
-        readline.set_completer_delims(' \t\n;')
-        readline.parse_and_bind('set enable-bracketed-paste on')
-        
+        # Set up history
         self.history_file = os.path.expanduser('~/.chat_history')
         if os.path.exists(self.history_file):
-            readline.read_history_file(self.history_file)
+            with open(self.history_file, 'r') as f:
+                self.history = f.readlines()
     
     def display_prompt(self) -> str:
-        self.buffer = []
-        
-        while True:
-            try:
-                prompt = "User: " if not self.buffer else "... "
-                line = input(prompt)
+        with self.term.cbreak(), self.term.hidden_cursor():
+            self.buffer = []
+            inp = ""
+            
+            # 显示初始提示符
+            print(self.term.move_xy(0, self.term.height - 2) + "User: ", end='', flush=True)
+            
+            while True:
+                key = self.term.inkey()
                 
-                should_send, processed_line = self.input_handler.handle_input(line)
+                if key.code == self.term.KEY_ENTER:
+                    if self.buffer and not inp.strip():  # 空行且有之前输入
+                        return '\n'.join(self.buffer)
+                    if inp.strip():  # 非空行
+                        self.buffer.append(inp)
+                        self.history.append(inp)
+                        self.history_pos = len(self.history)
+                        if not self.buffer[-1].startswith('```'):  # 非代码块
+                            return '\n'.join(self.buffer)
+                        inp = ""
+                        
+                elif key.code == self.term.KEY_ESCAPE:
+                    if key.code == self.term.KEY_SHIFT_ENTER:  # Shift+Enter
+                        self.buffer.append(inp)
+                        inp = ""
+                        print("\n... ", end='', flush=True)
+                        
+                elif key.code == self.term.KEY_BACKSPACE:
+                    if inp:
+                        inp = inp[:-1]
+                        print(self.term.move_left + ' ' + self.term.move_left, end='', flush=True)
+                        
+                elif key.code == self.term.KEY_UP:
+                    if self.history_pos > 0:
+                        self.history_pos -= 1
+                        inp = self.history[self.history_pos]
+                        print(self.term.move_x(0) + self.term.clear_eol + 
+                              ("User: " if not self.buffer else "... ") + inp, end='', flush=True)
+                        
+                elif key.code == self.term.KEY_DOWN:
+                    if self.history_pos < len(self.history):
+                        self.history_pos += 1
+                        inp = self.history[self.history_pos] if self.history_pos < len(self.history) else ""
+                        print(self.term.move_x(0) + self.term.clear_eol + 
+                              ("User: " if not self.buffer else "... ") + inp, end='', flush=True)
                 
-                if processed_line.strip() or self.input_handler.state != InputState.NORMAL:
-                    self.buffer.append(processed_line)
+                elif key.code == self.term.KEY_CTRL_C:
+                    print("\n")
+                    self.buffer = []
+                    return ""
                 
-                if should_send and self.buffer:  # 只有buffer非空时才发送
-                    break
+                elif key.code == self.term.KEY_CTRL_D:
+                    return "exit"
                     
-            except EOFError:
-                return "exit"
-            except KeyboardInterrupt:
-                self.buffer = []
-                print("\n")
-                self.input_handler.state = InputState.NORMAL
-                continue
-                
-        return '\n'.join(filter(None, self.buffer))
+                else:
+                    inp += key
+                    print(key, end='', flush=True)
 
-    
-    def __del__(self):
-        readline.write_history_file(self.history_file)
-        
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
-        if flush:
-            print(content, end=end, flush=True)
+        if style:
+            print(getattr(self.term, style)(content), end=end, flush=flush)
         else:
-            self.console.print(content, style=style, end=end)
+            print(content, end=end, flush=flush)
 
     def display_reasoning(self, content: str):
-        self.console.print("\n[Reasoning Chain]", style="bold yellow")
-        self.console.print(Panel.fit(content, border_style="yellow"))
-
-    def highlight_code(self, code: str, language: str = 'python') -> str:
-        try:
-            lexer = get_lexer_by_name(language)
-            return highlight(code, lexer, Terminal256Formatter())
-        except:
-            return code
-
-
-    def display_welcome(self, model: str):
-        welcome_text = f"""
-        DeepSeek Chat CLI (Model: {model})
-        Enter 'q' or 'exit' or 'quit' to quit
-        Commands:
-         - /clear : Clear chat history
-         - /save  : Save chat history
-         - /load  : Load chat history
-         - /help  : Show help
-        Shortcuts:
-         - Shift+Enter: New line
-         - Up/Down: Navigate history
-        """
-        self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
+        print(self.term.yellow("\n[Reasoning Chain]"))
+        print(self.term.yellow_bold(content))
 
 
 class ConfigManager:
