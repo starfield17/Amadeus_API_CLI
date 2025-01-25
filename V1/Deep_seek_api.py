@@ -168,7 +168,8 @@ class ChatApp:
                 user_input = self.ui.display_prompt()
                 
                 if user_input.lower() in ['q', 'quit', 'exit']:
-                    if Prompt.ask("Are you sure you want to quit? (y/n)", choices=["y", "n"], default="n") == "y":
+                    user_choice = Prompt.ask("Are you sure you want to quit? (y/n)", default="n").strip().lower()
+                    if user_choice == 'y':
                         self.ui.display_message("\nGoodbye!", style="yellow")
                         break
                     continue
