@@ -16,6 +16,7 @@ import readline
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
+
 class ChatUI:
     def __init__(self):
         self.console = Console()
@@ -61,13 +62,17 @@ class ChatUI:
                 
                 self.buffer.append(line)
                 
-                # 只有在非粘贴模式下才检查是否结束输入
-                if not in_paste_mode and line.strip() == '':
-                    if len(self.buffer) > 1:  # 确保不是第一行就是空行
+                # 在有内容的情况下，按Enter就发送
+                if len(self.buffer) > 0 and not in_paste_mode:
+                    last_line = self.buffer[-1].strip()
+                    if not last_line:  # 如果是空行
+                        if len(self.buffer) > 1:  # 且不是第一次输入
+                            break
+                        else:
+                            self.buffer.pop()  # 移除空行
+                            continue
+                    else:  # 非空行，直接发送
                         break
-                    else:
-                        self.buffer.pop()  # 移除空行
-                        continue
                 
             except EOFError:
                 return "exit"
@@ -77,7 +82,6 @@ class ChatUI:
                 continue
         
         return '\n'.join(filter(None, self.buffer))  # 过滤掉空行
-        
     def __del__(self):
         readline.write_history_file(self.history_file)
         
