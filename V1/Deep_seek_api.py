@@ -7,8 +7,6 @@ from rich.console import Console
 from rich.prompt import Prompt
 from rich.panel import Panel
 import signal
-from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import WordCompleter
 import httpx
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
