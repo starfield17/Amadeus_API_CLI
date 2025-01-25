@@ -62,11 +62,22 @@ class ChatUI:
                 else:
                     line = input("... ")
                     
+                # Handle pasted content - split into lines and process each
+                if '\n' in line:
+                    lines = line.split('\n')
+                    self.buffer.extend(lines[:-1])  # Add all but last line
+                    line = lines[-1]  # Process last line normally
+                    
                 if line.endswith('\x1b[13;2u'):  # Shift+Enter
                     self.buffer.append(line[:-8])
                     continue
                     
                 self.buffer.append(line)
+                
+                # Only break if this was a single line input (not paste)
+                # and doesn't start a code block
+                if '\n' not in line and not line.startswith('```'):
+                    break
                 
                 # Code block handling
                 if line.startswith('```'):
@@ -79,8 +90,8 @@ class ChatUI:
                         code_buffer.append(code_line)
                     highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
                     self.buffer.extend([highlighted_code, '```'])
-                break
-                
+                    break
+                    
             except EOFError:
                 return "exit"
             except KeyboardInterrupt:
@@ -89,7 +100,6 @@ class ChatUI:
                 continue
         
         return '\n'.join(self.buffer)
-
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
