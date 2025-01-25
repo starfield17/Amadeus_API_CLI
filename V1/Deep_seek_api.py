@@ -112,17 +112,14 @@ class ChatUI:
 
     def _init_key_bindings(self):
         from prompt_toolkit.key_binding import KeyBindings
-        from prompt_toolkit.filters import shift
-
         self.kb = KeyBindings()
+    
         @self.kb.add('enter')
         def _(event):
-            event.current_buffer.validate_and_handle()
-
-        # Shift+Enter
-        @self.kb.add('enter', filter=shift)
-        def _(event):
-            event.current_buffer.insert_text('\n')
+            if event.key.shift_pressed:
+                event.current_buffer.insert_text('\n')
+            else:
+                event.current_buffer.validate_and_handle()
             
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
