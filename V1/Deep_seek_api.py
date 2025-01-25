@@ -108,19 +108,8 @@ class ChatHistory:
 class ChatUI:
     def __init__(self):
         self.console = Console()
-        self._init_key_bindings()
-
-    def _init_key_bindings(self):
-        from prompt_toolkit.key_binding import KeyBindings
-        self.kb = KeyBindings()
-    
-        @self.kb.add('enter')
-        def _(event):
-            if event.shift_pressed:
-                event.current_buffer.insert_text('\n')
-            else:
-                event.current_buffer.validate_and_handle()
-            
+        self.buffer = []
+        
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
             print(content, end=end, flush=True)
@@ -132,15 +121,23 @@ class ChatUI:
         self.console.print(Panel.fit(content, border_style="yellow"))
 
     def display_prompt(self) -> str:
-        from prompt_toolkit import PromptSession
-        from prompt_toolkit.formatted_text import HTML
-
-        session = PromptSession(
-            key_bindings=self.kb,
-            multiline=True,  
-            prompt_continuation=lambda width, lineno, is_soft_wrap: HTML('<style fg="#888888">... </style>')
-        )
-        return session.prompt(HTML('<b>User:</b> ')).strip()
+        self.buffer = []
+        while True:
+            try:
+                if not self.buffer:
+                    line = input("User: ")
+                else:
+                    line = input("... ")
+                
+                if line.endswith('\x1b[13;2u'):  # Shift+Enter
+                    self.buffer.append(line[:-8])  # Remove Shift+Enter code
+                    continue
+                self.buffer.append(line)
+                break
+            except EOFError:
+                return "exit"
+        
+        return "\n".join(self.buffer)
 
     def display_welcome(self, model: str):
         welcome_text = f"""
@@ -154,7 +151,7 @@ class ChatUI:
         Tip: Use Shift+Enter for new lines
         """
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
-
+        
 class ChatApp:
     def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None):
         self.config_manager = ConfigManager()
