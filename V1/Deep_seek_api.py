@@ -70,13 +70,11 @@ class ChatUI:
                     line = input("... ")
                     
                 if line.endswith('\x1b[13;2u'):  # Shift+Enter
-                    self.buffer.append(line[:-8])
-                    in_multiline = True
+                    self.buffer.append(line[:-8])  # Remove Shift+Enter sequence
                     continue
-                    
-                if in_multiline:
-                    if not line.strip():  # Empty line ends multiline input
-                        break
+                elif not line and in_multiline:  # Empty line in multiline mode
+                    break
+                elif in_multiline:
                     self.buffer.append(line)
                     continue
                 
