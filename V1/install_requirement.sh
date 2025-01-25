@@ -7,7 +7,5 @@ pip install -i https://mirrors.ustc.edu.cn/pypi/web/simple \
     prompt_toolkit \
     httpx \
     httpx-socks \
-    pygments \
-    pyperclip
-
+    pygments 
 echo "All dependencies installed successfully!"
