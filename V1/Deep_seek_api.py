@@ -16,72 +16,113 @@ import readline
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
+from enum import Enum, auto
+
+class InputState(Enum):
+    NORMAL = auto()
+    MULTILINE = auto()
+    CODE_BLOCK = auto()
+    PASTE = auto()
+
+class InputEvent(Enum):
+    ENTER = auto()
+    SHIFT_ENTER = auto()
+    PASTE_START = auto()
+    PASTE_END = auto()
+    CODE_START = auto()
+    CODE_END = auto()
+
+class InputHandler:
+    def __init__(self):
+        self.state = InputState.NORMAL
+        self.buffer = []
+        self.code_lang = None
+        
+    def handle_input(self, line: str) -> tuple[bool, str]:
+        """返回(是否发送消息, 处理后的输入)"""
+        event = self._detect_event(line)
+        return self._process_event(event, line)
+    
+    def _detect_event(self, line: str) -> InputEvent:
+        if '\x1b[200~' in line:
+            return InputEvent.PASTE_START
+        if '\x1b[201~' in line:
+            return InputEvent.PASTE_END
+        if line.endswith('\x1b[13;2u'):  # Shift+Enter
+            return InputEvent.SHIFT_ENTER
+        if line.startswith('```'):
+            return InputEvent.CODE_START if self.state != InputState.CODE_BLOCK else InputEvent.CODE_END
+        return InputEvent.ENTER
+    
+    def _process_event(self, event: InputEvent, line: str) -> tuple[bool, str]:
+        if self.state == InputState.NORMAL:
+            if event == InputEvent.SHIFT_ENTER:
+                self.state = InputState.MULTILINE
+                return False, line[:-8]  # 移除Shift+Enter标记
+            if event == InputEvent.CODE_START:
+                self.state = InputState.CODE_BLOCK
+                self.code_lang = line[3:].strip()
+                return False, line
+            if event == InputEvent.PASTE_START:
+                self.state = InputState.PASTE
+                return False, line[6:]  # 移除粘贴开始标记
+            if event == InputEvent.ENTER and line.strip():
+                return True, line
+                
+        elif self.state == InputState.MULTILINE:
+            if event == InputEvent.ENTER and not line.strip():
+                self.state = InputState.NORMAL
+                return True, line
+                
+        elif self.state == InputState.CODE_BLOCK:
+            if event == InputEvent.CODE_END:
+                self.state = InputState.NORMAL
+                return False, line
+                
+        elif self.state == InputState.PASTE:
+            if event == InputEvent.PASTE_END:
+                self.state = InputState.NORMAL
+                return True, line.replace('\x1b[201~', '')
+                
+        return False, line
 
 class ChatUI:
     def __init__(self):
         self.console = Console()
         self.buffer = []
+        self.input_handler = InputHandler()
         
-        # 禁用 readline 的自动添加换行符功能
         readline.set_completer_delims(' \t\n;')
         readline.parse_and_bind('set enable-bracketed-paste on')
-        
-        if 'libedit' in readline.__doc__:
-            readline.parse_and_bind("bind ^I rl_complete")
-        else:
-            readline.parse_and_bind("tab: complete")
         
         self.history_file = os.path.expanduser('~/.chat_history')
         if os.path.exists(self.history_file):
             readline.read_history_file(self.history_file)
-            
+    
     def display_prompt(self) -> str:
         self.buffer = []
-        in_paste_mode = False
         
         while True:
             try:
-                if not self.buffer:
-                    line = input("User: ")
-                else:
-                    line = input("... ")
+                prompt = "User: " if not self.buffer else "... "
+                line = input(prompt)
                 
-                # 检测是否是粘贴模式开始
-                if line.startswith('\x1b[200~'):
-                    in_paste_mode = True
-                    line = line[6:]  # 移除粘贴模式标记
+                should_send, processed_line = self.input_handler.handle_input(line)
+                self.buffer.append(processed_line)
                 
-                # 检测粘贴模式结束
-                if in_paste_mode and '\x1b[201~' in line:
-                    in_paste_mode = False
-                    line = line.replace('\x1b[201~', '')
-                    self.buffer.append(line)
-                    if line.strip():  # 如果最后一行不是空行，直接发送
-                        break
-                    continue
-                
-                self.buffer.append(line)
-                
-                # 在有内容的情况下，按Enter就发送
-                if len(self.buffer) > 0 and not in_paste_mode:
-                    last_line = self.buffer[-1].strip()
-                    if not last_line:  # 如果是空行
-                        if len(self.buffer) > 1:  # 且不是第一次输入
-                            break
-                        else:
-                            self.buffer.pop()  # 移除空行
-                            continue
-                    else:  # 非空行，直接发送
-                        break
-                
+                if should_send:
+                    break
+                    
             except EOFError:
                 return "exit"
             except KeyboardInterrupt:
                 self.buffer = []
                 print("\n")
+                self.input_handler.state = InputState.NORMAL
                 continue
+                
+        return '\n'.join(filter(None, self.buffer))
         
-        return '\n'.join(filter(None, self.buffer))  # 过滤掉空行
     def __del__(self):
         readline.write_history_file(self.history_file)
         
