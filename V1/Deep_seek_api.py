@@ -17,6 +17,9 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
 from enum import Enum, auto
+
+
+
 class InputState(Enum):
     NORMAL = auto()      # 普通输入状态
     MULTILINE = auto()   # 多行输入状态（通过Shift+Enter触发）
@@ -120,7 +123,10 @@ class InputHandler:
                 
             # 普通回车处理
             if event == InputEvent.ENTER:
-                if self.state == InputState.NORMAL and processed_line.strip():
+                # 只有在Normal状态且没有特殊按键（如Shift+Enter）时才考虑发送
+                if (self.state == InputState.NORMAL and 
+                    processed_line.strip() and 
+                    InputEvent.SHIFT_ENTER not in events):
                     should_send = True
                     
         return should_send, processed_line
