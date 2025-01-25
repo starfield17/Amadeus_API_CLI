@@ -13,8 +13,7 @@ import httpx
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.key_processor import KeyPressEvent
+
 
 class ConfigManager:
     def __init__(self):
