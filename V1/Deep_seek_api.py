@@ -14,6 +14,7 @@ from pathlib import Path
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
+
 class ChatUI:
     def __init__(self):
         self.console = Console()
@@ -49,24 +50,24 @@ class ChatUI:
             return highlight(code, lexer, Terminal256Formatter())
         except:
             return code
-
+    
     def display_prompt(self) -> str:
         self.buffer = []
         state = "INITIAL"  # 状态机状态：INITIAL, MULTILINE, CODE_BLOCK
         code_block = None  # (language, code_buffer)
-
+    
         while True:
             try:
-                # 状态判断
+                # 根据状态显示提示符
                 if state == "CODE_BLOCK":
                     prompt = "... "
-                elif not self.buffer:
-                    prompt = "User: "
-                else:
+                elif state == "MULTILINE":
                     prompt = "... "
-
+                else:
+                    prompt = "User: " if not self.buffer else "... "
+    
                 line = input(prompt)
-
+    
                 # 状态转移处理
                 if state == "CODE_BLOCK":
                     if line.strip() == '```':
@@ -80,23 +81,30 @@ class ChatUI:
                     else:
                         code_block[1].append(line)
                     continue
-
-                if line.endswith('\x1b[13;2u'):  # Shift+Enter
-                    self.buffer.append(line[:-8])
+    
+                # 处理 Shift+Enter
+                if line.endswith('\x1b[13;2u'):
+                    cleaned_line = line[:-8]
+                    if cleaned_line:  # 避免添加空行
+                        self.buffer.append(cleaned_line)
                     state = "MULTILINE"
-                    continue
-
+                    continue  # 保持循环继续输入
+    
+                # 处理代码块开始
                 if line.startswith('```'):
-                    # 开始代码块
                     lang = line[3:].strip()
                     code_block = (lang, [])
                     state = "CODE_BLOCK"
                     continue
-
-                # 普通输入处理
+    
+                # 处理普通输入提交
                 self.buffer.append(line)
+                
+                # MULTILINE 状态下只有遇到普通 Enter 才提交
+                if state == "MULTILINE":
+                    state = "INITIAL"  # 重置状态
                 break  # 结束输入循环
-
+    
             except EOFError:
                 return "exit"
             except KeyboardInterrupt:
