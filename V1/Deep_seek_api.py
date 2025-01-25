@@ -8,6 +8,7 @@ from rich.prompt import Prompt
 from rich.panel import Panel
 import signal
 import httpx
+import readline
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
 from pygments import highlight
