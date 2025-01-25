@@ -18,7 +18,6 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
 import blessed
 
-
 class ChatUI:
     def __init__(self):
         self.term = blessed.Terminal()
@@ -29,36 +28,40 @@ class ChatUI:
         self.history = []
         self.history_pos = 0
         
-        # Set up history
         self.history_file = os.path.expanduser('~/.chat_history')
         if os.path.exists(self.history_file):
             with open(self.history_file, 'r') as f:
                 self.history = f.readlines()
+    
+    def __del__(self):
+        if self.history:
+            with open(self.history_file, 'w') as f:
+                f.writelines(self.history)
     
     def display_prompt(self) -> str:
         with self.term.cbreak(), self.term.hidden_cursor():
             self.buffer = []
             inp = ""
             
-            # 显示初始提示符
             print(self.term.move_xy(0, self.term.height - 2) + "User: ", end='', flush=True)
             
             while True:
                 key = self.term.inkey()
                 
                 if key.code == self.term.KEY_ENTER:
-                    if self.buffer and not inp.strip():  # 空行且有之前输入
+                    if self.buffer and not inp.strip():
                         return '\n'.join(self.buffer)
-                    if inp.strip():  # 非空行
+                    if inp.strip():
                         self.buffer.append(inp)
-                        self.history.append(inp)
+                        self.history.append(inp + '\n')
                         self.history_pos = len(self.history)
-                        if not self.buffer[-1].startswith('```'):  # 非代码块
+                        if not self.buffer[-1].startswith('```'):
                             return '\n'.join(self.buffer)
                         inp = ""
+                        print("\n... ", end='', flush=True)
                         
                 elif key.code == self.term.KEY_ESCAPE:
-                    if key.code == self.term.KEY_SHIFT_ENTER:  # Shift+Enter
+                    if key.code == self.term.KEY_SHIFT_ENTER:
                         self.buffer.append(inp)
                         inp = ""
                         print("\n... ", end='', flush=True)
@@ -71,14 +74,14 @@ class ChatUI:
                 elif key.code == self.term.KEY_UP:
                     if self.history_pos > 0:
                         self.history_pos -= 1
-                        inp = self.history[self.history_pos]
+                        inp = self.history[self.history_pos].rstrip('\n')
                         print(self.term.move_x(0) + self.term.clear_eol + 
                               ("User: " if not self.buffer else "... ") + inp, end='', flush=True)
                         
                 elif key.code == self.term.KEY_DOWN:
                     if self.history_pos < len(self.history):
                         self.history_pos += 1
-                        inp = self.history[self.history_pos] if self.history_pos < len(self.history) else ""
+                        inp = self.history[self.history_pos].rstrip('\n') if self.history_pos < len(self.history) else ""
                         print(self.term.move_x(0) + self.term.clear_eol + 
                               ("User: " if not self.buffer else "... ") + inp, end='', flush=True)
                 
@@ -103,6 +106,31 @@ class ChatUI:
     def display_reasoning(self, content: str):
         print(self.term.yellow("\n[Reasoning Chain]"))
         print(self.term.yellow_bold(content))
+
+    def display_welcome(self, model: str):
+        welcome_text = f"""
+        DeepSeek Chat CLI (Model: {model})
+        Enter 'q' or 'exit' or 'quit' to quit
+        Commands:
+         - /clear : Clear chat history
+         - /save  : Save chat history
+         - /load  : Load chat history
+         - /help  : Show help
+        Shortcuts:
+         - Shift+Enter: New line
+         - Up/Down: Navigate history
+        """
+        print(self.term.blue_bold("\n╭" + "─" * 44 + " Welcome " + "─" * 43 + "╮"))
+        for line in welcome_text.strip().split('\n'):
+            print(self.term.blue_bold("│") + f"{line:^100}" + self.term.blue_bold("│"))
+        print(self.term.blue_bold("╰" + "─" * 100 + "╯"))
+
+    def highlight_code(self, code: str, language: str = 'python') -> str:
+        try:
+            lexer = get_lexer_by_name(language)
+            return highlight(code, lexer, Terminal256Formatter())
+        except:
+            return code
 
 
 class ConfigManager:
