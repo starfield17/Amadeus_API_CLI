@@ -14,7 +14,18 @@ from pathlib import Path
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-
+def is_shift_enter(line: str) -> bool:
+    """检测 Shift+Enter 组合键（跨平台兼容）"""
+    # 常见终端生成的序列：
+    # - xterm: '\x1b[13;2u'
+    # - Windows Terminal: '\x1b[13;2u'
+    # - Linux 控制台: '\x1b[13;2~'
+    return any([
+        line.endswith('\x1b[13;2u'),
+        line.endswith('\x1b[13;2~'),
+        line.endswith('\x1bOM')  # 某些终端的备用序列
+    ])
+    
 class ChatUI:
     def __init__(self):
         self.console = Console()
@@ -53,57 +64,62 @@ class ChatUI:
     
     def display_prompt(self) -> str:
         self.buffer = []
-        state = "INITIAL"  # 状态机状态：INITIAL, MULTILINE, CODE_BLOCK
-        code_block = None  # (language, code_buffer)
+        state = "INITIAL"
+        code_block = None
+        shift_enter_buffer = ""  # 用于收集多行输入
     
         while True:
             try:
-                # 根据状态显示提示符
-                if state == "CODE_BLOCK":
-                    prompt = "... "
-                elif state == "MULTILINE":
-                    prompt = "... "
-                else:
-                    prompt = "User: " if not self.buffer else "... "
+                # 动态提示符
+                prompt_map = {
+                    "INITIAL": "User: " if not self.buffer else "... ",
+                    "MULTILINE": "... ",
+                    "CODE_BLOCK": "... "
+                }
+                prompt = prompt_map.get(state, "User: ")
     
                 line = input(prompt)
     
-                # 状态转移处理
+                # 调试输出（生产环境可移除）
+                print(f"[DEBUG] State={state}, Line={repr(line)}")
+    
+                # 状态处理
                 if state == "CODE_BLOCK":
                     if line.strip() == '```':
-                        # 结束代码块
-                        lang, code_buffer = code_block
-                        highlighted = self.highlight_code('\n'.join(code_buffer), lang)
-                        self.buffer.extend([f'```{lang}', highlighted, '```'])
+                        lang, code = code_block
+                        self.buffer.extend([
+                            f'```{lang}',
+                            self.highlight_code('\n'.join(code), lang),
+                            '```'
+                        ])
                         state = "INITIAL"
                         code_block = None
-                        break  # 代码块结束后直接提交
-                    else:
-                        code_block[1].append(line)
+                        break
+                    code_block[1].append(line)
                     continue
     
-                # 处理 Shift+Enter
-                if line.endswith('\x1b[13;2u'):
-                    cleaned_line = line[:-8]
-                    if cleaned_line:  # 避免添加空行
-                        self.buffer.append(cleaned_line)
+                # 检测组合键
+                if is_shift_enter(line):
+                    clean_line = line.replace('\x1b[13;2u', '').replace('\x1bOM', '')
+                    if clean_line:
+                        shift_enter_buffer += clean_line + '\n'
                     state = "MULTILINE"
-                    continue  # 保持循环继续输入
+                    continue
     
                 # 处理代码块开始
                 if line.startswith('```'):
-                    lang = line[3:].strip()
+                    lang = line[3:].strip() or 'text'
                     code_block = (lang, [])
                     state = "CODE_BLOCK"
                     continue
     
-                # 处理普通输入提交
-                self.buffer.append(line)
-                
-                # MULTILINE 状态下只有遇到普通 Enter 才提交
-                if state == "MULTILINE":
-                    state = "INITIAL"  # 重置状态
-                break  # 结束输入循环
+                # 处理最终输入
+                full_line = shift_enter_buffer + line
+                if full_line.strip():
+                    self.buffer.append(full_line)
+                shift_enter_buffer = ""
+                state = "INITIAL"
+                break
     
             except EOFError:
                 return "exit"
@@ -111,9 +127,9 @@ class ChatUI:
                 self.buffer = []
                 print("\n")
                 continue
-        
+    
         return '\n'.join(self.buffer)
-
+        
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
