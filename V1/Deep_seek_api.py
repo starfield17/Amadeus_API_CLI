@@ -8,6 +8,7 @@ from rich.prompt import Prompt
 from rich.panel import Panel
 import signal
 import httpx
+import readline
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
 from pygments import highlight
@@ -22,113 +23,77 @@ from pygments.formatters import Terminal256Formatter
 
 class ChatUI:
     def __init__(self):
-        self.style = Style.from_dict({
-            '': '#ansiblue',
-            'prompt': '#ansicyan bold',
-            'code': '#ansigreen'
-        })
-        self.history_file = os.path.expanduser('~/.chat_history')
-        self.session = self._create_session()
         self.console = Console()
+        self.buffer = []
         
-    def _create_session(self):
-        """创建带有多行支持的提示会话"""
-        bindings = KeyBindings()
+        # Initialize readline
+        if 'libedit' in readline.__doc__:
+            readline.parse_and_bind("bind ^I rl_complete")
+        else:
+            readline.parse_and_bind("tab: complete")
         
-        # Shift+Enter 换行
-        @bindings.add(Keys.Escape, Keys.Enter)
-        @bindings.add(Keys.ControlJ)
-        def _(event):
-            event.current_buffer.insert_text('\n')
+        # Setup history file
+        self.history_file = os.path.expanduser('~/.chat_history')
+        if os.path.exists(self.history_file):
+            readline.read_history_file(self.history_file)
             
-        return PromptSession(
-            history=FileHistory(self.history_file),
-            auto_suggest=AutoSuggestFromHistory(),
-            key_bindings=bindings,
-            multiline=True,
-            style=self.style
-        )
+    def __del__(self):
+        readline.write_history_file(self.history_file)
+        
+    def display_message(self, content: str, style: str = None, end="\n", flush=False):
+        if flush:
+            print(content, end=end, flush=True)
+        else:
+            self.console.print(content, style=style, end=end)
 
-    def display_prompt(self) -> str:
-        """获取用户输入（支持多行和代码块）"""
-        try:
-            user_input = []
-            
-            # 获取初始输入
-            first_line = self.session.prompt(
-                message=[('class:prompt', 'User: ')],
-                mouse_support=True
-            )
-            
-            # 处理空输入
-            if not first_line.strip():
-                return ""
-                
-            user_input.append(first_line)
-            
-            # 检测代码块
-            if first_line.startswith('```'):
-                lang = first_line[3:].strip() or 'text'
-                code_buffer = []
-                
-                while True:
-                    line = self.session.prompt(
-                        message=[('class:prompt', '... ')],
-                        multiline=True
-                    )
-                    if line.strip() == '```':
-                        break
-                    code_buffer.append(line)
-                
-                # 代码高亮
-                highlighted = self.highlight_code('\n'.join(code_buffer), lang)
-                user_input.extend([f'```{lang}', highlighted, '```'])
-                
-            # 处理普通多行输入
-            elif '\n' in first_line:  # 如果直接粘贴多行内容
-                user_input = first_line.split('\n')
-            else:  # 通过 Shift+Enter 输入的多行
-                while True:
-                    line = self.session.prompt(
-                        message=[('class:prompt', '... ')],
-                        multiline=True
-                    )
-                    if not line:  # 空行结束输入
-                        break
-                    user_input.append(line)
-            
-            return '\n'.join(user_input)
-            
-        except KeyboardInterrupt:
-            return ""
-        except EOFError:
-            return "exit"
+    def display_reasoning(self, content: str):
+        self.console.print("\n[Reasoning Chain]", style="bold yellow")
+        self.console.print(Panel.fit(content, border_style="yellow"))
 
-    def highlight_code(self, code: str, language: str) -> str:
+    def highlight_code(self, code: str, language: str = 'python') -> str:
         try:
             lexer = get_lexer_by_name(language)
             return highlight(code, lexer, Terminal256Formatter())
         except:
             return code
 
-    def display_reasoning(self, content: str):
-        self.console.print("\n[Reasoning Chain]", style="bold yellow")
-        self.console.print(Panel.fit(content, border_style="yellow"))
-
-    
-    def display_message(self, content: str, style: str = None):
-        """专业化的消息显示（自动处理代码块）"""
-        if '```' in content:
-            parts = content.split('```')
-            for i, part in enumerate(parts):
-                if i % 2 == 1:  # 代码块部分
-                    lang, *code_lines = part.split('\n', 1)
-                    code = code_lines[0] if code_lines else ""
-                    print(self.highlight_code(code, lang.strip()))
+    def display_prompt(self) -> str:
+        self.buffer = []
+        while True:
+            try:
+                if not self.buffer:
+                    line = input("User: ")
                 else:
-                    print(part)
-        else:
-            print(content)
+                    line = input("... ")
+                    
+                if line.endswith('\x1b[13;2u'):  # Shift+Enter
+                    self.buffer.append(line[:-8])
+                    continue
+                    
+                self.buffer.append(line)
+                
+                # Code block handling
+                if line.startswith('```'):
+                    lang = line[3:].strip()
+                    code_buffer = []
+                    while True:
+                        code_line = input("... ")
+                        if code_line.strip() == '```':
+                            break
+                        code_buffer.append(code_line)
+                    highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
+                    self.buffer.extend([highlighted_code, '```'])
+                break
+                
+            except EOFError:
+                return "exit"
+            except KeyboardInterrupt:
+                self.buffer = []
+                print("\n")
+                continue
+        
+        return '\n'.join(self.buffer)
+
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
@@ -143,7 +108,6 @@ class ChatUI:
          - Up/Down: Navigate history
         """
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
-
 class ConfigManager:
     def __init__(self):
         self.config_file = Path.home() / '.deepseek_config'
