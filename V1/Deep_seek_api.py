@@ -22,17 +22,59 @@ class ChatUI:
         self.console = Console()
         self.buffer = []
         
-        # Initialize readline
+        # 禁用 readline 的自动添加换行符功能
+        readline.set_completer_delims(' \t\n;')
+        readline.parse_and_bind('set enable-bracketed-paste on')
+        
         if 'libedit' in readline.__doc__:
             readline.parse_and_bind("bind ^I rl_complete")
         else:
             readline.parse_and_bind("tab: complete")
         
-        # Setup history file
         self.history_file = os.path.expanduser('~/.chat_history')
         if os.path.exists(self.history_file):
             readline.read_history_file(self.history_file)
             
+    def display_prompt(self) -> str:
+        self.buffer = []
+        in_paste_mode = False
+        
+        while True:
+            try:
+                if not self.buffer:
+                    line = input("User: ")
+                else:
+                    line = input("... ")
+                
+                # 检测是否是粘贴模式开始
+                if line.startswith('\x1b[200~'):
+                    in_paste_mode = True
+                    line = line[6:]  # 移除粘贴模式标记
+                
+                # 检测粘贴模式结束
+                if in_paste_mode and '\x1b[201~' in line:
+                    in_paste_mode = False
+                    line = line.replace('\x1b[201~', '')
+                
+                self.buffer.append(line)
+                
+                # 只有在非粘贴模式下才检查是否结束输入
+                if not in_paste_mode and line.strip() == '':
+                    if len(self.buffer) > 1:  # 确保不是第一行就是空行
+                        break
+                    else:
+                        self.buffer.pop()  # 移除空行
+                        continue
+                
+            except EOFError:
+                return "exit"
+            except KeyboardInterrupt:
+                self.buffer = []
+                print("\n")
+                continue
+        
+        return '\n'.join(filter(None, self.buffer))  # 过滤掉空行
+        
     def __del__(self):
         readline.write_history_file(self.history_file)
         
@@ -53,39 +95,7 @@ class ChatUI:
         except:
             return code
 
-    def display_prompt(self) -> str:
-        self.buffer = []
-        complete_input = False
-        
-        while not complete_input:
-            try:
-                prompt = "User: " if not self.buffer else "... "
-                line = input(prompt)
-                
-                if line.strip() == '':
-                    if self.buffer:  # 只有当buffer非空时才结束输入
-                        complete_input = True
-                    continue
-                    
-                self.buffer.append(line)
-                
-                if line.startswith('```'):
-                    # 处理代码块
-                    while True:
-                        code_line = input("... ")
-                        if code_line.strip() == '```':
-                            break
-                        self.buffer.append(code_line)
-                    self.buffer.append('```')
-                    
-            except EOFError:
-                return "exit"
-            except KeyboardInterrupt:
-                self.buffer = []
-                print("\n")
-                continue
-                
-        return '\n'.join(self.buffer)
+
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
