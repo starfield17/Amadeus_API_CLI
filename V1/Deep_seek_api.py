@@ -60,58 +60,69 @@ class ChatUI:
             
     def display_prompt(self) -> str:
         self.buffer = []
-        multiline_mode = False
+        prompt_toolkit_style = Style.from_dict({
+            'prompt': '#0000FF bold',
+        })
+        
+        session = PromptSession(
+            history=FileHistory(self.history_file),
+            auto_suggest=AutoSuggestFromHistory(),
+            style=prompt_toolkit_style
+        )
+    
+        # 设置按键绑定
+        kb = KeyBindings()
+        
+        @kb.add('s-enter')
+        def _(event):
+            event.current_buffer.insert_text('\n')
         
         while True:
             try:
-                # 显示适当的提示符
-                prompt = "... " if len(self.buffer) > 0 else "User: "
-                line = input(prompt)
+                line = session.prompt(
+                    'User: ' if not self.buffer else '... ',
+                    key_bindings=kb,
+                    multiline=False
+                ).rstrip()
                 
-                # 检查是否为退出命令
-                if line.lower() in ['q', 'quit', 'exit'] and not multiline_mode:
-                    return line
+                # 处理空行
+                if not line and self.buffer:
+                    break
+                    
+                # 处理空输入
+                if not line and not self.buffer:
+                    continue
+                    
+                self.buffer.append(line)
                 
                 # 处理代码块
-                if line.startswith('```') and not multiline_mode:
+                if line.startswith('```'):
                     lang = line[3:].strip()
                     code_buffer = []
                     while True:
-                        code_line = input("... ")
+                        code_line = session.prompt(
+                            '... ',
+                            key_bindings=kb,
+                            multiline=False
+                        ).rstrip()
                         if code_line.strip() == '```':
                             break
                         code_buffer.append(code_line)
                     highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
-                    self.buffer.extend([line, highlighted_code, '```'])
-                    break
-                
-                # Shift+Enter 处理
-                if line.endswith('\x1b[13;2u'):
-                    self.buffer.append(line[:-8])  # 移除 Shift+Enter 序列
-                    multiline_mode = True
-                    continue
-                
-                # 处理多行模式
-                if multiline_mode:
-                    if not line:  # 空行结束多行输入
-                        break
-                    self.buffer.append(line)
-                    continue
-                
-                # 单行模式
-                self.buffer.append(line)
-                if not multiline_mode:
+                    self.buffer.extend([highlighted_code, '```'])
                     break
                     
-            except EOFError:
-                return "exit"
-            except KeyboardInterrupt:
+                # 单行模式直接退出
+                if len(self.buffer) == 1 and not line.endswith('\n'):
+                    break
+                    
+            except (EOFError, KeyboardInterrupt):
                 self.buffer = []
                 print("\n")
                 continue
-        
-        return '\n'.join(filter(None, self.buffer))
-
+                
+        return '\n'.join(self.buffer)
+    
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
