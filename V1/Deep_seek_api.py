@@ -47,8 +47,9 @@ class ChatUI:
             self.console.print(content, style=style, end=end)
             
     def display_reasoning(self, content: str):
-        self.console.print("\n[Reasoning Chain]", style="bold yellow")
-        self.console.print(Panel.fit(content, border_style="yellow"))
+        if content and content.strip():
+            self.console.print("\n[Reasoning Chain]", style="bold yellow")
+            self.console.print(Panel.fit(content, border_style="yellow"))
         
     def highlight_code(self, code: str, language: str = 'python') -> str:
         try:
