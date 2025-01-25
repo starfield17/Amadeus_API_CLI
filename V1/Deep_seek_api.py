@@ -127,7 +127,7 @@ class ChatUI:
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
-        Enter 'q' or 'exit' to quit
+        Enter 'q' or 'exit' or 'quit' to quit
         Commands:
          - /clear : Clear chat history
          - /save  : Save chat history
