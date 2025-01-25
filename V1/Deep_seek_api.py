@@ -110,30 +110,45 @@ class ChatHistory:
 class ChatUI:
     def __init__(self):
         self.console = Console()
+        # 添加按键绑定
+        self._init_key_bindings()
+
+    def _init_key_bindings(self):
+        from prompt_toolkit.keys import Keys
+        from prompt_toolkit.key_binding import KeyBindings
         self.kb = KeyBindings()
-        
-        @self.kb.add('enter')
+
+        # 绑定Shift+Enter插入换行
+        @self.kb.add(Keys.Enter, filter=True)
         def _(event):
-            event.current_buffer.validate_and_handle()
-            
-        @self.kb.add('escape', 'enter')  # Alt+Enter
-        def _(event):
-            event.current_buffer.insert_text('\n')
-    
-    def display_prompt(self) -> str:
-        session = PromptSession(key_bindings=self.kb)
-        return session.prompt("\nUser: ").strip()
-        
+            # 如果按的是Shift+Enter（即换行）
+            if event.current_buffer.document.current_line_ending == '\n':
+                event.current_buffer.insert_text('\n')
+            # 否则提交输入
+            else:
+                event.current_buffer.validate_and_handle()
+
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
             print(content, end=end, flush=True)
         else:
             self.console.print(content, style=style, end=end)
-            
+
     def display_reasoning(self, content: str):
         self.console.print("\n[Reasoning Chain]", style="bold yellow")
         self.console.print(Panel.fit(content, border_style="yellow"))
-        
+
+    def display_prompt(self) -> str:
+        from prompt_toolkit import PromptSession
+        from prompt_toolkit.formatted_text import HTML
+
+        session = PromptSession(
+            key_bindings=self.kb,
+            multiline=True,  # 启用多行模式
+            prompt_continuation=lambda width, lineno, is_soft_wrap: HTML('<style fg="#888888">... </style>')
+        )
+        return session.prompt(HTML('<b>User:</b> ')).strip()
+
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
@@ -143,8 +158,10 @@ class ChatUI:
          - /save  : Save chat history
          - /load  : Load chat history
          - /help  : Show help
+        Tip: Use Shift+Enter for new lines
         """
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
+        
 
 class ChatApp:
     def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None):
