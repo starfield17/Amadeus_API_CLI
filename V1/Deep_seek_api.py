@@ -16,96 +16,80 @@ import readline
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-import blessed
+
 
 class ChatUI:
     def __init__(self):
-        self.term = blessed.Terminal()
         self.console = Console()
         self.buffer = []
-        self.cursor_pos = 0
-        self.current_line = ""
-        self.history = []
-        self.history_pos = 0
         
+        # Initialize readline
+        if 'libedit' in readline.__doc__:
+            readline.parse_and_bind("bind ^I rl_complete")
+        else:
+            readline.parse_and_bind("tab: complete")
+        
+        # Setup history file
         self.history_file = os.path.expanduser('~/.chat_history')
         if os.path.exists(self.history_file):
-            with open(self.history_file, 'r') as f:
-                self.history = f.readlines()
-    
+            readline.read_history_file(self.history_file)
+            
     def __del__(self):
-        if self.history:
-            with open(self.history_file, 'w') as f:
-                f.writelines(self.history)
-    
-    def display_prompt(self) -> str:
-        with self.term.cbreak(), self.term.hidden_cursor():
-            self.buffer = []
-            inp = ""
-            
-            print(self.term.move_xy(0, self.term.height - 2) + "User: ", end='', flush=True)
-            
-            while True:
-                key = self.term.inkey()
-                
-                if key.code == self.term.KEY_ENTER:
-                    if self.buffer and not inp.strip():
-                        return '\n'.join(self.buffer)
-                    if inp.strip():
-                        self.buffer.append(inp)
-                        self.history.append(inp + '\n')
-                        self.history_pos = len(self.history)
-                        if not self.buffer[-1].startswith('```'):
-                            return '\n'.join(self.buffer)
-                        inp = ""
-                        print("\n... ", end='', flush=True)
-                        
-                elif key.code == self.term.KEY_ESCAPE:
-                    if key.code == self.term.KEY_SHIFT_ENTER:
-                        self.buffer.append(inp)
-                        inp = ""
-                        print("\n... ", end='', flush=True)
-                        
-                elif key.code == self.term.KEY_BACKSPACE:
-                    if inp:
-                        inp = inp[:-1]
-                        print(self.term.move_left + ' ' + self.term.move_left, end='', flush=True)
-                        
-                elif key.code == self.term.KEY_UP:
-                    if self.history_pos > 0:
-                        self.history_pos -= 1
-                        inp = self.history[self.history_pos].rstrip('\n')
-                        print(self.term.move_x(0) + self.term.clear_eol + 
-                              ("User: " if not self.buffer else "... ") + inp, end='', flush=True)
-                        
-                elif key.code == self.term.KEY_DOWN:
-                    if self.history_pos < len(self.history):
-                        self.history_pos += 1
-                        inp = self.history[self.history_pos].rstrip('\n') if self.history_pos < len(self.history) else ""
-                        print(self.term.move_x(0) + self.term.clear_eol + 
-                              ("User: " if not self.buffer else "... ") + inp, end='', flush=True)
-                
-                elif key.code == self.term.KEY_CTRL_C:
-                    print("\n")
-                    self.buffer = []
-                    return ""
-                
-                elif key.code == self.term.KEY_CTRL_D:
-                    return "exit"
-                    
-                else:
-                    inp += key
-                    print(key, end='', flush=True)
-
+        readline.write_history_file(self.history_file)
+        
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
-        if style:
-            print(getattr(self.term, style)(content), end=end, flush=flush)
+        if flush:
+            print(content, end=end, flush=True)
         else:
-            print(content, end=end, flush=flush)
+            self.console.print(content, style=style, end=end)
 
     def display_reasoning(self, content: str):
-        print(self.term.yellow("\n[Reasoning Chain]"))
-        print(self.term.yellow_bold(content))
+        self.console.print("\n[Reasoning Chain]", style="bold yellow")
+        self.console.print(Panel.fit(content, border_style="yellow"))
+
+    def highlight_code(self, code: str, language: str = 'python') -> str:
+        try:
+            lexer = get_lexer_by_name(language)
+            return highlight(code, lexer, Terminal256Formatter())
+        except:
+            return code
+
+    def display_prompt(self) -> str:
+        self.buffer = []
+        while True:
+            try:
+                if not self.buffer:
+                    line = input("User: ")
+                else:
+                    line = input("... ")
+                    
+                if line.endswith('\x1b[13;2u'):  # Shift+Enter
+                    self.buffer.append(line[:-8])
+                    continue
+                    
+                self.buffer.append(line)
+                
+                # Code block handling
+                if line.startswith('```'):
+                    lang = line[3:].strip()
+                    code_buffer = []
+                    while True:
+                        code_line = input("... ")
+                        if code_line.strip() == '```':
+                            break
+                        code_buffer.append(code_line)
+                    highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
+                    self.buffer.extend([highlighted_code, '```'])
+                break
+                
+            except EOFError:
+                return "exit"
+            except KeyboardInterrupt:
+                self.buffer = []
+                print("\n")
+                continue
+        
+        return '\n'.join(self.buffer)
 
     def display_welcome(self, model: str):
         welcome_text = f"""
@@ -120,18 +104,7 @@ class ChatUI:
          - Shift+Enter: New line
          - Up/Down: Navigate history
         """
-        print(self.term.blue_bold("\n╭" + "─" * 44 + " Welcome " + "─" * 43 + "╮"))
-        for line in welcome_text.strip().split('\n'):
-            print(self.term.blue_bold("│") + f"{line:^100}" + self.term.blue_bold("│"))
-        print(self.term.blue_bold("╰" + "─" * 100 + "╯"))
-
-    def highlight_code(self, code: str, language: str = 'python') -> str:
-        try:
-            lexer = get_lexer_by_name(language)
-            return highlight(code, lexer, Terminal256Formatter())
-        except:
-            return code
-
+        self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
 
 class ConfigManager:
     def __init__(self):
