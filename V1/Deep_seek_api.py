@@ -16,7 +16,6 @@ import readline
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-
 class ChatUI:
     def __init__(self):
         self.console = Console()
@@ -55,6 +54,10 @@ class ChatUI:
                 if in_paste_mode and '\x1b[201~' in line:
                     in_paste_mode = False
                     line = line.replace('\x1b[201~', '')
+                    self.buffer.append(line)
+                    if line.strip():  # 如果最后一行不是空行，直接发送
+                        break
+                    continue
                 
                 self.buffer.append(line)
                 
