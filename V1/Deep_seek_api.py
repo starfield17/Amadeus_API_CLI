@@ -14,7 +14,6 @@ from pathlib import Path
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-
 class ChatUI:
     def __init__(self):
         self.console = Console()
@@ -53,32 +52,51 @@ class ChatUI:
 
     def display_prompt(self) -> str:
         self.buffer = []
+        state = "INITIAL"  # 状态机状态：INITIAL, MULTILINE, CODE_BLOCK
+        code_block = None  # (language, code_buffer)
+
         while True:
             try:
-                if not self.buffer:
-                    line = input("User: ")
+                # 状态判断
+                if state == "CODE_BLOCK":
+                    prompt = "... "
+                elif not self.buffer:
+                    prompt = "User: "
                 else:
-                    line = input("... ")
-                    
+                    prompt = "... "
+
+                line = input(prompt)
+
+                # 状态转移处理
+                if state == "CODE_BLOCK":
+                    if line.strip() == '```':
+                        # 结束代码块
+                        lang, code_buffer = code_block
+                        highlighted = self.highlight_code('\n'.join(code_buffer), lang)
+                        self.buffer.extend([f'```{lang}', highlighted, '```'])
+                        state = "INITIAL"
+                        code_block = None
+                        break  # 代码块结束后直接提交
+                    else:
+                        code_block[1].append(line)
+                    continue
+
                 if line.endswith('\x1b[13;2u'):  # Shift+Enter
                     self.buffer.append(line[:-8])
+                    state = "MULTILINE"
                     continue
-                    
-                self.buffer.append(line)
-                
-                # Code block handling
+
                 if line.startswith('```'):
+                    # 开始代码块
                     lang = line[3:].strip()
-                    code_buffer = []
-                    while True:
-                        code_line = input("... ")
-                        if code_line.strip() == '```':
-                            break
-                        code_buffer.append(code_line)
-                    highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
-                    self.buffer.extend([highlighted_code, '```'])
-                break
-                
+                    code_block = (lang, [])
+                    state = "CODE_BLOCK"
+                    continue
+
+                # 普通输入处理
+                self.buffer.append(line)
+                break  # 结束输入循环
+
             except EOFError:
                 return "exit"
             except KeyboardInterrupt:
