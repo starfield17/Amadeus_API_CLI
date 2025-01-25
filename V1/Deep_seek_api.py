@@ -12,6 +12,8 @@ from prompt_toolkit.completion import WordCompleter
 import httpx
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.keys import Keys
 
 class ConfigManager:
     def __init__(self):
@@ -107,6 +109,19 @@ class ChatHistory:
 class ChatUI:
     def __init__(self):
         self.console = Console()
+        self.kb = KeyBindings()
+        
+        @self.kb.add('enter')
+        def _(event):
+            event.current_buffer.validate_and_handle()
+            
+        @self.kb.add('s-enter')
+        def _(event):
+            event.current_buffer.insert_text('\n')
+    
+    def display_prompt(self) -> str:
+        session = PromptSession(key_bindings=self.kb)
+        return session.prompt("\nUser: ").strip()
         
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
@@ -119,10 +134,6 @@ class ChatUI:
     def display_reasoning(self, content: str):
         self.console.print("\n[Reasoning Chain]", style="bold yellow")
         self.console.print(Panel.fit(content, border_style="yellow"))
-        
-    def display_prompt(self) -> str:
-        session = PromptSession()
-        return session.prompt("\nUser: ").strip()
         
     def display_welcome(self, model: str):
         welcome_text = f"""
