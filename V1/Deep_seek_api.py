@@ -12,124 +12,123 @@ import readline
 from httpx_socks import SyncProxyTransport
 from pathlib import Path
 from pygments import highlight
+from prompt_toolkit import PromptSession
+from prompt_toolkit.keys import Keys
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.styles import Style
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
-def is_shift_enter(line: str) -> bool:
-    """检测 Shift+Enter 组合键（跨平台兼容）"""
-    # 常见终端生成的序列：
-    # - xterm: '\x1b[13;2u'
-    # - Windows Terminal: '\x1b[13;2u'
-    # - Linux 控制台: '\x1b[13;2~'
-    return any([
-        line.endswith('\x1b[13;2u'),
-        line.endswith('\x1b[13;2~'),
-        line.endswith('\x1bOM')  # 某些终端的备用序列
-    ])
-    
+
 class ChatUI:
     def __init__(self):
-        self.console = Console()
-        self.buffer = []
-        
-        # Initialize readline
-        if 'libedit' in readline.__doc__:
-            readline.parse_and_bind("bind ^I rl_complete")
-        else:
-            readline.parse_and_bind("tab: complete")
-        
-        # Setup history file
+        self.style = Style.from_dict({
+            '': '#ansiblue',
+            'prompt': '#ansicyan bold',
+            'code': '#ansigreen'
+        })
         self.history_file = os.path.expanduser('~/.chat_history')
-        if os.path.exists(self.history_file):
-            readline.read_history_file(self.history_file)
-            
-    def __del__(self):
-        readline.write_history_file(self.history_file)
+        self.session = self._create_session()
         
-    def display_message(self, content: str, style: str = None, end="\n", flush=False):
-        if flush:
-            print(content, end=end, flush=True)
-        else:
-            self.console.print(content, style=style, end=end)
+    def _create_session(self):
+        """创建带有多行支持的提示会话"""
+        bindings = KeyBindings()
+        
+        # Shift+Enter 换行
+        @bindings.add(Keys.Escape, Keys.Enter)
+        @bindings.add(Keys.ControlJ)
+        def _(event):
+            event.current_buffer.insert_text('\n')
+            
+        return PromptSession(
+            history=FileHistory(self.history_file),
+            auto_suggest=AutoSuggestFromHistory(),
+            key_bindings=bindings,
+            multiline=True,
+            style=self.style
+        )
 
-    def display_reasoning(self, content: str):
-        self.console.print("\n[Reasoning Chain]", style="bold yellow")
-        self.console.print(Panel.fit(content, border_style="yellow"))
+    def display_prompt(self) -> str:
+        """获取用户输入（支持多行和代码块）"""
+        try:
+            user_input = []
+            
+            # 获取初始输入
+            first_line = self.session.prompt(
+                message=[('class:prompt', 'User: ')],
+                mouse_support=True
+            )
+            
+            # 处理空输入
+            if not first_line.strip():
+                return ""
+                
+            user_input.append(first_line)
+            
+            # 检测代码块
+            if first_line.startswith('```'):
+                lang = first_line[3:].strip() or 'text'
+                code_buffer = []
+                
+                while True:
+                    line = self.session.prompt(
+                        message=[('class:prompt', '... ')],
+                        multiline=True
+                    )
+                    if line.strip() == '```':
+                        break
+                    code_buffer.append(line)
+                
+                # 代码高亮
+                highlighted = self.highlight_code('\n'.join(code_buffer), lang)
+                user_input.extend([f'```{lang}', highlighted, '```'])
+                
+            # 处理普通多行输入
+            elif '\n' in first_line:  # 如果直接粘贴多行内容
+                user_input = first_line.split('\n')
+            else:  # 通过 Shift+Enter 输入的多行
+                while True:
+                    line = self.session.prompt(
+                        message=[('class:prompt', '... ')],
+                        multiline=True
+                    )
+                    if not line:  # 空行结束输入
+                        break
+                    user_input.append(line)
+            
+            return '\n'.join(user_input)
+            
+        except KeyboardInterrupt:
+            return ""
+        except EOFError:
+            return "exit"
 
-    def highlight_code(self, code: str, language: str = 'python') -> str:
+    def highlight_code(self, code: str, language: str) -> str:
         try:
             lexer = get_lexer_by_name(language)
             return highlight(code, lexer, Terminal256Formatter())
         except:
             return code
+
+    def display_reasoning(self, content: str):
+        self.console.print("\n[Reasoning Chain]", style="bold yellow")
+        self.console.print(Panel.fit(content, border_style="yellow"))
+
     
-    def display_prompt(self) -> str:
-        self.buffer = []
-        state = "INITIAL"
-        code_block = None
-        shift_enter_buffer = ""  # 用于收集多行输入
-    
-        while True:
-            try:
-                # 动态提示符
-                prompt_map = {
-                    "INITIAL": "User: " if not self.buffer else "... ",
-                    "MULTILINE": "... ",
-                    "CODE_BLOCK": "... "
-                }
-                prompt = prompt_map.get(state, "User: ")
-    
-                line = input(prompt)
-    
-                # 调试输出（生产环境可移除）
-                print(f"[DEBUG] State={state}, Line={repr(line)}")
-    
-                # 状态处理
-                if state == "CODE_BLOCK":
-                    if line.strip() == '```':
-                        lang, code = code_block
-                        self.buffer.extend([
-                            f'```{lang}',
-                            self.highlight_code('\n'.join(code), lang),
-                            '```'
-                        ])
-                        state = "INITIAL"
-                        code_block = None
-                        break
-                    code_block[1].append(line)
-                    continue
-    
-                # 检测组合键
-                if is_shift_enter(line):
-                    clean_line = line.replace('\x1b[13;2u', '').replace('\x1bOM', '')
-                    if clean_line:
-                        shift_enter_buffer += clean_line + '\n'
-                    state = "MULTILINE"
-                    continue
-    
-                # 处理代码块开始
-                if line.startswith('```'):
-                    lang = line[3:].strip() or 'text'
-                    code_block = (lang, [])
-                    state = "CODE_BLOCK"
-                    continue
-    
-                # 处理最终输入
-                full_line = shift_enter_buffer + line
-                if full_line.strip():
-                    self.buffer.append(full_line)
-                shift_enter_buffer = ""
-                state = "INITIAL"
-                break
-    
-            except EOFError:
-                return "exit"
-            except KeyboardInterrupt:
-                self.buffer = []
-                print("\n")
-                continue
-    
-        return '\n'.join(self.buffer)
-        
+    def display_message(self, content: str, style: str = None):
+        """专业化的消息显示（自动处理代码块）"""
+        if '```' in content:
+            parts = content.split('```')
+            for i, part in enumerate(parts):
+                if i % 2 == 1:  # 代码块部分
+                    lang, *code_lines = part.split('\n', 1)
+                    code = code_lines[0] if code_lines else ""
+                    print(self.highlight_code(code, lang.strip()))
+                else:
+                    print(part)
+        else:
+            print(content)
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
