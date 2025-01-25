@@ -55,42 +55,28 @@ class ChatUI:
 
     def display_prompt(self) -> str:
         self.buffer = []
-        while True:
+        complete_input = False
+        
+        while not complete_input:
             try:
-                if not self.buffer:
-                    line = input("User: ")
-                else:
-                    line = input("... ")
-                    
-                # Handle pasted content - split into lines and process each
-                if '\n' in line:
-                    lines = line.split('\n')
-                    self.buffer.extend(lines[:-1])  # Add all but last line
-                    line = lines[-1]  # Process last line normally
-                    
-                if line.endswith('\x1b[13;2u'):  # Shift+Enter
-                    self.buffer.append(line[:-8])
+                prompt = "User: " if not self.buffer else "... "
+                line = input(prompt)
+                
+                if line.strip() == '':
+                    if self.buffer:  # 只有当buffer非空时才结束输入
+                        complete_input = True
                     continue
                     
                 self.buffer.append(line)
                 
-                # Only break if this was a single line input (not paste)
-                # and doesn't start a code block
-                if '\n' not in line and not line.startswith('```'):
-                    break
-                
-                # Code block handling
                 if line.startswith('```'):
-                    lang = line[3:].strip()
-                    code_buffer = []
+                    # 处理代码块
                     while True:
                         code_line = input("... ")
                         if code_line.strip() == '```':
                             break
-                        code_buffer.append(code_line)
-                    highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
-                    self.buffer.extend([highlighted_code, '```'])
-                    break
+                        self.buffer.append(code_line)
+                    self.buffer.append('```')
                     
             except EOFError:
                 return "exit"
@@ -98,7 +84,7 @@ class ChatUI:
                 self.buffer = []
                 print("\n")
                 continue
-        
+                
         return '\n'.join(self.buffer)
     def display_welcome(self, model: str):
         welcome_text = f"""
