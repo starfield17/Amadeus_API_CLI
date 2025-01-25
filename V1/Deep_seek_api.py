@@ -119,7 +119,7 @@ class ChatUI:
         def _(event):
             event.current_buffer.validate_and_handle()
 
-        @self.kb.add('s-enter')
+        @self.kb.add('shift-enter')
         def _(event):
             event.current_buffer.insert_text('\n')
 
@@ -156,7 +156,6 @@ class ChatUI:
         Tip: Use Shift+Enter for new lines
         """
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
-        
 
 class ChatApp:
     def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None):
