@@ -115,17 +115,13 @@ class ChatUI:
         from prompt_toolkit.key_binding import KeyBindings
         self.kb = KeyBindings()
 
-        @self.kb.add(Keys.Enter)
+        @self.kb.add('enter')
         def _(event):
-            # 检查shift键是否被按下
-            shift_pressed = bool(event.data.modifiers & 1)
-            
-            if shift_pressed:
-                # 如果按下shift键，插入换行符
-                event.current_buffer.insert_text('\n')
-            else:
-                # 否则提交输入
-                event.current_buffer.validate_and_handle()
+            event.current_buffer.validate_and_handle()
+
+        @self.kb.add('s-enter')
+        def _(event):
+            event.current_buffer.insert_text('\n')
 
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
