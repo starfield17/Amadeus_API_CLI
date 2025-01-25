@@ -36,7 +36,53 @@ class ChatUI:
         self.history_file = os.path.expanduser('~/.chat_history')
         if os.path.exists(self.history_file):
             readline.read_history_file(self.history_file)
-            
+    def display_prompt(self) -> str:
+        self.buffer = []
+        
+        while True:
+            try:
+                # 获取输入
+                line = input("User: " if not self.buffer else "... ")
+                
+                # 处理 Shift+Enter
+                if line.endswith('\x1b[13;2u'):
+                    self.buffer.append(line[:-8])  # 移除 Shift+Enter 序列
+                    continue
+                
+                # 处理空行结束输入
+                if not line and self.buffer:
+                    break
+                    
+                # 处理空输入
+                if not line and not self.buffer:
+                    continue
+                    
+                # 常规输入处理
+                self.buffer.append(line)
+                
+                # 首行且不是代码块，立即结束
+                if len(self.buffer) == 1 and not line.startswith('```'):
+                    break
+                    
+                # 代码块处理
+                if line.startswith('```'):
+                    lang = line[3:].strip()
+                    code_buffer = []
+                    while True:
+                        code_line = input("... ")
+                        if code_line.strip() == '```':
+                            break
+                        code_buffer.append(code_line)
+                    highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
+                    self.buffer.extend([highlighted_code, '```'])
+                    break
+                    
+            except (EOFError, KeyboardInterrupt):
+                self.buffer = []
+                print("\n")
+                continue
+                
+        return '\n'.join(filter(None, self.buffer))
     def __del__(self):
         readline.write_history_file(self.history_file)
         
@@ -58,71 +104,7 @@ class ChatUI:
         except:
             return code
             
-    def display_prompt(self) -> str:
-        self.buffer = []
-        prompt_toolkit_style = Style.from_dict({
-            'prompt': '#0000FF bold',
-        })
-        
-        session = PromptSession(
-            history=FileHistory(self.history_file),
-            auto_suggest=AutoSuggestFromHistory(),
-            style=prompt_toolkit_style
-        )
-    
-        # 设置按键绑定
-        kb = KeyBindings()
-        
-        @kb.add('s-enter')
-        def _(event):
-            event.current_buffer.insert_text('\n')
-        
-        while True:
-            try:
-                line = session.prompt(
-                    'User: ' if not self.buffer else '... ',
-                    key_bindings=kb,
-                    multiline=False
-                ).rstrip()
-                
-                # 处理空行
-                if not line and self.buffer:
-                    break
-                    
-                # 处理空输入
-                if not line and not self.buffer:
-                    continue
-                    
-                self.buffer.append(line)
-                
-                # 处理代码块
-                if line.startswith('```'):
-                    lang = line[3:].strip()
-                    code_buffer = []
-                    while True:
-                        code_line = session.prompt(
-                            '... ',
-                            key_bindings=kb,
-                            multiline=False
-                        ).rstrip()
-                        if code_line.strip() == '```':
-                            break
-                        code_buffer.append(code_line)
-                    highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
-                    self.buffer.extend([highlighted_code, '```'])
-                    break
-                    
-                # 单行模式直接退出
-                if len(self.buffer) == 1 and not line.endswith('\n'):
-                    break
-                    
-            except (EOFError, KeyboardInterrupt):
-                self.buffer = []
-                print("\n")
-                continue
-                
-        return '\n'.join(self.buffer)
-    
+
     def display_welcome(self, model: str):
         welcome_text = f"""
         DeepSeek Chat CLI (Model: {model})
