@@ -115,22 +115,20 @@ class ChatUI:
         def _(event):
             event.current_buffer.validate_and_handle()
             
-        @self.kb.add('s-enter')
+        @self.kb.add(Keys.Shift, Keys.Enter)
         def _(event):
             event.current_buffer.insert_text('\n')
     
     def display_prompt(self) -> str:
         session = PromptSession(key_bindings=self.kb)
         return session.prompt("\nUser: ").strip()
-        
+
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
-            # Use print for immediate flushing of small chunks
             print(content, end=end, flush=True)
         else:
-            # Use rich console for styled output
             self.console.print(content, style=style, end=end)
-        
+            
     def display_reasoning(self, content: str):
         self.console.print("\n[Reasoning Chain]", style="bold yellow")
         self.console.print(Panel.fit(content, border_style="yellow"))
