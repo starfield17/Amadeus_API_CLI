@@ -1,29 +1,32 @@
 import os
 import argparse
 import json
-from openai import OpenAI
-from typing import List, Dict, Optional
-from rich.console import Console
-from rich.prompt import Prompt
-from rich.panel import Panel
 import signal
 import httpx
 import readline
-from httpx_socks import SyncProxyTransport
+#################################################################
 from pathlib import Path
+from typing import List, Dict, Optional
+from openai import OpenAI
+from rich.console import Console
+from rich.prompt import Prompt
+from rich.panel import Panel
+from httpx_socks import SyncProxyTransport
 from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import Terminal256Formatter
 from prompt_toolkit import PromptSession
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.styles import Style
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import Terminal256Formatter
-
+#################################################################
 class ChatUI:
     def __init__(self):
         self.console = Console()
+        self.undo_stack = []
+        self.redo_stack = []
         self.session = PromptSession(
             history=FileHistory(os.path.expanduser('~/.chat_history')),
             auto_suggest=AutoSuggestFromHistory(),
@@ -33,23 +36,69 @@ class ChatUI:
     def _create_key_bindings(self):
         bindings = KeyBindings()
         
-        @bindings.add(Keys.Enter)
+        @bindings.add(Keys.Enter, eager=True)
         def _(event):
-            event.current_buffer.newline()
-            
+            if event.current_buffer.document.char_before_cursor == ' ':
+                event.current_buffer.newline()
+            else:
+                event.current_buffer.validate_and_handle()
+
         @bindings.add(Keys.ControlD)
         def _(event):
-            event.current_buffer.validate_and_handle()
-            
+            if event.current_buffer.text.strip():
+                event.current_buffer.validate_and_handle()
+                
+        @bindings.add(Keys.ControlV)
+        def _(event):
+            try:
+                import pyperclip
+                text = pyperclip.paste()
+                self.undo_stack.append(event.current_buffer.text)
+                event.current_buffer.insert_text(text)
+            except ImportError:
+                self.display_message("pyperclip not installed.", style="red")
+            except Exception as e:
+                self.display_message(f"Failed to paste: {str(e)}", style="red")
+                
+        @bindings.add('c-z', eager=True)
+        def _(event):
+            if not self.undo_stack:
+                current_text = event.current_buffer.text
+                if current_text.strip():
+                    self.undo_stack.append("")
+                    self.redo_stack.append(current_text)
+                    event.current_buffer.text = ""
+            elif len(self.undo_stack) > 0:
+                current_text = event.current_buffer.text
+                last_state = self.undo_stack.pop()
+                self.redo_stack.append(current_text)
+                event.current_buffer.text = last_state
+                
+        @bindings.add('c-y', eager=True)
+        def _(event):
+            if len(self.redo_stack) > 0:
+                current_text = event.current_buffer.text
+                next_state = self.redo_stack.pop()
+                self.undo_stack.append(current_text)
+                event.current_buffer.text = next_state
+
+        @bindings.add('c-b')
+        def _(event):
+            current_text = event.current_buffer.text
+            if current_text.strip():
+                print(f"Saving state: {current_text}")
+                self.undo_stack.append(current_text)
+
         return bindings
 
     def display_prompt(self) -> str:
         try:
-            # 使用prompt_toolkit的多行输入
+            self.undo_stack = []
+            self.redo_stack = []
             text = self.session.prompt(
                 "User: ",
-                multiline=True,  # 启用多行模式
-                wrap_lines=True,  # 启用自动换行
+                multiline=True,
+                wrap_lines=True,
             )
             return text.strip()
         except (EOFError, KeyboardInterrupt):
@@ -75,19 +124,30 @@ class ChatUI:
 
     def display_welcome(self, model: str):
         welcome_text = f"""
-        DeepSeek Chat CLI (Model: {model})
-        Enter 'q' or 'exit' or 'quit' to quit
-        Commands:
-         - /clear : Clear chat history
-         - /save  : Save chat history
-         - /load  : Load chat history
-         - /help  : Show help
-        Shortcuts:
-         - Enter: New line
-         - Ctrl+D: Send message
-         - Up/Down: Navigate history
+        [cyan]DeepSeek Chat CLI[/cyan] (Model: [green]{model}[/green])
+        
+        [yellow]Enter 'q' or 'exit' or 'quit' to quit[/yellow]
+        
+        [bold magenta]Commands:[/bold magenta]
+        [blue]- /clear[/blue] : Clear chat history
+        [blue]- /save[/blue]  : Save chat history
+        [blue]- /load[/blue]  : Load chat history
+        [blue]- /help[/blue]  : Show help
+        
+        [bold magenta]Shortcuts:[/bold magenta]
+        [green]- Enter[/green]: New line
+        [green]- Ctrl+D[/green]: Send message
+        [green]- Ctrl+V[/green]: Paste
+        [green]- Ctrl+Z[/green]: Undo
+        [green]- Ctrl+Y[/green]: Redo
+        [green]- Up/Down[/green]: Navigate history
         """
-        self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
+        self.console.print(Panel.fit(
+            welcome_text,
+            title="[bold red]Welcome[/bold red]",
+            border_style="blue",
+            padding=(1, 2)
+        ))
         
 class ConfigManager:
     def __init__(self):
@@ -284,10 +344,46 @@ class ChatApp:
                 else:
                     self.ui.display_message(f"File not found: {filename}", style="red")
             elif cmd == "help":
-                self.ui.display_welcome(self.model.model)
+                help_text = """[bold cyan]DeepSeek Chat CLI Help[/bold cyan]
+
+    [bold yellow]Available Commands:[/bold yellow]
+    [green]/clear[/green]
+        Clear all chat history and start a new conversation
+        Usage: /clear
+
+    [green]/save [filename][/green]
+        Save current chat history to a JSON file
+        Usage: /save [filename]
+        Default filename: chat_history.json
+        Example: /save my_chat.json
+
+    [green]/load [filename][/green]
+        Load chat history from a JSON file
+        Usage: /load [filename]
+        Default filename: chat_history.json
+        Example: /load my_chat.json
+
+    [green]/help[/green]
+        Display this help message
+        Usage: /help
+
+    [bold yellow]Keyboard Shortcuts:[/bold yellow]
+    [blue]Enter[/blue]        Start a new line in your message
+    [blue]Ctrl+D[/blue]       Send your message
+    [blue]Ctrl+V[/blue]       Paste text from clipboard
+    [blue]Ctrl+Z[/blue]       Undo last text change
+    [blue]Ctrl+Y[/blue]       Redo last undone change
+    [blue]Up/Down[/blue]      Navigate through command history
+
+    [bold yellow]Tips:[/bold yellow]
+    - Press Enter to start a new line within your message
+    - To send a message, either press Ctrl+D or Enter without leading space
+    - Chat history is automatically saved between sessions
+    - Use Up/Down arrows to quickly access previous commands
+    """
+                self.ui.display_message(Panel.fit(help_text, border_style="blue"))
             return True
         return False
-
 
 def main():
     parser = argparse.ArgumentParser(description="DeepSeek Chat CLI")
