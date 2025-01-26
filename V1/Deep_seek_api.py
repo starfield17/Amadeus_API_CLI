@@ -24,68 +24,37 @@ from pygments.formatters import Terminal256Formatter
 class ChatUI:
     def __init__(self):
         self.console = Console()
-        self.buffer = []
+        self.session = PromptSession(
+            history=FileHistory(os.path.expanduser('~/.chat_history')),
+            auto_suggest=AutoSuggestFromHistory(),
+            key_bindings=self._create_key_bindings()
+        )
+
+    def _create_key_bindings(self):
+        bindings = KeyBindings()
         
-        # Initialize readline
-        if 'libedit' in readline.__doc__:
-            readline.parse_and_bind("bind ^I rl_complete")
-        else:
-            readline.parse_and_bind("tab: complete")
-        
-        # Setup history file
-        self.history_file = os.path.expanduser('~/.chat_history')
-        if os.path.exists(self.history_file):
-            readline.read_history_file(self.history_file)
+        @bindings.add(Keys.Enter)
+        def _(event):
+            event.current_buffer.newline()
+            
+        @bindings.add(Keys.ControlD)
+        def _(event):
+            event.current_buffer.validate_and_handle()
+            
+        return bindings
+
     def display_prompt(self) -> str:
-        self.buffer = []
-        
-        while True:
-            try:
-                # 获取输入
-                line = input("User: " if not self.buffer else "... ")
-                
-                # 处理 Shift+Enter
-                if line.endswith('\x1b[13;2u'):
-                    self.buffer.append(line[:-8])  # 移除 Shift+Enter 序列
-                    continue
-                
-                # 处理空行结束输入
-                if not line and self.buffer:
-                    break
-                    
-                # 处理空输入
-                if not line and not self.buffer:
-                    continue
-                    
-                # 常规输入处理
-                self.buffer.append(line)
-                
-                # 首行且不是代码块，立即结束
-                if len(self.buffer) == 1 and not line.startswith('```'):
-                    break
-                    
-                # 代码块处理
-                if line.startswith('```'):
-                    lang = line[3:].strip()
-                    code_buffer = []
-                    while True:
-                        code_line = input("... ")
-                        if code_line.strip() == '```':
-                            break
-                        code_buffer.append(code_line)
-                    highlighted_code = self.highlight_code('\n'.join(code_buffer), lang)
-                    self.buffer.extend([highlighted_code, '```'])
-                    break
-                    
-            except (EOFError, KeyboardInterrupt):
-                self.buffer = []
-                print("\n")
-                continue
-                
-        return '\n'.join(filter(None, self.buffer))
-    def __del__(self):
-        readline.write_history_file(self.history_file)
-        
+        try:
+            # 使用prompt_toolkit的多行输入
+            text = self.session.prompt(
+                "User: ",
+                multiline=True,  # 启用多行模式
+                wrap_lines=True,  # 启用自动换行
+            )
+            return text.strip()
+        except (EOFError, KeyboardInterrupt):
+            return 'q'
+
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
             print(content, end=end, flush=True)
@@ -103,7 +72,6 @@ class ChatUI:
             return highlight(code, lexer, Terminal256Formatter())
         except:
             return code
-            
 
     def display_welcome(self, model: str):
         welcome_text = f"""
@@ -115,7 +83,8 @@ class ChatUI:
          - /load  : Load chat history
          - /help  : Show help
         Shortcuts:
-         - Shift+Enter: New line
+         - Enter: New line
+         - Ctrl+D: Send message
          - Up/Down: Navigate history
         """
         self.console.print(Panel.fit(welcome_text, title="Welcome", border_style="blue"))
