@@ -220,7 +220,7 @@ class ChatHistory:
             self.reasoning_history.append({"role": role, "reasoning_content": reasoning_content})
         
     def clear(self):
-        self.messages = [{"role": "system", "content": "You are a helpful assistant"}]
+        self.messages = [{"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."}]
         self.reasoning_history = []
         
     def save(self, filename: str):
