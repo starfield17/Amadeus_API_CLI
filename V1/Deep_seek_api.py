@@ -210,7 +210,7 @@ class ChatModel:
 
 class ChatHistory:
     def __init__(self):
-        self.messages = [{"role": "system", "content": "You are a helpful assistant"}]
+        self.messages = [{"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."}]
         self.reasoning_history = []
         
     def add_message(self, role: str, content: str, reasoning_content: str = None):
