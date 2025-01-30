@@ -1,88 +1,112 @@
-# DEEPSEEK_API_CLI
-一个基于命令行的 DeepSeek AI 聊天应用程序，支持与 DeepSeek 模型进行交互、保存对话历史，以及其他实用功能。
+# DeepSeek Chat CLI
 
-## 功能特点
+DeepSeek Chat CLIは、コマンドラインから直接DeepSeek APIと対話できる高機能なチャットインターフェースです。
 
-- 支持与 DeepSeek AI 模型实时对话
-- 流式输出响应
-- 保存和加载对话历史
-- 简单直观的命令行界面
-- 支持中断操作（Ctrl+C）
-- 丰富的命令支持
+## 特徴
 
-## 环境要求
+- インタラクティブなチャット機能
+- チャット履歴の保存と読み込み
+- コードのシンタックスハイライト
+- プロキシサポート
+- キーボードショートカット
+- 推論チェーンの表示
 
-- Python 3.7+
-- pip（Python 包管理器）
+## 必要条件
 
-## 安装步骤
+- Python 3.7以上
+- pip（Pythonパッケージマネージャー）
+- DeepSeek APIキー
 
-1. 克隆或下载项目到本地
+## インストール方法
 
-2. 安装所需依赖：
+1. 必要なパッケージをインストールします：
+
 ```bash
-pip install openai rich prompt_toolkit httpx-socks
+pip install openai httpx httpx_socks rich prompt_toolkit pygments pyperclip
 ```
 
-## 配置
+2. ソースコードをダウンロードまたはクローンします：
 
-在运行程序前，你需要：
+```bash
+git clone <repository-url>
+cd deepseek-chat-cli
+```
 
-1. 获取 DeepSeek API 密钥
-2. 确保有可用的网络连接
+## 設定
+
+1. DeepSeek APIキーを取得します（https://platform.deepseek.com）
+
+2. 以下のいずれかの方法でAPIキーを設定できます：
+   - 初回起動時に対話的に入力
+   - コマンドライン引数で指定
+   - 設定ファイルに保存（`~/.deepseek_config`）
 
 ## 使用方法
 
-### 基本运行
-
-使用以下命令启动应用：
+### 基本的な起動
 
 ```bash
-python chat_cli.py --api-key YOUR_API_KEY
+python deepseek_api.py
 ```
 
-可选参数：
-- `--model`: 指定使用的模型（默认为 "deepseek-reasoner"）
+### コマンドライン引数の使用
 
-例如：
 ```bash
-python chat_cli.py --api-key YOUR_API_KEY --model custom-model-name
+python deepseek_api.py --api-key YOUR_API_KEY --model deepseek-reasoner --proxy socks5://127.0.0.1:7890
 ```
 
-### 可用命令
+### 利用可能なコマンドライン引数
 
-在聊天界面中可以使用以下命令：
+- `--api-key`: DeepSeek APIキー
+- `--model`: 使用するモデル（デフォルト: deepseek-reasoner）
+- `--proxy`: プロキシサーバーアドレス（例: socks5://127.0.0.1:7890）
 
-- `/clear`: 清除当前对话历史
-- `/save [文件名]`: 保存对话历史（默认保存为 chat_history.json）
-- `/load [文件名]`: 加载已保存的对话历史（默认加载 chat_history.json）
-- `/help`: 显示帮助信息
-- `q` 或 `exit`: 退出程序
+## チャットコマンド
 
-### 示例用法
+- `/clear`: チャット履歴をクリア
+- `/save [ファイル名]`: チャット履歴を保存
+- `/load [ファイル名]`: チャット履歴を読み込み
+- `/help`: ヘルプメッセージを表示
 
-1. 启动程序：
-```bash
-python chat_cli.py --api-key sk-xxxxx
-```
+## キーボードショートカット
 
-2. 开始对话：
-```
-您: 你好
-助手: 你好！有什么我可以帮你的吗？
+- `Enter`: 新しい行を開始
+- `Ctrl+D`: メッセージを送信
+- `Ctrl+V`: クリップボードからテキストを貼り付け
+- `Ctrl+Z`: テキストの変更を元に戻す
+- `Ctrl+Y`: 元に戻した変更をやり直す
+- `↑/↓`: コマンド履歴をナビゲート
 
-您: /save my_chat.json
-对话已保存至 my_chat.json
+## トラブルシューティング
 
-您: /clear
-已清除对话历史
-```
+### よくある問題と解決方法
 
-## 错误处理
+1. APIキーエラー
+   - APIキーが正しく設定されているか確認
+   - DeepSeekダッシュボードでAPIキーの有効性を確認
 
-程序会处理常见的错误情况：
+2. プロキシ接続エラー
+   - プロキシサーバーが稼働しているか確認
+   - プロキシのフォーマットが正しいか確認（例：socks5://127.0.0.1:7890）
 
-- API 错误：显示具体的错误信息
-- 文件操作错误：当保存/加载对话历史出现问题时提供反馈
-- 网络连接问题：显示相关错误信息
+3. パッケージのインストールエラー
+   - Pythonのバージョンが3.7以上であることを確認
+   - pip を最新バージョンに更新：`pip install --upgrade pip`
+   - 必要に応じて仮想環境を使用
 
+### エラーメッセージの意味
+
+- "API Error": APIキーまたはネットワーク接続の問題
+- "Failed to save config": 設定ファイルの保存権限の問題
+- "File not found": 指定されたチャット履歴ファイルが存在しない
+
+## セキュリティ注意事項
+
+- APIキーは安全に保管し、共有しないでください
+- 設定ファイル（`.deepseek_config`）のパーミッションは自動的に600に設定されます
+- チャット履歴には機密情報が含まれる可能性があるため、適切に管理してください
+
+## サポートとコントリビューション
+
+バグ報告や機能リクエストは、GitHubのIssuesページでお願いします。
+プルリクエストも歓迎します。
