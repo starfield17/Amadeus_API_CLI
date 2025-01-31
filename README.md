@@ -28,7 +28,7 @@ pip install openai httpx httpx_socks rich prompt_toolkit pygments pyperclip
 2. ソースコードをダウンロードまたはクローンします：
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/CZYPRESSEN/DEEPSEEK_API_CLI.git
 cd DEEPSEEK_API_CLI
 ```
 
