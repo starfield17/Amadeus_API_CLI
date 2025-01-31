@@ -29,7 +29,7 @@ pip install openai httpx httpx_socks rich prompt_toolkit pygments pyperclip
 
 ```bash
 git clone <repository-url>
-cd deepseek-chat-cli
+cd DEEPSEEK_API_CLI
 ```
 
 ## 設定
