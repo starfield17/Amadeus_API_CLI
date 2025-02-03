@@ -4,7 +4,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # 定义软链接的目标路径
-TARGET="/usr/local/bin/deepseek"
+TARGET="/usr/local/bin/askds"
 
 # 检查目标文件是否已经存在
 if [ -f "$TARGET" ]; then
