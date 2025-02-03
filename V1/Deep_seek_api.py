@@ -336,25 +336,31 @@ class ChatApp:
                     debug_info = []
                     reasoning_complete = False
                     content_buffer = [] 
-                    
+                    is_reasoning = False
                     for chunk in response:
                         chunk_count += 1
                         if Debug:
                             debug_info.append(f"Chunk {chunk_count}: {chunk.choices[0].delta}")
+                        
                         if chunk.choices[0].delta.reasoning_content is not None:
                             content = chunk.choices[0].delta.reasoning_content
-                            reasoning_content += content
-                            # Only display the header once at the start of reasoning
-                            if not reasoning_complete:
+                            if not is_reasoning:
                                 self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
-                                self.ui.display_message(Panel.fit("", border_style="yellow"), end="")
-                                reasoning_complete = True
+                                self.ui.display_message("[", style="bold yellow", end="", flush=True)
+                                is_reasoning = True
+                            reasoning_content += content
                             self.ui.display_message(content, end="", flush=True)
-                            
                         elif chunk.choices[0].delta.content is not None:
+                            if is_reasoning:
+                                self.ui.display_message("]", style="bold yellow")
+                                is_reasoning = False
                             content = chunk.choices[0].delta.content
                             full_response += content
                             content_buffer.append(content)
+                    
+                    if is_reasoning:
+                        self.ui.display_message("]", style="bold yellow")
+                    
                     if content_buffer:
                         self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
                         for content in content_buffer:
@@ -373,15 +379,6 @@ class ChatApp:
                         self.ui.display_message("")
                     else:
                         raise Exception("No content in response chunks")
-                        
-                except Exception as e:
-                    if Debug:
-                        import traceback
-                        self.debug_log(f"Full error traceback:\n{traceback.format_exc()}", style="red")
-                    raise Exception(f"Failed to process response: {str(e)}")
-                    
-            except Exception as e:
-                self.ui.display_message(f"\nError: {str(e)}", style="red")
                     
     def _handle_interrupt(self, signum, frame):
         self.ui.display_message("\n\nSession terminated", style="yellow")
