@@ -272,49 +272,34 @@ class ChatApp:
             try:
                 user_input = self.ui.display_prompt()
                 
-                if user_input.lower() in ['q', 'quit', 'exit']:
-                    user_choice = Prompt.ask("Are you sure you want to quit? (y/n)", default="n").strip().lower()
-                    if user_choice == 'y':
-                        self.ui.display_message("\nGoodbye!", style="yellow")
-                        break
-                    continue
-                
                 if not user_input:
                     continue
                     
                 if self.handle_user_input(user_input):
                     continue
                 
-                self.history.add_message("user", user_input)
+                # Only add the user message after confirming we got a valid response
+                response = self.model.get_response([*self.history.messages, {"role": "user", "content": user_input}])
                 
-                response = self.model.get_response(self.history.messages)
                 full_response = ""
                 reasoning_content = ""
                 
-                # First, collect and display reasoning content
+                # Process response chunks
                 for chunk in response:
                     if chunk.choices[0].delta.reasoning_content:
                         content = chunk.choices[0].delta.reasoning_content
                         reasoning_content += content
-                        if len(reasoning_content) == len(content):  # First chunk
+                        if len(reasoning_content) == len(content):
                             self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
                         self.ui.display_message(content, end="", flush=True)
                     elif chunk.choices[0].delta.content:
-                        break
-                
-                if reasoning_content:
-                    self.ui.display_message("\n")  # Add a newline after reasoning
-                
-                # Then display and collect the response
-                self.ui.display_message("\nChat: ", style="bold blue", end="")
-                
-                for chunk in response:
-                    if chunk.choices[0].delta.content:
                         content = chunk.choices[0].delta.content
                         full_response += content
                         self.ui.display_message(content, end="", flush=True)
                 
+                # Only update history if we got a valid response
                 if full_response:
+                    self.history.add_message("user", user_input)
                     self.history.add_message("assistant", full_response, reasoning_content)
                     self.ui.display_message("")
                 else:
