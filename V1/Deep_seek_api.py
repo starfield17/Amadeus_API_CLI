@@ -303,7 +303,6 @@ class ChatApp:
         signal.signal(signal.SIGINT, self._handle_interrupt)
 
     def debug_log(self, message: str, style: str = "yellow"):
-        """将调试信息输出到单独的调试面板"""
         if Debug:
             self.ui.display_message(
                 Panel(message, title="[bold yellow]Debug Log[/bold yellow]", 
@@ -330,7 +329,6 @@ class ChatApp:
                 if self.handle_user_input(user_input):
                     continue
                 
-                # 创建新的消息列表用于测试
                 test_messages = [*self.history.messages, {"role": "user", "content": user_input}]
                 
                 try:
@@ -345,28 +343,30 @@ class ChatApp:
                     full_response = ""
                     reasoning_content = ""
                     chunk_count = 0
-                    debug_info = []  # 收集调试信息
+                    debug_info = []
+                    reasoning_complete = False
+                    content_buffer = [] 
                     
-                    # 处理响应流
+                    # 首先收集所有块
                     for chunk in response:
                         chunk_count += 1
                         if Debug:
                             debug_info.append(f"Chunk {chunk_count}: {chunk.choices[0].delta}")
                         
-                        if chunk.choices[0].delta.reasoning_content:
+                        if chunk.choices[0].delta.reasoning_content is not None:
                             content = chunk.choices[0].delta.reasoning_content
                             reasoning_content += content
                             if len(reasoning_content) == len(content):
                                 self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
                             self.ui.display_message(content, end="", flush=True)
-                        elif chunk.choices[0].delta.content:
+                        elif chunk.choices[0].delta.content is not None:
                             content = chunk.choices[0].delta.content
                             full_response += content
-                            if not reasoning_content:  # 只在第一次输出时显示Chat:
-                                self.ui.display_message("\nChat: ", style="bold blue", end="")
+                            content_buffer.append(content)
+                    if content_buffer:
+                        self.ui.display_message("\nChat: ", style="bold blue", end="")
+                        for content in content_buffer:
                             self.ui.display_message(content, end="", flush=True)
-                    
-                    # 在对话完成后一次性显示所有调试信息
                     if Debug and debug_info:
                         self.debug_log("\n".join([
                             f"Total chunks processed: {chunk_count}",
@@ -375,8 +375,6 @@ class ChatApp:
                             "\nChunk details:",
                             *debug_info
                         ]))
-                    
-                    # 只有在成功获取响应后才更新历史
                     if full_response:
                         self.history.add_message("user", user_input)
                         self.history.add_message("assistant", full_response, reasoning_content)
