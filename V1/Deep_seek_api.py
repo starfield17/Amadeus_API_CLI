@@ -143,27 +143,28 @@ class ChatUI:
         ))
         
 class ConfigManager:
+    
     def __init__(self):
         self.config_file = Path.home() / '.deepseek_config'
         self.default_config = {
             "api_key": "",
-            "proxy": None
+            "proxy": None,
+            "model": "deepseek-reasoner",
+            "debug": False
         }
     
-    def save_config(self, api_key: str = None, proxy: str = None) -> None:
+    def save_config(self, **kwargs) -> None:
         """Save configuration to hidden file in user's home directory"""
         try:
             config = self.load_config()
-            if api_key is not None:
-                config["api_key"] = api_key
-            if proxy is not None:
-                config["proxy"] = proxy
+            for key, value in kwargs.items():
+                if value is not None:
+                    config[key] = value
                 
-            self.config_file.write_text(json.dumps(config))
+            self.config_file.write_text(json.dumps(config, indent=2))
             self.config_file.chmod(0o600)  # Set file permissions to owner read/write only
         except Exception as e:
             raise Exception(f"Failed to save config: {str(e)}")
-    
     def load_config(self) -> dict:
         """Load configuration from hidden file"""
         try:
@@ -455,16 +456,33 @@ class ChatApp:
         return False
 
 def main():
+    config_manager = ConfigManager()
+    config = config_manager.load_config()
     parser = argparse.ArgumentParser(description="DeepSeek Chat CLI")
-    parser.add_argument("--api-key", help="DeepSeek API key (optional if already saved)")
-    parser.add_argument("--model", default="deepseek-reasoner", help="Model to use")
+    parser.add_argument("--api-key", help="DeepSeek API key")
+    parser.add_argument("--model", help="Model to use")
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("--save-config", action="store_true", 
+                       help="Save the current settings as default configuration")
     args = parser.parse_args()
+    final_config = {
+        "api_key": args.api_key or config["api_key"],
+        "model": args.model or config["model"],
+        "proxy": args.proxy or config["proxy"],
+        "debug": args.debug or config["debug"]
+    }
+    if args.save_config:
+        config_manager.save_config(**final_config)
+        print("Configuration saved successfully!")
+    
     global Debug
-    Debug = args.debug
-    app = ChatApp(api_key=args.api_key, model=args.model, proxy=args.proxy)
+    Debug = final_config["debug"]
+    app = ChatApp(
+        api_key=final_config["api_key"],
+        model=final_config["model"],
+        proxy=final_config["proxy"]
+    )
     app.chat()
-
 if __name__ == "__main__":
     main()
