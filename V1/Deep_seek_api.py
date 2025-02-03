@@ -38,11 +38,9 @@ class ChatUI:
         
         @bindings.add(Keys.Enter, eager=True)
         def _(event):
-            if event.current_buffer.document.char_before_cursor == ' ':
-                event.current_buffer.newline()
-            else:
-                event.current_buffer.validate_and_handle()
-
+            # 直接发送消息，不考虑换行
+            event.current_buffer.validate_and_handle()
+    
         @bindings.add(Keys.ControlD)
         def _(event):
             if event.current_buffer.text.strip():
@@ -81,16 +79,9 @@ class ChatUI:
                 next_state = self.redo_stack.pop()
                 self.undo_stack.append(current_text)
                 event.current_buffer.text = next_state
-
-        @bindings.add('c-b')
-        def _(event):
-            current_text = event.current_buffer.text
-            if current_text.strip():
-                print(f"Saving state: {current_text}")
-                self.undo_stack.append(current_text)
-
+    
         return bindings
-
+    
     def display_prompt(self) -> str:
         try:
             self.undo_stack = []
@@ -124,24 +115,24 @@ class ChatUI:
 
     def display_welcome(self, model: str):
         welcome_text = f"""
-        [cyan]DeepSeek Chat CLI[/cyan] (Model: [green]{model}[/green])
-        
-        [yellow]Enter 'q' or 'exit' or 'quit' to quit[/yellow]
-        
-        [bold magenta]Commands:[/bold magenta]
-        [blue]- /clear[/blue] : Clear chat history
-        [blue]- /save[/blue]  : Save chat history
-        [blue]- /load[/blue]  : Load chat history
-        [blue]- /help[/blue]  : Show help
-        
-        [bold magenta]Shortcuts:[/bold magenta]
-        [green]- Enter[/green]: New line
-        [green]- Ctrl+D[/green]: Send message
-        [green]- Ctrl+V[/green]: Paste
-        [green]- Ctrl+Z[/green]: Undo
-        [green]- Ctrl+Y[/green]: Redo
-        [green]- Up/Down[/green]: Navigate history
-        """
+            [cyan]DeepSeek Chat CLI[/cyan] (Model: [green]{model}[/green])
+            
+            [yellow]Enter 'q' or 'exit' or 'quit' to quit[/yellow]
+            
+            [bold magenta]Commands:[/bold magenta]
+            [blue]- /clear[/blue] : Clear chat history
+            [blue]- /save[/blue]  : Save chat history
+            [blue]- /load[/blue]  : Load chat history
+            [blue]- /help[/blue]  : Show help
+            
+            [bold magenta]Shortcuts:[/bold magenta]
+            [green]- Enter[/green]: Send message
+            [green]- Ctrl+D[/green]: Send message
+            [green]- Ctrl+V[/green]: Paste
+            [green]- Ctrl+Z[/green]: Undo
+            [green]- Ctrl+Y[/green]: Redo
+            [green]- Up/Down[/green]: Navigate history
+            """
         self.console.print(Panel.fit(
             welcome_text,
             title="[bold red]Welcome[/bold red]",
