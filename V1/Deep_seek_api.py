@@ -22,6 +22,8 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.styles import Style
 #################################################################
+Debug = False
+#################################################################
 class ChatUI:
     def __init__(self):
         self.console = Console()
@@ -174,6 +176,10 @@ class ConfigManager:
             
 class ChatModel:
     def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None):
+        # ensure can access Debug Variables
+        global Debug
+        self.debug = Debug
+        
         if proxy and proxy.startswith('socks'):
             transport = SyncProxyTransport.from_url(proxy)
             http_client = httpx.Client(transport=transport)
@@ -190,15 +196,23 @@ class ChatModel:
                 timeout=30.0
             )
         self.model = model
+        
+        if self.debug:
+            print(f"\nDebug - Initialized ChatModel with model: {model}")
+            
+    def debug_print(self, message: str):
+        if self.debug:
+            print(f"\nDebug - {message}")
 
     def get_response(self, messages: List[Dict]) -> Optional[str]:
         try:
-            # 添加请求验证
+
             if not messages or not isinstance(messages, list):
                 raise ValueError("Invalid messages format")
                 
-            # 打印诊断信息
-            print("\nDebug - Sending request with messages:", json.dumps(messages[-2:], indent=2))
+
+            if self.debug:
+                self.debug_print(f"Sending request with messages: {json.dumps(messages[-2:], indent=2)}")
                 
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -206,19 +220,29 @@ class ChatModel:
                 stream=True
             )
             
-            # 验证响应
             if not response:
                 raise Exception("Empty response from API")
+                
+            if self.debug:
+                self.debug_print("Response received successfully")
                 
             return response
             
         except httpx.TimeoutException:
+            if self.debug:
+                self.debug_print("Timeout Exception occurred")
             raise Exception("Request timed out - API server not responding")
+            
         except httpx.ConnectError:
+            if self.debug:
+                self.debug_print("Connection Error occurred")
             raise Exception("Connection failed - Please check your internet connection")
+            
         except Exception as e:
+            if self.debug:
+                self.debug_print(f"Exception occurred: {type(e).__name__}: {str(e)}")
             raise Exception(f"API Error ({type(e).__name__}): {str(e)}")
-
+            
 class ChatHistory:
     def __init__(self):
         self.messages = [{"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."}]
