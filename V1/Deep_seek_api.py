@@ -293,6 +293,7 @@ class ChatApp:
 
     def debug_log(self, message: str, style: str = "yellow"):
         if Debug:
+            self.ui.display_message("\n")
             self.ui.display_message(
                 Panel(message, title="[bold yellow]Debug Log[/bold yellow]", 
                       border_style="yellow", expand=False),
