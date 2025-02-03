@@ -309,36 +309,70 @@ class ChatApp:
                 
                 if not user_input:
                     continue
-                    
+                
+                if user_input.lower() in ['q', 'quit', 'exit']:
+                    user_choice = Prompt.ask("Are you sure you want to quit? (y/n)", default="n").strip().lower()
+                    if user_choice == 'y':
+                        self.ui.display_message("\nGoodbye!", style="yellow")
+                        break
+                    continue
+                
                 if self.handle_user_input(user_input):
                     continue
                 
-                # Only add the user message after confirming we got a valid response
-                response = self.model.get_response([*self.history.messages, {"role": "user", "content": user_input}])
+                # 创建新的消息列表用于测试
+                test_messages = [*self.history.messages, {"role": "user", "content": user_input}]
                 
-                full_response = ""
-                reasoning_content = ""
-                
-                # Process response chunks
-                for chunk in response:
-                    if chunk.choices[0].delta.reasoning_content:
-                        content = chunk.choices[0].delta.reasoning_content
-                        reasoning_content += content
-                        if len(reasoning_content) == len(content):
-                            self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
-                        self.ui.display_message(content, end="", flush=True)
-                    elif chunk.choices[0].delta.content:
-                        content = chunk.choices[0].delta.content
-                        full_response += content
-                        self.ui.display_message(content, end="", flush=True)
-                
-                # Only update history if we got a valid response
-                if full_response:
-                    self.history.add_message("user", user_input)
-                    self.history.add_message("assistant", full_response, reasoning_content)
-                    self.ui.display_message("")
-                else:
-                    self.ui.display_message("\nError: No response received", style="red")
+                try:
+                    if Debug:
+                        self.ui.display_message("\nDebug - Attempting to get response...", style="yellow")
+                    
+                    response = self.model.get_response(test_messages)
+                    
+                    if Debug:
+                        self.ui.display_message("\nDebug - Got initial response stream", style="yellow")
+                    
+                    full_response = ""
+                    reasoning_content = ""
+                    chunk_count = 0
+                    
+                    # 处理响应流
+                    for chunk in response:
+                        chunk_count += 1
+                        if Debug:
+                            self.ui.display_message(f"\nDebug - Processing chunk {chunk_count}", style="yellow")
+                            self.ui.display_message(f"Debug - Chunk content: {chunk.choices[0].delta}", style="yellow")
+                        
+                        if chunk.choices[0].delta.reasoning_content:
+                            content = chunk.choices[0].delta.reasoning_content
+                            reasoning_content += content
+                            if len(reasoning_content) == len(content):
+                                self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
+                            self.ui.display_message(content, end="", flush=True)
+                        elif chunk.choices[0].delta.content:
+                            content = chunk.choices[0].delta.content
+                            full_response += content
+                            self.ui.display_message(content, end="", flush=True)
+                    
+                    if Debug:
+                        self.ui.display_message(f"\nDebug - Total chunks processed: {chunk_count}", style="yellow")
+                        self.ui.display_message(f"Debug - Final response length: {len(full_response)}", style="yellow")
+                        self.ui.display_message(f"Debug - Has reasoning: {bool(reasoning_content)}", style="yellow")
+                    
+                    # 只有在成功获取响应后才更新历史
+                    if full_response:
+                        self.history.add_message("user", user_input)
+                        self.history.add_message("assistant", full_response, reasoning_content)
+                        self.ui.display_message("")
+                    else:
+                        raise Exception("No content in response chunks")
+                        
+                except Exception as e:
+                    if Debug:
+                        import traceback
+                        self.ui.display_message(f"\nDebug - Full error traceback:", style="red")
+                        self.ui.display_message(traceback.format_exc(), style="red")
+                    raise Exception(f"Failed to process response: {str(e)}")
                     
             except Exception as e:
                 self.ui.display_message(f"\nError: {str(e)}", style="red")
