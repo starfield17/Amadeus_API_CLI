@@ -341,13 +341,16 @@ class ChatApp:
                         chunk_count += 1
                         if Debug:
                             debug_info.append(f"Chunk {chunk_count}: {chunk.choices[0].delta}")
-                        
                         if chunk.choices[0].delta.reasoning_content is not None:
                             content = chunk.choices[0].delta.reasoning_content
                             reasoning_content += content
-                            if len(reasoning_content) == len(content):
+                            # Only display the header once at the start of reasoning
+                            if not reasoning_complete:
                                 self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
+                                self.ui.display_message(Panel.fit("", border_style="yellow"), end="")
+                                reasoning_complete = True
                             self.ui.display_message(content, end="", flush=True)
+                            
                         elif chunk.choices[0].delta.content is not None:
                             content = chunk.choices[0].delta.content
                             full_response += content
