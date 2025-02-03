@@ -181,23 +181,43 @@ class ChatModel:
                 api_key=api_key,
                 base_url="https://api.deepseek.com",
                 http_client=http_client
+                timeout=30.0
             )
         else:
             self.client = OpenAI(
                 api_key=api_key,
                 base_url="https://api.deepseek.com"
+                timeout=30.0
             )
         self.model = model
 
     def get_response(self, messages: List[Dict]) -> Optional[str]:
         try:
-            return self.client.chat.completions.create(
+            # 添加请求验证
+            if not messages or not isinstance(messages, list):
+                raise ValueError("Invalid messages format")
+                
+            # 打印诊断信息
+            print("\nDebug - Sending request with messages:", json.dumps(messages[-2:], indent=2))
+                
+            response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 stream=True
             )
+            
+            # 验证响应
+            if not response:
+                raise Exception("Empty response from API")
+                
+            return response
+            
+        except httpx.TimeoutException:
+            raise Exception("Request timed out - API server not responding")
+        except httpx.ConnectError:
+            raise Exception("Connection failed - Please check your internet connection")
         except Exception as e:
-            raise Exception(f"API Error: {str(e)}")
+            raise Exception(f"API Error ({type(e).__name__}): {str(e)}")
 
 class ChatHistory:
     def __init__(self):
