@@ -70,7 +70,7 @@ python deepseek_api.py --api-key YOUR_API_KEY --model deepseek-reasoner --proxy 
 
 ## キーボードショートカット
 
-- `Enter`: 新しい行を開始
+- `Enter`: メッセージを送信
 - `Ctrl+D`: メッセージを送信
 - `Ctrl+V`: クリップボードからテキストを貼り付け
 - `Ctrl+Z`: テキストの変更を元に戻す
