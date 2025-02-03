@@ -289,7 +289,7 @@ class ChatApp:
         self.model = ChatModel(api_key, model, proxy)
         self.history = ChatHistory()
         self.ui = ChatUI()
-        signal.signal(signal.SIGINT, self._handle_interrupt)
+        signal.signal(signal.SIGINT, self.handle_interrupt)
 
     def debug_log(self, message: str, style: str = "yellow"):
         if Debug:
@@ -380,7 +380,7 @@ class ChatApp:
                     else:
                         raise Exception("No content in response chunks")
                     
-    def _handle_interrupt(self, signum, frame):
+    def handle_interrupt(self, signum, frame):
         self.ui.display_message("\n\nSession terminated", style="yellow")
         exit(0)
         
