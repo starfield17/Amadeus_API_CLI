@@ -335,7 +335,7 @@ class ChatApp:
                    chunk_count = 0
                    debug_info = []
                    reasoning_complete = False
-                   content_buffer = [] 
+                   content_buffer = []
                    is_reasoning = False
                    
                    for chunk in response:
@@ -347,20 +347,15 @@ class ChatApp:
                            content = chunk.choices[0].delta.reasoning_content
                            if not is_reasoning:
                                self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
-                               self.ui.display_message("[", style="bold yellow", end="", flush=True)
                                is_reasoning = True
                            reasoning_content += content
                            self.ui.display_message(content, end="", flush=True)
                        elif chunk.choices[0].delta.content is not None:
                            if is_reasoning:
-                               self.ui.display_message("]", style="bold yellow")
                                is_reasoning = False
                            content = chunk.choices[0].delta.content
                            full_response += content
                            content_buffer.append(content)
-                   
-                   if is_reasoning:
-                       self.ui.display_message("]", style="bold yellow")
                    
                    if content_buffer:
                        self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
