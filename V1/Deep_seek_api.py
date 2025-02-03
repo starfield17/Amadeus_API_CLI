@@ -301,82 +301,90 @@ class ChatApp:
         self.ui = ChatUI()
         signal.signal(signal.SIGINT, self._handle_interrupt)
 
-    def chat(self):
-        self.ui.display_welcome(self.model.model)
-        while True:
-            try:
-                user_input = self.ui.display_prompt()
-                
-                if not user_input:
-                    continue
-                
-                if user_input.lower() in ['q', 'quit', 'exit']:
-                    user_choice = Prompt.ask("Are you sure you want to quit? (y/n)", default="n").strip().lower()
-                    if user_choice == 'y':
-                        self.ui.display_message("\nGoodbye!", style="yellow")
-                        break
-                    continue
-                
-                if self.handle_user_input(user_input):
-                    continue
-                
-                # 创建新的消息列表用于测试
-                test_messages = [*self.history.messages, {"role": "user", "content": user_input}]
-                
+        def debug_log(self, message: str, style: str = "yellow"):
+            if Debug:
+                self.ui.display_message(
+                    Panel(message, title="[bold yellow]Debug Log[/bold yellow]", 
+                          border_style="yellow", expand=False),
+                    style=style
+                )
+    
+        def chat(self):
+            self.ui.display_welcome(self.model.model)
+            while True:
                 try:
-                    if Debug:
-                        self.ui.display_message("\nDebug - Attempting to get response...", style="yellow")
+                    user_input = self.ui.display_prompt()
                     
-                    response = self.model.get_response(test_messages)
+                    if not user_input:
+                        continue
                     
-                    if Debug:
-                        self.ui.display_message("\nDebug - Got initial response stream", style="yellow")
+                    if user_input.lower() in ['q', 'quit', 'exit']:
+                        user_choice = Prompt.ask("Are you sure you want to quit? (y/n)", default="n").strip().lower()
+                        if user_choice == 'y':
+                            self.ui.display_message("\nGoodbye!", style="yellow")
+                            break
+                        continue
                     
-                    full_response = ""
-                    reasoning_content = ""
-                    chunk_count = 0
+                    if self.handle_user_input(user_input):
+                        continue
                     
-                    # 处理响应流
-                    for chunk in response:
-                        chunk_count += 1
+                    test_messages = [*self.history.messages, {"role": "user", "content": user_input}]
+                    
+                    try:
                         if Debug:
-                            self.ui.display_message(f"\nDebug - Processing chunk {chunk_count}", style="yellow")
-                            self.ui.display_message(f"Debug - Chunk content: {chunk.choices[0].delta}", style="yellow")
+                            self.debug_log("Attempting to get response...")
                         
-                        if chunk.choices[0].delta.reasoning_content:
-                            content = chunk.choices[0].delta.reasoning_content
-                            reasoning_content += content
-                            if len(reasoning_content) == len(content):
-                                self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
-                            self.ui.display_message(content, end="", flush=True)
-                        elif chunk.choices[0].delta.content:
-                            content = chunk.choices[0].delta.content
-                            full_response += content
-                            self.ui.display_message(content, end="", flush=True)
-                    
-                    if Debug:
-                        self.ui.display_message(f"\nDebug - Total chunks processed: {chunk_count}", style="yellow")
-                        self.ui.display_message(f"Debug - Final response length: {len(full_response)}", style="yellow")
-                        self.ui.display_message(f"Debug - Has reasoning: {bool(reasoning_content)}", style="yellow")
-                    
-                    # 只有在成功获取响应后才更新历史
-                    if full_response:
-                        self.history.add_message("user", user_input)
-                        self.history.add_message("assistant", full_response, reasoning_content)
-                        self.ui.display_message("")
-                    else:
-                        raise Exception("No content in response chunks")
+                        response = self.model.get_response(test_messages)
+                        
+                        if Debug:
+                            self.debug_log("Got initial response stream")
+                        
+                        full_response = ""
+                        reasoning_content = ""
+                        chunk_count = 0
+                        debug_info = []  
+                        for chunk in response:
+                            chunk_count += 1
+                            if Debug:
+                                debug_info.append(f"Chunk {chunk_count}: {chunk.choices[0].delta}")
+                            
+                            if chunk.choices[0].delta.reasoning_content:
+                                content = chunk.choices[0].delta.reasoning_content
+                                reasoning_content += content
+                                if len(reasoning_content) == len(content):
+                                    self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
+                                self.ui.display_message(content, end="", flush=True)
+                            elif chunk.choices[0].delta.content:
+                                content = chunk.choices[0].delta.content
+                                full_response += content
+                                if not reasoning_content:  # 只在第一次输出时显示Chat:
+                                    self.ui.display_message("\nChat: ", style="bold blue", end="")
+                                self.ui.display_message(content, end="", flush=True)
+                        if Debug and debug_info:
+                            self.debug_log("\n".join([
+                                f"Total chunks processed: {chunk_count}",
+                                f"Final response length: {len(full_response)}",
+                                f"Has reasoning: {bool(reasoning_content)}",
+                                "\nChunk details:",
+                                *debug_info
+                            ]))
+                        
+                        if full_response:
+                            self.history.add_message("user", user_input)
+                            self.history.add_message("assistant", full_response, reasoning_content)
+                            self.ui.display_message("")
+                        else:
+                            raise Exception("No content in response chunks")
+                            
+                    except Exception as e:
+                        if Debug:
+                            import traceback
+                            self.debug_log(f"Full error traceback:\n{traceback.format_exc()}", style="red")
+                        raise Exception(f"Failed to process response: {str(e)}")
                         
                 except Exception as e:
-                    if Debug:
-                        import traceback
-                        self.ui.display_message(f"\nDebug - Full error traceback:", style="red")
-                        self.ui.display_message(traceback.format_exc(), style="red")
-                    raise Exception(f"Failed to process response: {str(e)}")
+                    self.ui.display_message(f"\nError: {str(e)}", style="red")
                     
-            except Exception as e:
-                self.ui.display_message(f"\nError: {str(e)}", style="red")
-                
     def _handle_interrupt(self, signum, frame):
         self.ui.display_message("\n\nSession terminated", style="yellow")
         exit(0)
