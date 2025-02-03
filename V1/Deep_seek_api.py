@@ -22,7 +22,7 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.styles import Style
 #################################################################
-Debug = True
+Debug = False
 #################################################################
 class ChatUI:
     def __init__(self):
@@ -459,8 +459,10 @@ def main():
     parser.add_argument("--api-key", help="DeepSeek API key (optional if already saved)")
     parser.add_argument("--model", default="deepseek-reasoner", help="Model to use")
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     args = parser.parse_args()
-    
+    global Debug
+    Debug = args.debug
     app = ChatApp(api_key=args.api_key, model=args.model, proxy=args.proxy)
     app.chat()
 
