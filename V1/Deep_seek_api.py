@@ -180,13 +180,13 @@ class ChatModel:
             self.client = OpenAI(
                 api_key=api_key,
                 base_url="https://api.deepseek.com",
-                http_client=http_client
+                http_client=http_client,
                 timeout=30.0
             )
         else:
             self.client = OpenAI(
                 api_key=api_key,
-                base_url="https://api.deepseek.com"
+                base_url="https://api.deepseek.com",
                 timeout=30.0
             )
         self.model = model
