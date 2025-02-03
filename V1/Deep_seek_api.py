@@ -37,17 +37,13 @@ class ChatUI:
 
     def _create_key_bindings(self):
         bindings = KeyBindings()
-        
         @bindings.add(Keys.Enter, eager=True)
         def _(event):
-            # 直接发送消息，不考虑换行
             event.current_buffer.validate_and_handle()
-    
         @bindings.add(Keys.ControlD)
         def _(event):
             if event.current_buffer.text.strip():
                 event.current_buffer.validate_and_handle()
-                
         @bindings.add(Keys.ControlV)
         def _(event):
             try:
@@ -59,7 +55,6 @@ class ChatUI:
                 self.display_message("pyperclip not installed.", style="red")
             except Exception as e:
                 self.display_message(f"Failed to paste: {str(e)}", style="red")
-                
         @bindings.add('c-z', eager=True)
         def _(event):
             if not self.undo_stack:
@@ -81,9 +76,7 @@ class ChatUI:
                 next_state = self.redo_stack.pop()
                 self.undo_stack.append(current_text)
                 event.current_buffer.text = next_state
-    
         return bindings
-    
     def display_prompt(self) -> str:
         try:
             self.undo_stack = []
@@ -96,25 +89,21 @@ class ChatUI:
             return text.strip()
         except (EOFError, KeyboardInterrupt):
             return 'q'
-
     def display_message(self, content: str, style: str = None, end="\n", flush=False):
         if flush:
             print(content, end=end, flush=True)
         else:
             self.console.print(content, style=style, end=end)
-            
     def display_reasoning(self, content: str):
         if content and content.strip():
             self.console.print("\n[Reasoning Chain]", style="bold yellow")
             self.console.print(Panel.fit(content, border_style="yellow"))
-        
     def highlight_code(self, code: str, language: str = 'python') -> str:
         try:
             lexer = get_lexer_by_name(language)
             return highlight(code, lexer, Terminal256Formatter())
         except:
             return code
-
     def display_welcome(self, model: str):
         welcome_text = f"""
             [cyan]DeepSeek Chat CLI[/cyan] (Model: [green]{model}[/green])
@@ -347,7 +336,6 @@ class ChatApp:
                     reasoning_complete = False
                     content_buffer = [] 
                     
-                    # 首先收集所有块
                     for chunk in response:
                         chunk_count += 1
                         if Debug:
