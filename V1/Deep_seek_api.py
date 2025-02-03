@@ -379,7 +379,7 @@ class ChatApp:
                         self.ui.display_message("")
                     else:
                         raise Exception("No content in response chunks")
-                except Exception as e
+                except Exception as e:
                     self.ui.display_message(f"\nError: {str(e)}", style="red")
                     
     def handle_interrupt(self, signum, frame):
