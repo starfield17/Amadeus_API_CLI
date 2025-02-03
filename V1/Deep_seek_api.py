@@ -353,7 +353,7 @@ class ChatApp:
                             full_response += content
                             content_buffer.append(content)
                     if content_buffer:
-                        self.ui.display_message("\nChat: ", style="bold blue", end="")
+                        self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
                         for content in content_buffer:
                             self.ui.display_message(content, end="", flush=True)
                     if Debug and debug_info:
