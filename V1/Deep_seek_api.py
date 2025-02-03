@@ -22,7 +22,7 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.styles import Style
 #################################################################
-Debug = False
+Debug = True
 #################################################################
 class ChatUI:
     def __init__(self):
