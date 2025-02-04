@@ -34,7 +34,10 @@ class ChatUI:
             auto_suggest=AutoSuggestFromHistory(),
             key_bindings=self._create_key_bindings()
         )
-
+        self.separator = "*-*-*-*-*-*" * 10 
+    def display_separator(self):
+        self.console.print(f"\n{self.separator}\n", style="bold yellow")
+        
     def _create_key_bindings(self):
         bindings = KeyBindings()
         @bindings.add(Keys.Enter, eager=True)
