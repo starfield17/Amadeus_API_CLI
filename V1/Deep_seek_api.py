@@ -360,6 +360,7 @@ class ChatApp:
                            self.ui.display_message(content, end="", flush=True)
                        elif chunk.choices[0].delta.content is not None:
                            if is_reasoning:
+                               self.ui.display_separator()  # <-- 在这里调用分界线函数
                                is_reasoning = False
                            content = chunk.choices[0].delta.content
                            full_response += content
