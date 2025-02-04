@@ -349,28 +349,38 @@ class ChatApp:
                     chunk_count = 0
                     debug_info = []
                     is_reasoning = False
+                    is_first_content = True  # 添加标志来跟踪是否是第一个内容块
                     
                     for chunk in response:
                         chunk_count += 1
                         if Debug:
                             debug_info.append(f"Chunk {chunk_count}: {chunk.choices[0].delta}")
                         
+                        delta = chunk.choices[0].delta
+                        
                         # 处理推理内容
-                        if chunk.choices[0].delta.reasoning_content is not None:
-                            content = chunk.choices[0].delta.reasoning_content
+                        if hasattr(delta, 'reasoning_content') and delta.reasoning_content is not None:
+                            content = delta.reasoning_content
                             if not is_reasoning:
                                 self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
                                 is_reasoning = True
                             reasoning_content += content
                             self.ui.display_message(content, end="", flush=True)
                         
-                        # 处理回答内容
-                        elif chunk.choices[0].delta.content is not None:
-                            content = chunk.choices[0].delta.content
+                        # 处理正常内容
+                        elif hasattr(delta, 'content') and delta.content is not None:
+                            content = delta.content
+                            # 如果是从推理切换到内容，添加分隔符
                             if is_reasoning:
                                 self.ui.display_separator()
-                                self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
                                 is_reasoning = False
+                                is_first_content = True
+                                
+                            # 只在第一个内容块之前显示 "Amadeus: "
+                            if is_first_content:
+                                self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
+                                is_first_content = False
+                                
                             full_response += content
                             self.ui.display_message(content, end="", flush=True)
                             
