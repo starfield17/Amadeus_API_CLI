@@ -96,8 +96,13 @@ class ChatUI:
             self.console.print(content, style=style, end=end)
     def display_reasoning(self, content: str):
         if content and content.strip():
-            self.console.print("\n[Reasoning Chain]", style="bold yellow")
-            self.console.print(Panel.fit(content, border_style="yellow"))
+            self.console.print(Panel.fit(
+                content,
+                title="[bold yellow]Reasoning Chain[/bold yellow]",
+                border_style="yellow",
+                padding=(1, 2),
+                title_align="left"
+            ))
     def highlight_code(self, code: str, language: str = 'python') -> str:
         try:
             lexer = get_lexer_by_name(language)
