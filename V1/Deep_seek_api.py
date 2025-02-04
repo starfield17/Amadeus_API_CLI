@@ -35,7 +35,7 @@ class ChatUI:
             auto_suggest=AutoSuggestFromHistory(),
             key_bindings=self._create_key_bindings()
         )
-        self.separator = "*-"
+        self.separator_pattern = "*-" 
     def display_separator(self):
         terminal_width = shutil.get_terminal_size().columns
         repeat_count = terminal_width // len(self.separator_pattern)
