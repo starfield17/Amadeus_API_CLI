@@ -349,17 +349,21 @@ class ChatApp:
                     chunk_count = 0
                     debug_info = []
                     is_reasoning = False
-                    is_first_content = True  # 添加标志来跟踪是否是第一个内容块
+                    is_first_content = True
                     
                     for chunk in response:
                         chunk_count += 1
-                        if Debug:
-                            debug_info.append(f"Chunk {chunk_count}: {chunk.choices[0].delta}")
-                        
                         delta = chunk.choices[0].delta
                         
-                        # 处理推理内容
-                        if hasattr(delta, 'reasoning_content') and delta.reasoning_content is not None:
+                        # 添加调试信息
+                        if Debug:
+                            if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                                debug_info.append(f"Chunk {chunk_count} (reasoning): {delta.reasoning_content}")
+                            if hasattr(delta, 'content') and delta.content:
+                                debug_info.append(f"Chunk {chunk_count} (content): {delta.content}")
+                        
+                        # 只有在还没收到content时才显示reasoning_content
+                        if hasattr(delta, 'reasoning_content') and delta.reasoning_content and not full_response:
                             content = delta.reasoning_content
                             if not is_reasoning:
                                 self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
@@ -367,16 +371,14 @@ class ChatApp:
                             reasoning_content += content
                             self.ui.display_message(content, end="", flush=True)
                         
-                        # 处理正常内容
-                        elif hasattr(delta, 'content') and delta.content is not None:
+                        # 处理实际内容
+                        elif hasattr(delta, 'content') and delta.content:
                             content = delta.content
-                            # 如果是从推理切换到内容，添加分隔符
                             if is_reasoning:
                                 self.ui.display_separator()
                                 is_reasoning = False
                                 is_first_content = True
                                 
-                            # 只在第一个内容块之前显示 "Amadeus: "
                             if is_first_content:
                                 self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
                                 is_first_content = False
@@ -388,8 +390,8 @@ class ChatApp:
                         self.debug_log("\n".join([
                             f"Total chunks processed: {chunk_count}",
                             f"Final response length: {len(full_response)}",
-                            f"Has reasoning: {bool(reasoning_content)}",
-                            "\nChunk details:",
+                            f"Reasoning length: {len(reasoning_content)}",
+                            "== Debug Info ==",
                             *debug_info
                         ]))
                         
