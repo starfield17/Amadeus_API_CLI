@@ -4,6 +4,7 @@ import json
 import signal
 import httpx
 import readline
+import shutil
 #################################################################
 from pathlib import Path
 from typing import List, Dict, Optional
@@ -34,9 +35,14 @@ class ChatUI:
             auto_suggest=AutoSuggestFromHistory(),
             key_bindings=self._create_key_bindings()
         )
-        self.separator = "*-*-*-*-*-*" * 10 
+        self.separator = "*-"
     def display_separator(self):
-        self.console.print(f"\n{self.separator}\n", style="bold yellow")
+        terminal_width = shutil.get_terminal_size().columns
+        repeat_count = terminal_width // len(self.separator_pattern)
+        separator = self.separator_pattern * repeat_count
+        if len(separator) < terminal_width:
+            separator += separator[0]
+        self.console.print(f"\n{separator}\n", style="bold yellow")
         
     def _create_key_bindings(self):
         bindings = KeyBindings()
