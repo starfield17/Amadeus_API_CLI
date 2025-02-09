@@ -279,7 +279,12 @@ class ChatModel:
         self.model = model
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
-        self.model_config = model_config or {}
+        
+        # Filter model config to only include API-supported parameters
+        self.model_config = {}
+        if model_config:
+            supported_params = {'max_tokens', 'temperature', 'top_p', 'presence_penalty', 'frequency_penalty'}
+            self.model_config = {k: v for k, v in model_config.items() if k in supported_params}
         
         # Configure API client
         if proxy and proxy.startswith('socks'):
@@ -301,7 +306,7 @@ class ChatModel:
         if self.debug:
             print(f"\nDebug - Initialized ChatModel with model: {model}")
             print(f"Debug - Using API URL: {base_url}/v{api_version}")
-            print(f"Debug - Model config: {model_config}")
+            print(f"Debug - Model config after filtering: {self.model_config}")
             
     def get_response(self, messages: List[Dict]) -> Optional[str]:
         attempts = 0
@@ -318,7 +323,7 @@ class ChatModel:
                     model=self.model,
                     messages=messages,
                     stream=True,
-                    **self.model_config  # Apply model-specific configurations
+                    **self.model_config  # Apply filtered model-specific configurations
                 )
                 
                 if not response:
@@ -346,7 +351,6 @@ class ChatModel:
     def debug_print(self, message: str):
         if self.debug:
             print(f"\nDebug - {message}")
-            
             
 class ChatHistory:
     def __init__(self):
