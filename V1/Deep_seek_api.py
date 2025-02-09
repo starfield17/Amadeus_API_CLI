@@ -146,42 +146,13 @@ class ChatUI:
         ))
         
 class ConfigManager:
+    
     def __init__(self):
         self.config_file = Path.home() / '.deepseek_config'
         self.default_config = {
-            # API Configuration
             "api_key": "",
-            "base_url": "https://api.deepseek.com/v1",
-            "timeout": 30.0,
-            
-            # Model Configuration
-            "model": "deepseek-reasoner",
-            "model_configs": {
-                "deepseek-reasoner": {
-                    "description": "Standard reasoning model",
-                    "max_tokens": 4096,
-                    "temperature": 0.7
-                },
-                "deepseek-chat": {
-                    "description": "General chat model",
-                    "max_tokens": 2048,
-                    "temperature": 0.9
-                }
-            },
-            
-            # Network Configuration
             "proxy": None,
-            "retry_attempts": 3,
-            "retry_delay": 1.0,
-            
-            # System Messages
-            "system_prompts": {
-                "default": "You are ChatGPT, a large language model trained by OpenAI.",
-                "coding": "You are a helpful coding assistant.",
-                "creative": "You are a creative writing assistant."
-            },
-            
-            # Debug Mode
+            "model": "deepseek-reasoner",
             "debug": False
         }
     
@@ -189,165 +160,92 @@ class ConfigManager:
         """Save configuration to hidden file in user's home directory"""
         try:
             config = self.load_config()
-            
-            # Update nested configurations
             for key, value in kwargs.items():
                 if value is not None:
-                    if isinstance(value, dict) and key in config and isinstance(config[key], dict):
-                        config[key].update(value)
-                    else:
-                        config[key] = value
-            
-            # Save configuration
+                    config[key] = value
+                
             self.config_file.write_text(json.dumps(config, indent=2))
             self.config_file.chmod(0o600)  # Set file permissions to owner read/write only
-            
         except Exception as e:
             raise Exception(f"Failed to save config: {str(e)}")
-    
     def load_config(self) -> dict:
         """Load configuration from hidden file"""
         try:
             if self.config_file.exists():
                 config = json.loads(self.config_file.read_text())
-                # Deep merge with default config
-                return self._deep_merge(self.default_config.copy(), config)
+                return {**self.default_config, **config}
             return self.default_config.copy()
         except Exception as e:
             raise Exception(f"Failed to load config: {str(e)}")
-    
-    def _deep_merge(self, default: dict, override: dict) -> dict:
-        """
-        Recursively merge two dictionaries, with override values taking precedence
-        """
-        result = default.copy()
-        for key, value in override.items():
-            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
-                result[key] = self._deep_merge(result[key], value)
-            else:
-                result[key] = value
-        return result
-    
-    def get_model_config(self, model_name: str) -> dict:
-        """Get specific model configuration"""
-        config = self.load_config()
-        return config.get('model_configs', {}).get(model_name, {})
-    
-    def update_model_config(self, model_name: str, **kwargs) -> None:
-        """Update specific model configuration"""
-        config = self.load_config()
-        if 'model_configs' not in config:
-            config['model_configs'] = {}
-        if model_name not in config['model_configs']:
-            config['model_configs'][model_name] = {}
-        config['model_configs'][model_name].update(kwargs)
-        self.save_config(model_configs=config['model_configs'])
-    
-    def get_system_prompt(self, prompt_type: str = "default") -> str:
-        """Get system prompt by type"""
-        config = self.load_config()
-        return config.get('system_prompts', {}).get(prompt_type, self.default_config['system_prompts']['default'])
-    
-    def add_system_prompt(self, prompt_type: str, prompt: str) -> None:
-        """Add new system prompt"""
-        config = self.load_config()
-        if 'system_prompts' not in config:
-            config['system_prompts'] = {}
-        config['system_prompts'][prompt_type] = prompt
-        self.save_config(system_prompts=config['system_prompts'])
             
 class ChatModel:
-    def __init__(self, 
-                 api_key: str,
-                 model: str = "deepseek-reasoner",
-                 proxy: str = None,
-                 base_url: str = "https://api.deepseek.com",
-                 api_version: str = "v1",
-                 timeout: float = 30.0,
-                 retry_attempts: int = 3,
-                 retry_delay: float = 1.0,
-                 model_config: dict = None):
-        
+    def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None):
         # ensure can access Debug Variables
         global Debug
         self.debug = Debug
         
-        # Store configurations
-        self.model = model
-        self.retry_attempts = retry_attempts
-        self.retry_delay = retry_delay
-        
-        # Filter model config to only include API-supported parameters
-        self.model_config = {}
-        if model_config:
-            supported_params = {'max_tokens', 'temperature', 'top_p', 'presence_penalty', 'frequency_penalty'}
-            self.model_config = {k: v for k, v in model_config.items() if k in supported_params}
-        
-        # Configure API client
         if proxy and proxy.startswith('socks'):
             transport = SyncProxyTransport.from_url(proxy)
             http_client = httpx.Client(transport=transport)
             self.client = OpenAI(
                 api_key=api_key,
-                base_url=base_url,
+                base_url="https://api.deepseek.com",
                 http_client=http_client,
-                timeout=timeout
+                timeout=30.0
             )
         else:
             self.client = OpenAI(
                 api_key=api_key,
-                base_url=f"{base_url}/v{api_version}",
-                timeout=timeout
+                base_url="https://api.deepseek.com",
+                timeout=30.0
             )
+        self.model = model
         
         if self.debug:
             print(f"\nDebug - Initialized ChatModel with model: {model}")
-            print(f"Debug - Using API URL: {base_url}/v{api_version}")
-            print(f"Debug - Model config after filtering: {self.model_config}")
             
-    def get_response(self, messages: List[Dict]) -> Optional[str]:
-        attempts = 0
-        while attempts < self.retry_attempts:
-            try:
-                if not messages or not isinstance(messages, list):
-                    raise ValueError("Invalid messages format")
-                
-                if self.debug:
-                    self.debug_print(f"Sending request with messages: {json.dumps(messages[-2:], indent=2)}")
-                
-                # Add model configuration to the request
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=messages,
-                    stream=True,
-                    **self.model_config  # Apply filtered model-specific configurations
-                )
-                
-                if not response:
-                    raise Exception("Empty response from API")
-                    
-                if self.debug:
-                    self.debug_print("Response received successfully")
-                    
-                return response
-                
-            except (httpx.TimeoutException, httpx.ConnectError) as e:
-                attempts += 1
-                if attempts >= self.retry_attempts:
-                    if isinstance(e, httpx.TimeoutException):
-                        raise Exception("Request timed out - API server not responding")
-                    else:
-                        raise Exception("Connection failed - Please check your internet connection")
-                time.sleep(self.retry_delay)
-                
-            except Exception as e:
-                if self.debug:
-                    self.debug_print(f"Exception occurred: {type(e).__name__}: {str(e)}")
-                raise Exception(f"API Error ({type(e).__name__}): {str(e)}")
-                
     def debug_print(self, message: str):
         if self.debug:
             print(f"\nDebug - {message}")
+
+    def get_response(self, messages: List[Dict]) -> Optional[str]:
+        try:
+
+            if not messages or not isinstance(messages, list):
+                raise ValueError("Invalid messages format")
+                
+
+            if self.debug:
+                self.debug_print(f"Sending request with messages: {json.dumps(messages[-2:], indent=2)}")
+                
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                stream=True
+            )
+            
+            if not response:
+                raise Exception("Empty response from API")
+                
+            if self.debug:
+                self.debug_print("Response received successfully")
+                
+            return response
+            
+        except httpx.TimeoutException:
+            if self.debug:
+                self.debug_print("Timeout Exception occurred")
+            raise Exception("Request timed out - API server not responding")
+            
+        except httpx.ConnectError:
+            if self.debug:
+                self.debug_print("Connection Error occurred")
+            raise Exception("Connection failed - Please check your internet connection")
+            
+        except Exception as e:
+            if self.debug:
+                self.debug_print(f"Exception occurred: {type(e).__name__}: {str(e)}")
+            raise Exception(f"API Error ({type(e).__name__}): {str(e)}")
             
 class ChatHistory:
     def __init__(self):
@@ -383,17 +281,7 @@ class ChatHistory:
 
 
 class ChatApp:
-    def __init__(self, 
-                 api_key: Optional[str] = None,
-                 model: str = "deepseek-reasoner",
-                 proxy: str = None,
-                 base_url: str = "https://api.deepseek.com",
-                 api_version: str = "v1",
-                 timeout: float = 30.0,
-                 retry_attempts: int = 3,
-                 retry_delay: float = 1.0,
-                 model_config: Optional[dict] = None):
-        
+    def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None):
         self.config_manager = ConfigManager()
         config = self.config_manager.load_config()
         
@@ -412,22 +300,11 @@ class ChatApp:
         else:
             self.config_manager.save_config(proxy=proxy)
         
-        # Initialize ChatModel with all configurations
-        self.model = ChatModel(
-            api_key=api_key,
-            model=model,
-            proxy=proxy,
-            base_url=base_url,
-            api_version=api_version,
-            timeout=timeout,
-            retry_attempts=retry_attempts,
-            retry_delay=retry_delay,
-            model_config=model_config or {}
-        )
-        
+        self.model = ChatModel(api_key, model, proxy)
         self.history = ChatHistory()
         self.ui = ChatUI()
         signal.signal(signal.SIGINT, self.handle_interrupt)
+
     def debug_log(self, message: str, style: str = "yellow"):
         if Debug:
             self.ui.display_message("\n")
@@ -591,54 +468,31 @@ class ChatApp:
 def main():
     config_manager = ConfigManager()
     config = config_manager.load_config()
-    
     parser = argparse.ArgumentParser(description="DeepSeek Chat CLI")
     parser.add_argument("--api-key", help="DeepSeek API key")
     parser.add_argument("--model", help="Model to use")
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
-    parser.add_argument("--base-url", help="API base URL")
-    parser.add_argument("--timeout", type=float, help="API timeout in seconds")
-    parser.add_argument("--retry-attempts", type=int, help="Number of retry attempts")
-    parser.add_argument("--retry-delay", type=float, help="Delay between retries in seconds")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument("--save-config", action="store_true", 
                        help="Save the current settings as default configuration")
-
     args = parser.parse_args()
-
-    # Update configuration with command line arguments
     final_config = {
         "api_key": args.api_key or config["api_key"],
         "model": args.model or config["model"],
         "proxy": args.proxy or config["proxy"],
-        "base_url": args.base_url or config["base_url"],
-        "timeout": args.timeout or config["timeout"],
-        "retry_attempts": args.retry_attempts or config["retry_attempts"],
-        "retry_delay": args.retry_delay or config["retry_delay"],
         "debug": args.debug or config["debug"]
     }
-
     if args.save_config:
         config_manager.save_config(**final_config)
         print("Configuration saved successfully!")
     
     global Debug
     Debug = final_config["debug"]
-    
-    # Get specific model configuration
-    model_config = config_manager.get_model_config(final_config["model"])
-    
     app = ChatApp(
         api_key=final_config["api_key"],
         model=final_config["model"],
-        proxy=final_config["proxy"],
-        base_url=final_config["base_url"],
-        timeout=final_config["timeout"],
-        retry_attempts=final_config["retry_attempts"],
-        retry_delay=final_config["retry_delay"],
-        model_config=model_config
+        proxy=final_config["proxy"]
     )
     app.chat()
-
 if __name__ == "__main__":
     main()
