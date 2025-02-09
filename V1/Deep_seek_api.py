@@ -154,6 +154,7 @@ class ConfigManager:
             "proxy": None,
             "model": "deepseek-reasoner",
             "debug": False
+            "base_url": "https://api.deepseek.com"
         }
     
     def save_config(self, **kwargs) -> None:
@@ -179,7 +180,7 @@ class ConfigManager:
             raise Exception(f"Failed to load config: {str(e)}")
             
 class ChatModel:
-    def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None):
+    def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None, base_url: str = "https://api.deepseek.com"):
         # ensure can access Debug Variables
         global Debug
         self.debug = Debug
@@ -189,20 +190,20 @@ class ChatModel:
             http_client = httpx.Client(transport=transport)
             self.client = OpenAI(
                 api_key=api_key,
-                base_url="https://api.deepseek.com",
+                base_url=base_url,
                 http_client=http_client,
                 timeout=30.0
             )
         else:
             self.client = OpenAI(
                 api_key=api_key,
-                base_url="https://api.deepseek.com",
+                base_url=base_url,
                 timeout=30.0
             )
         self.model = model
         
         if self.debug:
-            print(f"\nDebug - Initialized ChatModel with model: {model}")
+            print(f"\nDebug - Initialized ChatModel with model: {model} and base_url: {base_url}")
             
     def debug_print(self, message: str):
         if self.debug:
@@ -281,7 +282,7 @@ class ChatHistory:
 
 
 class ChatApp:
-    def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None):
+    def __init__(self, api_key: Optional[str] = None, model: str = "deepseek-reasoner", proxy: str = None, base_url: Optional[str] = None):
         self.config_manager = ConfigManager()
         config = self.config_manager.load_config()
         
@@ -294,12 +295,15 @@ class ChatApp:
                 console.print("API key saved successfully!", style="green")
         else:
             self.config_manager.save_config(api_key=api_key)
-            
         if proxy is None:
             proxy = config["proxy"]
         else:
             self.config_manager.save_config(proxy=proxy)
-        
+        if base_url is None:
+            base_url = config["base_url"]
+        else:
+            self.config_manager.save_config(base_url=base_url)
+
         self.model = ChatModel(api_key, model, proxy)
         self.history = ChatHistory()
         self.ui = ChatUI()
@@ -486,27 +490,34 @@ def main():
     parser.add_argument("--api-key", help="DeepSeek API key")
     parser.add_argument("--model", help="Model to use")
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
+    parser.add_argument("--base-url", help="API base URL (e.g., https://api.example.com)")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument("--save-config", action="store_true", 
                        help="Save the current settings as default configuration")
     args = parser.parse_args()
+    
     final_config = {
         "api_key": args.api_key or config["api_key"],
         "model": args.model or config["model"],
         "proxy": args.proxy or config["proxy"],
+        "base_url": args.base_url or config["base_url"],
         "debug": args.debug or config["debug"]
     }
+    
     if args.save_config:
         config_manager.save_config(**final_config)
         print("Configuration saved successfully!")
     
     global Debug
     Debug = final_config["debug"]
+    
     app = ChatApp(
         api_key=final_config["api_key"],
         model=final_config["model"],
-        proxy=final_config["proxy"]
+        proxy=final_config["proxy"],
+        base_url=final_config["base_url"]
     )
     app.chat()
+
 if __name__ == "__main__":
     main()
