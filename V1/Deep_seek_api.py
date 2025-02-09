@@ -354,15 +354,12 @@ class ChatApp:
                     for chunk in response:
                         chunk_count += 1
                         delta = chunk.choices[0].delta
-                        
-                        # 添加调试信息
                         if Debug:
                             if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
                                 debug_info.append(f"Chunk {chunk_count} (reasoning): {delta.reasoning_content}")
                             if hasattr(delta, 'content') and delta.content:
                                 debug_info.append(f"Chunk {chunk_count} (content): {delta.content}")
                         
-                        # 只有在还没收到content时才显示reasoning_content
                         if hasattr(delta, 'reasoning_content') and delta.reasoning_content and not full_response:
                             content = delta.reasoning_content
                             if not is_reasoning:
@@ -370,8 +367,6 @@ class ChatApp:
                                 is_reasoning = True
                             reasoning_content += content
                             self.ui.display_message(content, end="", flush=True)
-                        
-                        # 处理实际内容
                         elif hasattr(delta, 'content') and delta.content:
                             content = delta.content
                             if is_reasoning:
