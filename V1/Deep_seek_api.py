@@ -180,30 +180,42 @@ class ConfigManager:
             raise Exception(f"Failed to load config: {str(e)}")
             
 class ChatModel:
-    def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None, base_url: str = "https://api.deepseek.com"):
+    def __init__(self, api_key: str, model: str = "deepseek-reasoner", proxy: str = None, base_url: Optional[str] = None):
         # ensure can access Debug Variables
         global Debug
         self.debug = Debug
+        config_manager = ConfigManager()
+        config = config_manager.load_config()
+        self.base_url = base_url or config.get("base_url")
+        
+        if self.debug:
+            print(f"\nDebug - ChatModel config:")
+            print(f"base_url (input): {base_url}")
+            print(f"base_url (config): {config.get('base_url')}")
+            print(f"base_url (final): {self.base_url}")
         
         if proxy and proxy.startswith('socks'):
             transport = SyncProxyTransport.from_url(proxy)
             http_client = httpx.Client(transport=transport)
             self.client = OpenAI(
                 api_key=api_key,
-                base_url=base_url,
+                base_url=self.base_url,
                 http_client=http_client,
                 timeout=30.0
             )
         else:
             self.client = OpenAI(
                 api_key=api_key,
-                base_url=base_url,
+                base_url=self.base_url,
                 timeout=30.0
             )
         self.model = model
         
         if self.debug:
-            print(f"\nDebug - Initialized ChatModel with model: {model} and base_url: {base_url}")
+            print(f"\nDebug - Initialized ChatModel with:")
+            print(f"model: {model}")
+            print(f"base_url: {self.base_url}")
+            print(f"proxy: {proxy}")
             
     def debug_print(self, message: str):
         if self.debug:
@@ -304,7 +316,12 @@ class ChatApp:
         else:
             self.config_manager.save_config(base_url=base_url)
 
-        self.model = ChatModel(api_key, model, proxy)
+        self.model = ChatModel(
+            api_key=api_key,
+            model=model,
+            proxy=proxy,
+            base_url=base_url
+        )
         self.history = ChatHistory()
         self.ui = ChatUI()
         signal.signal(signal.SIGINT, self.handle_interrupt)
