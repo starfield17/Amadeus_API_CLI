@@ -633,7 +633,6 @@ def main():
         model=final_config["model"],
         proxy=final_config["proxy"],
         base_url=final_config["base_url"],
-        api_version=final_config["api_version"],
         timeout=final_config["timeout"],
         retry_attempts=final_config["retry_attempts"],
         retry_delay=final_config["retry_delay"],
