@@ -153,7 +153,7 @@ class ConfigManager:
             "api_key": "",
             "proxy": None,
             "model": "deepseek-reasoner",
-            "debug": False，
+            "debug": False,
             "base_url": "https://api.deepseek.com"
         }
     
