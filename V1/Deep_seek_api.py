@@ -151,8 +151,7 @@ class ConfigManager:
         self.default_config = {
             # API Configuration
             "api_key": "",
-            "base_url": "https://api.deepseek.com",
-            "api_version": "v1",
+            "base_url": "https://api.deepseek.com/v1",
             "timeout": 30.0,
             
             # Model Configuration
@@ -256,8 +255,6 @@ class ConfigManager:
             config['system_prompts'] = {}
         config['system_prompts'][prompt_type] = prompt
         self.save_config(system_prompts=config['system_prompts'])
-
-
             
 class ChatModel:
     def __init__(self, 
@@ -292,7 +289,7 @@ class ChatModel:
             http_client = httpx.Client(transport=transport)
             self.client = OpenAI(
                 api_key=api_key,
-                base_url=f"{base_url}/v{api_version}",
+                base_url=base_url,
                 http_client=http_client,
                 timeout=timeout
             )
