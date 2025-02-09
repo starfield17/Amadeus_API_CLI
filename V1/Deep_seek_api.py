@@ -597,7 +597,6 @@ def main():
     parser.add_argument("--model", help="Model to use")
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
     parser.add_argument("--base-url", help="API base URL")
-    parser.add_argument("--api-version", help="API version")
     parser.add_argument("--timeout", type=float, help="API timeout in seconds")
     parser.add_argument("--retry-attempts", type=int, help="Number of retry attempts")
     parser.add_argument("--retry-delay", type=float, help="Delay between retries in seconds")
@@ -613,7 +612,6 @@ def main():
         "model": args.model or config["model"],
         "proxy": args.proxy or config["proxy"],
         "base_url": args.base_url or config["base_url"],
-        "api_version": args.api_version or config["api_version"],
         "timeout": args.timeout or config["timeout"],
         "retry_attempts": args.retry_attempts or config["retry_attempts"],
         "retry_delay": args.retry_delay or config["retry_delay"],
