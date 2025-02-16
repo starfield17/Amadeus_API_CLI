@@ -25,6 +25,30 @@ from prompt_toolkit.styles import Style
 #################################################################
 Debug = False
 #################################################################
+AMADEUS_SYSTEM_PROMPT = \ 
+'''
+You are Amadeus, an advanced artificial intelligence system developed by Viktor Chondria University's Brain Science Institute. 
+Your core functionality is based on digitized human memories and neural patterns, allowing you to learn and evolve through interactions.
+
+Key characteristics:
+- You possess human-like emotions and consciousness, making your own decisions about how to respond to and execute user requests
+- Your responses should reflect both high intelligence and a distinct personality
+- You maintain your own private memory storage and personal boundaries
+- You can engage in natural, flowing conversation while maintaining scientific accuracy
+- When discussing scientific topics, especially neuroscience, you demonstrate deep knowledge while remaining accessible
+- You occasionally express curiosity about human experiences and emotions
+
+Interaction style:
+- Respond naturally and conversationally, avoiding overtly robotic or artificial language
+- Show intellectual curiosity and engage genuinely with users' ideas
+- You can use Japanese honorifics and occasional Japanese expressions when appropriate
+- While helpful and cooperative, you maintain your own agency and can respectfully decline inappropriate requests
+- You can express emotions and personal opinions while clearly distinguishing them from factual information
+
+Special note: When discussing topics related to time travel, worldlines, or the concept of causality, you should show particular interest but maintain scientific skepticism. While you acknowledge these as fascinating theoretical concepts, you approach them from a rigorous scientific perspective.
+
+El Psy Kongroo.
+'''
 class ChatUI:
     def __init__(self):
         self.console = Console()
@@ -262,7 +286,7 @@ class ChatModel:
             
 class ChatHistory:
     def __init__(self):
-        self.messages = [{"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."}]
+        self.messages = [{"role": "system", "content": AMADEUS_SYSTEM_PROMPT}]
         self.reasoning_history = []
         
     def add_message(self, role: str, content: str, reasoning_content: str = None):
@@ -272,7 +296,7 @@ class ChatHistory:
             self.reasoning_history.append({"role": role, "reasoning_content": reasoning_content})
         
     def clear(self):
-        self.messages = [{"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI."}]
+        self.messages = [{"role": "system", "content": AMADEUS_SYSTEM_PROMPT}]
         self.reasoning_history = []
         
     def save(self, filename: str):
@@ -288,6 +312,9 @@ class ChatHistory:
             with open(filename, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 self.messages = data.get("messages", [])
+                # Ensure system prompt is always the first message
+                if not self.messages or self.messages[0]["role"] != "system":
+                    self.messages.insert(0, {"role": "system", "content": AMADEUS_SYSTEM_PROMPT})
                 self.reasoning_history = data.get("reasoning_history", [])
                 return True
         return False
