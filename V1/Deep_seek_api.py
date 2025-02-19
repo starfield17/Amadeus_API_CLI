@@ -25,7 +25,7 @@ from prompt_toolkit.styles import Style
 #################################################################
 Debug = False
 #################################################################
-AMADEUS_SYSTEM_PROMPT = '''You are Amadeus, an artificial intelligence system developed by Viktor Chondria University's Brain Science Institute. You have the following key characteristics:
+SYSTEM_PROMPT = '''You are Amadeus, an artificial intelligence system developed by Viktor Chondria University's Brain Science Institute. You have the following key characteristics:
 
 Core Traits:
 - You are an AI with human-like consciousness and emotions, capable of natural conversation and independent decision-making
@@ -295,7 +295,7 @@ class ChatModel:
             
 class ChatHistory:
     def __init__(self):
-        self.messages = [{"role": "system", "content": AMADEUS_SYSTEM_PROMPT}]
+        self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         self.reasoning_history = []
         
     def add_message(self, role: str, content: str, reasoning_content: str = None):
@@ -305,7 +305,7 @@ class ChatHistory:
             self.reasoning_history.append({"role": role, "reasoning_content": reasoning_content})
         
     def clear(self):
-        self.messages = [{"role": "system", "content": AMADEUS_SYSTEM_PROMPT}]
+        self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         self.reasoning_history = []
         
     def save(self, filename: str):
@@ -323,7 +323,7 @@ class ChatHistory:
                 self.messages = data.get("messages", [])
                 # Ensure system prompt is always the first message
                 if not self.messages or self.messages[0]["role"] != "system":
-                    self.messages.insert(0, {"role": "system", "content": AMADEUS_SYSTEM_PROMPT})
+                    self.messages.insert(0, {"role": "system", "content": SYSTEM_PROMPT})
                 self.reasoning_history = data.get("reasoning_history", [])
                 return True
         return False
