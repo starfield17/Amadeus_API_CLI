@@ -460,51 +460,47 @@ class ChatApp:
                     debug_info = []
                     is_reasoning = False
                     is_first_content = True
-                    for chunk in response:
-                        chunk_count += 1
-                        delta = chunk.choices[0].delta
-                        
-                        if Debug:
-                            if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-                                debug_info.append(f"Chunk {chunk_count} (reasoning): {delta.reasoning_content}")
-                            if hasattr(delta, 'content') and delta.content:
-                                debug_info.append(f"Chunk {chunk_count} (content): {delta.content}")
-                        if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
-                            content = delta.reasoning_content
-                            if not is_reasoning:
-                                self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
-                                is_reasoning = True
-                            reasoning_content += content
-                            self.ui.display_message(content, end="", flush=True)
-                        if hasattr(delta, 'content') and delta.content:
-                            content = delta.content
-                            if is_reasoning:
-                                self.ui.display_separator()
-                                is_reasoning = False
-                                is_first_content = True
-                                
-                            if is_first_content:
-                                self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
-                                is_first_content = False
-                                
-                            full_response += content
-                            self.ui.display_message(content, end="", flush=True)
                     
-                    if Debug and debug_info:
-                        self.debug_log("\n".join([
-                            f"Total chunks processed: {chunk_count}",
-                            f"Final response length: {len(full_response)}",
-                            f"Reasoning length: {len(reasoning_content)}",
-                            "== Debug Info ==",
-                            *debug_info
-                        ]))
-                        
-                    if full_response:
-                        self.history.add_message("user", user_input)
-                        self.history.add_message("assistant", full_response, reasoning_content)
-                        self.ui.display_message("")
-                    else:
-                        raise Exception("No content in response chunks")
+                    try:
+                        for chunk in response:
+                            chunk_count += 1
+                            delta = chunk.choices[0].delta
+                            
+                            if Debug:
+                                if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                                    debug_info.append(f"Chunk {chunk_count} (reasoning): {delta.reasoning_content}")
+                                if hasattr(delta, 'content') and delta.content:
+                                    debug_info.append(f"Chunk {chunk_count} (content): {delta.content}")
+                                    
+                            if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
+                                content = delta.reasoning_content
+                                if not is_reasoning:
+                                    self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
+                                    is_reasoning = True
+                                reasoning_content += content
+                                self.ui.display_message(content, end="", flush=True)
+                                
+                            if hasattr(delta, 'content') and delta.content:
+                                content = delta.content
+                                if is_reasoning:
+                                    self.ui.display_separator()
+                                    is_reasoning = False
+                                    is_first_content = True
+                                    
+                                if is_first_content:
+                                    self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
+                                    is_first_content = False
+                                    
+                                full_response += content
+                                self.ui.display_message(content, end="", flush=True)
+                                
+                    except KeyboardInterrupt:
+                        self.ui.display_message("\n[Response interrupted by user]", style="yellow")
+                        if full_response:  # Save partial response if available
+                            self.history.add_message("user", user_input)
+                            self.history.add_message("assistant", full_response, reasoning_content)
+                        continue
+    
                     if Debug and debug_info:
                         self.debug_log("\n".join([
                             f"Total chunks processed: {chunk_count}",
