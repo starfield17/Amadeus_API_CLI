@@ -413,7 +413,6 @@ class ChatApp:
         )
         self.history = ChatHistory()
         self.ui = ChatUI()
-        signal.signal(signal.SIGINT, self.handle_interrupt)
 
     def debug_log(self, message: str, style: str = "yellow"):
         if Debug:
