@@ -12,7 +12,7 @@ if [ -f "$TARGET" ]; then
 else
     # 创建一个启动脚本来运行当前环境的 python
     echo "#!/bin/bash" | sudo tee "$TARGET" > /dev/null
-    echo "python3 $SCRIPT_DIR/Deep_seek_api.py" | sudo tee -a "$TARGET" > /dev/null
+    echo "python3 $SCRIPT_DIR/Deep_seek_api_rebuild.py" | sudo tee -a "$TARGET" > /dev/null
 
     # 给软链接和脚本添加执行权限
     sudo chmod +x "$TARGET"
