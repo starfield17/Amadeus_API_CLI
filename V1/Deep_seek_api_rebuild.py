@@ -294,7 +294,7 @@ class ChatUI:
             )
             return text.strip()
         except (EOFError, KeyboardInterrupt):
-            return 'q'
+            return ''
     
     def display_message(self, content: str, style: str = None, end="\n", flush=False) -> None:
         """Display a message to the user"""
