@@ -679,7 +679,7 @@ def main():
     chat_app = ChatStateMachine(config, ui)
     
     # Handle Ctrl+C
-    signal.signal(signal.SIGINT, lambda signum, frame: exit_handler(ui))
+    #signal.signal(signal.SIGINT, lambda signum, frame: exit_handler(ui))
     
     # Run the application
     chat_app.run()
