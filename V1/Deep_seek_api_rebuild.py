@@ -177,7 +177,7 @@ class ConfigManager:
 
 class ChatHistory:
     """Manages chat message history with state-focused design"""
-    def __init__(self):
+    def __init__(self, system_prompt=SYSTEM_PROMPT):
         self.messages = [{"role": "system", "content": system_prompt}]
         self.reasoning_history = []
     
@@ -212,8 +212,13 @@ class ChatHistory:
             with open(filename, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 loaded_messages = data.get("messages", [])
+                
+                # 检查加载的消息中是否有系统提示
                 has_system_prompt = loaded_messages and loaded_messages[0]["role"] == "system"
+                
+                # 如果没有系统提示，使用当前对象的系统提示
                 if not has_system_prompt:
+                    # 获取当前实例保存的系统提示（这是初始化时设置的）
                     current_system_prompt = self.messages[0]["content"] if self.messages else SYSTEM_PROMPT
                     loaded_messages.insert(0, {"role": "system", "content": current_system_prompt})
                 
