@@ -128,7 +128,9 @@ class Config:
     model: str = "deepseek-reasoner"
     debug: bool = False
     base_url: str = "https://api.deepseek.com"
-
+    temperature: float = 0.7
+    system_prompt: str = SYSTEM_PROMPT
+    
     @classmethod
     def from_dict(cls, data: dict) -> 'Config':
         """Create Config instance from dictionary"""
@@ -176,7 +178,7 @@ class ConfigManager:
 class ChatHistory:
     """Manages chat message history with state-focused design"""
     def __init__(self):
-        self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        self.messages = [{"role": "system", "content": system_prompt}]
         self.reasoning_history = []
     
     def add_message(self, role: str, content: str, reasoning_content: Optional[str] = None) -> None:
@@ -185,9 +187,11 @@ class ChatHistory:
         if reasoning_content:
             self.reasoning_history.append({"role": role, "reasoning_content": reasoning_content})
     
-    def clear(self) -> None:
+    def clear(self, system_prompt=None) -> None:
         """Clear history, keeping system prompt"""
-        self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        if system_prompt is None:
+            system_prompt = self.messages[0]["content"] if self.messages else SYSTEM_PROMPT
+        self.messages = [{"role": "system", "content": system_prompt}]
         self.reasoning_history = []
     
     def save(self, filename: str) -> None:
@@ -204,14 +208,21 @@ class ChatHistory:
         if not os.path.exists(filename):
             return False
         
-        with open(filename, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            self.messages = data.get("messages", [])
-            # Ensure system prompt is always the first message
-            if not self.messages or self.messages[0]["role"] != "system":
-                self.messages.insert(0, {"role": "system", "content": SYSTEM_PROMPT})
-            self.reasoning_history = data.get("reasoning_history", [])
-            return True
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                loaded_messages = data.get("messages", [])
+                has_system_prompt = loaded_messages and loaded_messages[0]["role"] == "system"
+                if not has_system_prompt:
+                    current_system_prompt = self.messages[0]["content"] if self.messages else SYSTEM_PROMPT
+                    loaded_messages.insert(0, {"role": "system", "content": current_system_prompt})
+                
+                self.messages = loaded_messages
+                self.reasoning_history = data.get("reasoning_history", [])
+                return True
+        except Exception as e:
+            print(f"Error loading chat history: {str(e)}")
+            return False
 
 class ChatUI:
     """User interface components managed declaratively"""
@@ -385,6 +396,7 @@ class ChatModel:
             response = self.client.chat.completions.create(
                 model=self.config.model,
                 messages=messages,
+                temperature=self.config.temperature,
                 stream=True
             )
             
@@ -413,7 +425,7 @@ class ChatStateMachine:
     def __init__(self, config: Config, ui: ChatUI):
         self.config = config
         self.ui = ui
-        self.history = ChatHistory()
+        self.history = ChatHistory(system_prompt=config.system_prompt)
         self.model = ChatModel(config)
         self.current_state = ChatState.IDLE
         
@@ -644,44 +656,48 @@ def main():
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
     parser.add_argument("--base-url", help="API base URL (e.g., https://api.example.com)")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("--temperature", type=float, help="Temperature parameter for generation (e.g., 0.7)")
+    parser.add_argument("--system-prompt", help="Custom system prompt")
+    parser.add_argument("--system-prompt-file", help="File containing custom system prompt")
     parser.add_argument("--save-config", action="store_true", 
                        help="Save the current settings as default configuration")
     args = parser.parse_args()
+    system_prompt = None
+    if args.system_prompt_file:
+        try:
+            with open(args.system_prompt_file, 'r', encoding='utf-8') as f:
+                system_prompt = f.read()
+        except Exception as e:
+            print(f"Error reading system prompt file: {str(e)}")
+    elif args.system_prompt:
+        system_prompt = args.system_prompt
+
+    if system_prompt:
+        args.system_prompt = system_prompt
     
-    # Set up configuration
     config_manager = ConfigManager()
     config = config_manager.load_config()
     
-    # Update config with command line arguments
     config_dict = config.to_dict()
     for key, value in vars(args).items():
         if value is not None and key in config_dict:
             config_dict[key] = value
     
-    # Create final config
     config = Config.from_dict(config_dict)
     
-    # Save config if requested
     if args.save_config:
         config_manager.save_config(**config_dict)
         print("Configuration saved successfully!")
     
-    # Check for API key
     if not config.api_key:
         console = Console()
         api_key = Prompt.ask("Please enter your DeepSeek API key")
         config_manager.save_config(api_key=api_key)
         config.api_key = api_key
         console.print("API key saved successfully!", style="green")
-    
-    # Create UI and chat application
+
     ui = ChatUI()
     chat_app = ChatStateMachine(config, ui)
-    
-    # Handle Ctrl+C
-    #signal.signal(signal.SIGINT, lambda signum, frame: exit_handler(ui))
-    
-    # Run the application
     chat_app.run()
 
 def exit_handler(ui: ChatUI):
