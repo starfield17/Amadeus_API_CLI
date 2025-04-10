@@ -125,10 +125,10 @@ class Config:
     """Declarative configuration class"""
     api_key: str = ""
     proxy: Optional[str] = None
-    model: str = "deepseek-reasoner"
+    model: str = "deepseek-chat"
     debug: bool = False
-    base_url: str = "https://api.deepseek.com"
-    temperature: float = 0.7
+    base_url: str = "https://api.deepseek.com/v1"
+    temperature: float = 1.0
     system_prompt: str = SYSTEM_PROMPT
     
     @classmethod
