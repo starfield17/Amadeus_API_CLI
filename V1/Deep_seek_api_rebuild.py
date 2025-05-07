@@ -531,12 +531,15 @@ class ChatStateMachine:
             reasoning_content = ""
             is_reasoning = False
             is_first_content = True
+            in_think_tag = False  # tracking ensure <think> tag
+            think_content = ""    # save <think> tag context
+            buffered_content = "" # buffering context possible have <think> tag
             
             try:
                 for chunk in response_stream:
                     delta = chunk.choices[0].delta
                     
-                    # Process reasoning content if present
+                    # excute reasoning_content property (DeepSeek orignial format)
                     if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
                         content = delta.reasoning_content
                         if not is_reasoning:
@@ -545,20 +548,106 @@ class ChatStateMachine:
                         reasoning_content += content
                         self.ui.display_message(content, end="", flush=True)
                     
-                    # Process main content
+                    # excute principal content and check <think> tag
                     if hasattr(delta, 'content') and delta.content:
                         content = delta.content
-                        if is_reasoning:
-                            self.ui.display_separator()
-                            is_reasoning = False
-                            is_first_content = True
                         
-                        if is_first_content:
-                            self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
-                            is_first_content = False
+                        # accumulated content in buffer for detect tag
+                        buffered_content += content
                         
-                        full_response += content
-                        self.ui.display_message(content, end="", flush=True)
+                        # chect <think> tag
+                        if not in_think_tag and "<think>" in buffered_content:
+                            # extract the content before tag to be normal responses
+                            tag_pos = buffered_content.find("<think>")
+                            pre_tag_content = buffered_content[:tag_pos]
+                            
+                            if pre_tag_content:
+                                if is_reasoning:
+                                    self.ui.display_separator()
+                                    is_reasoning = False
+                                    is_first_content = True
+                                
+                                if is_first_content and not full_response:
+                                    self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
+                                    is_first_content = False
+                                
+                                full_response += pre_tag_content
+                                self.ui.display_message(pre_tag_content, end="", flush=True)
+                            
+                            # collect reasoning context
+                            in_think_tag = True
+                            if not is_reasoning:
+                                self.ui.display_message("\n[Reasoning Chain]", style="bold yellow")
+                                is_reasoning = True
+                            
+                            # collect content after <think>  
+                            think_content = buffered_content[tag_pos + 7:]  #  '<think>' 's length is 7
+                            reasoning_content += think_content
+                            self.ui.display_message(think_content, end="", flush=True)
+                            buffered_content = think_content  # reset buffer，but retain content after <think> 
+                        
+                        # if content is in <think> tag，check </think> (end tag)
+                        elif in_think_tag and "</think>" in buffered_content:
+                            # 提取结束标签前的内容作为思考部分
+                            tag_pos = buffered_content.find("</think>")
+                            think_part = buffered_content[:tag_pos]
+                            
+                            if think_part:
+                                reasoning_content += think_part
+                                self.ui.display_message(think_part, end="", flush=True)
+                    
+                            in_think_tag = False
+                            is_reasoning = True
+                            
+                            post_tag_content = buffered_content[tag_pos + 8:]  # '</think>' 's length is 8
+                            
+                            if post_tag_content:
+                                if is_reasoning:
+                                    self.ui.display_separator()
+                                    is_reasoning = False
+                                
+                                if is_first_content and not full_response:
+                                    self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
+                                    is_first_content = False
+                                
+                                full_response += post_tag_content
+                                self.ui.display_message(post_tag_content, end="", flush=True)
+                            
+                            buffered_content = post_tag_content  # reset buffer too
+                        
+                        # add normal content
+                        elif not in_think_tag:
+                            # If not in a tag and the buffer does not contain suspicious tags, add to the normal response
+                            if "<think>" not in buffered_content:
+                                if is_reasoning:
+                                    self.ui.display_separator()
+                                    is_reasoning = False
+                                    is_first_content = True
+                                
+                                if is_first_content and not full_response:
+                                    self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
+                                    is_first_content = False
+                                
+                                full_response += content
+                                self.ui.display_message(content, end="", flush=True)
+                                buffered_content = ""
+                        
+                        # If inside the <think> tag, continue collecting thought content
+                        elif in_think_tag and "</think>" not in buffered_content:
+                            reasoning_content += content
+                            self.ui.display_message(content, end="", flush=True)
+                            buffered_content = "" 
+                
+                if buffered_content and not in_think_tag:
+                    if is_reasoning:
+                        self.ui.display_separator()
+                        is_reasoning = False
+                    
+                    if is_first_content and not full_response:
+                        self.ui.display_message("\nAmadeus: ", style="bold blue", end="")
+                    
+                    full_response += buffered_content
+                    self.ui.display_message(buffered_content, end="", flush=True)
                 
             except KeyboardInterrupt:
                 self.ui.display_message("\n[Response interrupted by user]", style="yellow")
