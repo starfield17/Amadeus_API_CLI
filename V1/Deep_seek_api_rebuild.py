@@ -48,7 +48,6 @@ class PromptManager:
         except Exception as e:
             print(f"Error loading prompt from {prompt_file}: {e}")
         
-        # 返回默认提示词
         self._cached_prompt = self._get_default_prompt()
         return self._cached_prompt
     
