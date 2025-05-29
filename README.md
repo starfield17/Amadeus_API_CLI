@@ -1,112 +1,173 @@
 # DeepSeek Chat CLI
 
-DeepSeek Chat CLIは、コマンドラインから直接DeepSeek APIと対話できる高機能なチャットインターフェースです。
+A fully‑featured command‑line client for interacting with the [DeepSeek](https://deepseek.com) Chat API, offering a rich TUI experience, attachment support, and configurable state‑machine architecture.
 
-## 特徴
+## Table of contents
+- [Features](#features)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Command‑line options](#command-line-options)
+- [In‑session slash commands](#in-session-slash-commands)
+- [Attachments](#attachments)
+- [Keyboard shortcuts](#keyboard-shortcuts)
+- [Configuration file](#configuration-file)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
 
-- インタラクティブなチャット機能
-- チャット履歴の保存と読み込み
-- コードのシンタックスハイライト
-- プロキシサポート
-- キーボードショートカット
-- 推論チェーンの表示
+## Features
 
-## 必要条件
+- **Interactive REPL** powered by *prompt‑toolkit* with undo/redo, multiline editing, and history search.  
+- **Rich output** via *rich* panels, tables, and colourised syntax highlighting.  
+- **Streaming responses** with separate “Reasoning Chain” and assistant output, including `<think>` tag handling.  
+- **File attachments** – images, text, and Office/PDF docs up to 20 MB each, automatically embedded in the API call.  
+- **Slash‑command palette** (`/clear`, `/save`, `/load`, `/attach`, `/detach`, `/files`, `/help`).  
+- **Keyboard shortcuts** for power‑users (`Ctrl+D` to send, `Ctrl+Z/Y` undo/redo, etc.).  
+- **Persistent config** saved to `~/.deepseek_config`; includes API key, proxy, model, temperature.  
+- **State‑machine core** for clean transitions between *IDLE → WAITING_FOR_USER → PROCESSING → RESPONDING → ERROR*.  
+- **Proxy & timeout support** with optional SOCKS transport.  
+- **Debug mode** that prints the last request/response chunks.
 
-- Python 3.7以上
-- pip（Pythonパッケージマネージャー）
-- DeepSeek APIキー
+## Architecture
 
-## インストール方法
-
-1. 必要なパッケージをインストールします：
-
-```bash
-pip install openai httpx httpx_socks rich prompt_toolkit pygments pyperclip
+```
+┌──────────────────┐       ┌─────────────────────────┐
+│  ChatUI          │──────▶│  ChatStateMachine       │
+└──────────────────┘       └─────────────────────────┘
+        ▲                            │
+        │                            ▼
+┌──────────────────┐       ┌─────────────────────────┐
+│  AttachmentMgr   │◀──────│  ChatModel (API client) │
+└──────────────────┘       └─────────────────────────┘
 ```
 
-2. ソースコードをダウンロードまたはクローンします：
+*DeepSeek Chat CLI* follows a **clean separation of concerns**:
+
+| Layer | Responsibility |
+|-------|----------------|
+| `ChatUI` | Terminal I/O and presentation |
+| `AttachmentManager` | Validation & encoding of user‑supplied files |
+| `ChatModel` | Networking – talking to DeepSeek REST endpoints |
+| `ChatStateMachine` | Orchestrates conversation flow & error handling |
+
+## Installation
 
 ```bash
-git clone https://github.com/CZYPRESSEN/DEEPSEEK_API_CLI.git
+# 1. Clone
+git clone https://github.com/starfield17/DEEPSEEK_API_CLI.git
 cd DEEPSEEK_API_CLI
+
+# 2. Create Python ≥3.8 environment (recommended)
+python -m venv .venv
+source .venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
 ```
 
-## 設定
+### Requirements
 
-1. DeepSeek APIキーを取得します（https://platform.deepseek.com）
+- Python **3.8+*
+- [openai](https://pypi.org/project/openai/)
+- rich, prompt‑toolkit, httpx, httpx‑socks, pygments, readline (Linux / macOS), and their transitive deps.
 
-2. 以下のいずれかの方法でAPIキーを設定できます：
-   - 初回起動時に対話的に入力
-   - コマンドライン引数で指定
-   - 設定ファイルに保存（`~/.deepseek_config`）
+## Quick start
 
-## 使用方法
+1. **Set your API key**  
+   ```bash
+   export DEEPSEEK_API_KEY="sk‑..."
+   ```
+   Or pass `--api-key` on the command line.
 
-### 基本的な起動
+2. **Run**  
+   ```bash
+   python deep_seek_api_rebuild.py
+   ```
 
-```bash
-python deepseek_api.py
+3. **Chat** – type a prompt and press **Ctrl + D** to send.
+
+### Example session
+
+```
+$ python deep_seek_api_rebuild.py
+DeepSeek Chat CLI (Model: deepseek-chat)
+>>> /attach diagram.png
+Added: diagram.png (image/png, 42.0KB)
+User: Explain this diagram please   Ctrl+D
+Amadeus: …
 ```
 
-### コマンドライン引数の使用
+## Command‑line options
 
-```bash
-python deepseek_api.py --api-key YOUR_API_KEY --model deepseek-reasoner --proxy socks5://127.0.0.1:7890
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--api-key` | DeepSeek secret key | – |
+| `--model` | Model name | `deepseek-chat` |
+| `--proxy` | SOCKS/HTTP proxy, e.g. `socks5://127.0.0.1:7890` | – |
+| `--base-url` | Override API endpoint | `https://api.deepseek.com/v1` |
+| `--temperature` | Sampling temperature | `0.5` |
+| `--debug` | Verbose request/response logging | `False` |
+| `--system-prompt` | Inline system prompt | see below |
+| `--system-prompt-file` | Path to prompt text file | – |
+| `--save-config` | Persist the above to `~/.deepseek_config` | – |
+
+## In‑session slash commands
+
+| Command | Purpose |
+|---------|---------|
+| `/clear` | Wipe conversation and attachments |
+| `/save [file]` | Save chat history to JSON |
+| `/load [file]` | Load chat history |
+| `/attach <path…>` | Attach one or more files (supports glob) |
+| `/detach [index]` | Remove attachment(s) – without index clears all |
+| `/files` | List current attachments |
+| `/help` | Show built‑in help |
+
+## Attachments
+
+- **Images**: jpg, jpeg, png, gif, webp, bmp  
+- **Text**: txt, md, json, csv, xml, yaml/yml  
+- **Documents**: pdf, doc(x), xls(x), ppt(x)  
+- Each file ≤ 20 MB  
+- Multiple attachments allowed; cleared automatically after the request.
+
+## Keyboard shortcuts
+
+| Keys | Action |
+|------|--------|
+| `Enter` | New line |
+| `Ctrl+D` | Send message |
+| `Ctrl+V` | Paste clipboard |
+| `Ctrl+Z / Ctrl+Y` | Undo / Redo |
+| `↑ / ↓` | Browse history |
+
+## Configuration file
+
+Running `--save-config` (or entering your key at first launch) creates **`~/.deepseek_config`** with 0600 permissions:
+
+```json
+{
+  "api_key": "sk-***",
+  "model": "deepseek-chat",
+  "proxy": null,
+  "temperature": 0.7
+}
 ```
 
-### 利用可能なコマンドライン引数
+Edit this file or rerun the script with new flags to update.
 
-- `--api-key`: DeepSeek APIキー
-- `--model`: 使用するモデル（デフォルト: deepseek-reasoner）
-- `--proxy`: プロキシサーバーアドレス（例: socks5://127.0.0.1:7890）
+## Troubleshooting
 
-## チャットコマンド
+| Symptom | Fix |
+|---------|-----|
+| `API key missing` | Set `DEEPSEEK_API_KEY` or pass `--api-key` |
+| `Request timed out` | Check network, proxy, or raise `--timeout` |
+| `Connection failed` | Verify proxy string (`socks5://host:port`) |
+| CLI freezes on Windows | Use **WSL** or ensure *readline* is installed |
 
-- `/clear`: チャット履歴をクリア
-- `/save [ファイル名]`: チャット履歴を保存
-- `/load [ファイル名]`: チャット履歴を読み込み
-- `/help`: ヘルプメッセージを表示
+Run with `--debug` for verbose logs.
 
-## キーボードショートカット
+## Contributing
 
-- `Enter`: メッセージを送信
-- `Ctrl+D`: メッセージを送信
-- `Ctrl+V`: クリップボードからテキストを貼り付け
-- `Ctrl+Z`: テキストの変更を元に戻す
-- `Ctrl+Y`: 元に戻した変更をやり直す
-- `↑/↓`: コマンド履歴をナビゲート
-
-## トラブルシューティング
-
-### よくある問題と解決方法
-
-1. APIキーエラー
-   - APIキーが正しく設定されているか確認
-   - DeepSeekダッシュボードでAPIキーの有効性を確認
-
-2. プロキシ接続エラー
-   - プロキシサーバーが稼働しているか確認
-   - プロキシのフォーマットが正しいか確認（例：socks5://127.0.0.1:7890）
-
-3. パッケージのインストールエラー
-   - Pythonのバージョンが3.7以上であることを確認
-   - pip を最新バージョンに更新：`pip install --upgrade pip`
-   - 必要に応じて仮想環境を使用
-
-### エラーメッセージの意味
-
-- "API Error": APIキーまたはネットワーク接続の問題
-- "Failed to save config": 設定ファイルの保存権限の問題
-- "File not found": 指定されたチャット履歴ファイルが存在しない
-
-## セキュリティ注意事項
-
-- APIキーは安全に保管し、共有しないでください
-- 設定ファイル（`.deepseek_config`）のパーミッションは自動的に600に設定されます
-- チャット履歴には機密情報が含まれる可能性があるため、適切に管理してください
-
-## サポートとコントリビューション
-
-バグ報告や機能リクエストは、GitHubのIssuesページでお願いします。
-プルリクエストも歓迎します。
+PRs and issues are welcome! Please run `ruff` and `pytest` before submitting.
