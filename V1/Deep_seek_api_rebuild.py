@@ -30,7 +30,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 # Original system prompt
 class PromptManager:
     
-    def __init__(self, filename="prompt_v1.txt"):
+    def __init__(self, filename="prompt_v2.txt"):
         self.filename = filename
         self.script_dir = Path(__file__).parent
         self._cached_prompt = None
@@ -283,7 +283,7 @@ class Config:
     model: str = "deepseek-chat"
     debug: bool = False
     base_url: str = "https://api.deepseek.com/v1"
-    temperature: float = 0.5
+    temperature: float = 0.4
     system_prompt: str = SYSTEM_PROMPT
     
     @classmethod
