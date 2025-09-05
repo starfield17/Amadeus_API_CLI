@@ -7,6 +7,5 @@ else
     echo "#!/bin/bash" | sudo tee "$TARGET" > /dev/null
     echo "python3 $SCRIPT_DIR/Deep_seek_api_rebuild.py" | sudo tee -a "$TARGET" > /dev/null
     sudo chmod +x "$TARGET"
-
     echo "Soft link created at $TARGET"
 fi
