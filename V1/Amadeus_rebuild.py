@@ -1074,7 +1074,7 @@ def main():
     
     if not config.api_key:
         console = Console()
-        api_key = Prompt.ask("Please enter your DeepSeek API key")
+        api_key = Prompt.ask("Please enter your API key")
         config_manager.save_config(api_key=api_key)
         config.api_key = api_key
         console.print("API key saved successfully!", style="green")
