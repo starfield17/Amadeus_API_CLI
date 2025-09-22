@@ -277,9 +277,9 @@ class Config:
     """Declarative configuration class"""
     api_key: str = ""
     proxy: Optional[str] = None
-    model: str = "deepseek-chat"
+    model: str = ""
     debug: bool = False
-    base_url: str = "https://api.deepseek.com/v1"
+    base_url: str = ""
     temperature: float = 0.4
     system_prompt: str = SYSTEM_PROMPT
     
@@ -1071,6 +1071,20 @@ def main():
     if args.save_config:
         config_manager.save_config(**config_dict)
         print("Configuration saved successfully!")
+        
+    if not config.base_url:
+        console = Console()
+        base_url = Prompt.ask("Please enter the API base URL (e.g., https://api.deepseek.com/v1)")
+        config_manager.save_config(base_url=base_url)
+        config.base_url = base_url
+        console.print("Base URL saved successfully!", style="green")
+
+    if not config.model:
+        console = Console()
+        model = Prompt.ask("Please enter the model name (e.g., deepseek-chat)")
+        config_manager.save_config(model=model)
+        config.model = model
+        console.print("Model saved successfully!", style="green")
     
     if not config.api_key:
         console = Console()
