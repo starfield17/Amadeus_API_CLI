@@ -515,7 +515,7 @@ class ChatUI:
     def display_welcome(self, model: str) -> None:
         """Display welcome message with attachment info"""
         welcome_text = f"""
-            [cyan]DeepSeek Chat CLI[/cyan] (Model: [green]{model}[/green])
+            [cyan]Amadeus_API_CLI[/cyan] (Model: [green]{model}[/green])
             
             [yellow]Enter 'q' or 'exit' or 'quit' to quit[/yellow]
             
@@ -756,8 +756,7 @@ class ChatStateMachine:
             try:
                 for chunk in response_stream:
                     delta = chunk.choices[0].delta
-                    
-                    # excute reasoning_content property (DeepSeek orignial format)
+
                     if hasattr(delta, 'reasoning_content') and delta.reasoning_content:
                         content = delta.reasoning_content
                         if not is_reasoning:
@@ -967,7 +966,7 @@ class ChatStateMachine:
     
     def _handle_help_command(self, args: str) -> None:
         """Handle help command with attachment info"""
-        help_text = """[bold cyan]DeepSeek Chat CLI Help[/bold cyan]
+        help_text = """[bold cyan]Amadeus_API_CLI Help[/bold cyan]
 
 [bold yellow]Available Commands:[/bold yellow]
 [green]/clear[/green]
@@ -1033,8 +1032,8 @@ class ChatStateMachine:
 def main():
     """Main entry point"""
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description="DeepSeek Chat CLI with Attachments")
-    parser.add_argument("--api-key", help="DeepSeek API key")
+    parser = argparse.ArgumentParser(description="Amadeus_API_CLI with Attachments")
+    parser.add_argument("--api-key", help="API key")
     parser.add_argument("--model", help="Model to use")
     parser.add_argument("--proxy", help="Proxy server address (e.g., socks5://127.0.0.1:7890)")
     parser.add_argument("--base-url", help="API base URL (e.g., https://api.example.com)")
