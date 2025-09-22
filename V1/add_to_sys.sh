@@ -1,6 +1,6 @@
 #!/bin/bash
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="/usr/local/bin/ds"
+TARGET="/usr/local/bin/amadeus"
 if [ -f "$TARGET" ]; then
     echo "The script already exists at $TARGET. No changes made."
 else
