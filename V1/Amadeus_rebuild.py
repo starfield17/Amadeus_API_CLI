@@ -295,7 +295,7 @@ class Config:
 class ConfigManager:
     """Manages configuration storage and retrieval (TOML version)"""
     def __init__(self):
-        self.config_file = Path.home() / '.deepseek_config.toml'
+        self.config_file = Path.home() / '.amadeus_config.toml'
         self.default_config = Config()
     
     def save_config(self, **kwargs) -> None:
