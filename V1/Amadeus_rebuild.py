@@ -276,7 +276,7 @@ class ChatState(Enum):
 class Config:
     """Declarative configuration class"""
     api_key: str = ""
-    proxy: Optional[str] = None
+    proxy: str = ""
     model: str = ""
     debug: bool = False
     base_url: str = ""
