@@ -1,0 +1,8 @@
+openai
+httpx
+httpx-socks
+rich
+pygments
+prompt-toolkit
+toml
+pyperclip
