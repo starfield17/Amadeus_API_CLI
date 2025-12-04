@@ -35,7 +35,6 @@ Output **only** the specific Markdown template below without conversational fill
 
 ### Template:
 
-```markdown
 ### 📘 Input
 {Sanitized Input Text}
 
