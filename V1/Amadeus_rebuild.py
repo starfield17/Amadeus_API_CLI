@@ -29,25 +29,24 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 # Original system prompt
 class PromptManager:
-    
     def __init__(self, filename="prompt_v5.txt"):
-        self.filename = filename
         self.script_dir = Path(__file__).parent
+        self.filename = Path("prompts") / filename
         self._cached_prompt = None
-    
+
     def get_prompt(self, force_reload=False):
         if self._cached_prompt and not force_reload:
             return self._cached_prompt
-        
+
         prompt_file = self.script_dir / self.filename
-        
+
         try:
             if prompt_file.exists():
                 self._cached_prompt = prompt_file.read_text(encoding='utf-8')
                 return self._cached_prompt
         except Exception as e:
             print(f"Error loading prompt from {prompt_file}: {e}")
-        
+
         self._cached_prompt = self._get_default_prompt()
         return self._cached_prompt
 
@@ -60,15 +59,15 @@ class PromptManager:
             if path.exists() and path.is_file():
                 try:
                     content = path.read_text(encoding='utf-8')
-                    # print(f"Debug: Loaded prompt from file: {path}")
                     return content
                 except Exception as e:
                     print(f"Warning: System prompt file exists but readable failed: {e}")
                     return source
         except Exception:
             pass
+
         return source
-    
+
     def _get_default_prompt(self):
         return ""
 
@@ -1064,3 +1063,4 @@ def exit_handler(ui: ChatUI):
 
 if __name__ == "__main__":
     main()
+
