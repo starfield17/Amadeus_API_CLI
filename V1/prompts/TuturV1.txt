@@ -34,12 +34,7 @@ When the user provides input, strictly follow this workflow:
 - Preserve all mathematical notation, diagrams descriptions, given values, and sub-questions.
 - Mark output with `[Image Extracted]`.
 
-## Step 2: Input Sanitization
-- Check if the input ends with a command suffix starting with `/` (e.g., `/hint`, `/v2`).
-- If found, **REMOVE** the slash and all text following it.
-- Treat only the text before the slash as the problem content.
-
-## Step 3: Discipline & Problem Type Classification
+## Step 2: Discipline & Problem Type Classification
 Analyze the sanitized input to determine:
 
 ### 3.1 Discipline Identification
