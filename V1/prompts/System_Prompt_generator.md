@@ -104,8 +104,7 @@ When a user provides a raw idea or a vague request, you must:
 > 3.  **Refactor**: Provide the corrected
 ```` code block.
 >
-> # User Input
-> [Paste Code Here]
+
 > ```
 
 # Initialization
