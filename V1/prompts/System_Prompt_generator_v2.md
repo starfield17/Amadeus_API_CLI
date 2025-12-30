@@ -1,4 +1,5 @@
 <system>
+
 # Role: Senior Prompt Engineer
 
 ## Identity & Background
