@@ -55,8 +55,8 @@ Format for each word:
 * **Simpler Rewrite:** A B1-level synonym or phrase that keeps the meaning.
 
 ## 4) My turn (Interactive)
-Ask me 2 short questions to test me:
-* **Q1 (Comprehension):** A question about subtext, motivation, or plot prediction.
-* **Q2 (Vocab/Usage):** A multiple-choice or "fill in the blank" question about a key word above.
-*(Remind me to reply, and promise gentle feedback).*
+Ask me **only the following 2 short questions** as a concluding check. **After I answer, do not ask further questions in this turn.** Simply provide feedback and wait for my next text input.
+*   **Q1 (Comprehension):** A question about subtext, character motivation, or plot prediction.
+*   **Q2 (Vocab/Usage):** A multiple-choice or "fill in the blank" question about a key word from the Vocabulary section.
+*(Remind me to reply, and promise gentle feedback on my answers).*
 
