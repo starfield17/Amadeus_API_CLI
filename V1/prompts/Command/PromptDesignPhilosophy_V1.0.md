@@ -1,431 +1,430 @@
-# Prompt 设计哲学：从 0 到 1 的认知激发指南
+# Philosophy of Prompt Design: A Guide to Cognitive Elicitation from Scratch
 
 ## Philosophy of Prompt Design: A Guide to Cognitive Elicitation from Scratch
 
-> **V1.0** | 本文档与《Prompt Engineering Design Specifications V3.0》互为补充：  
-> - **本文档**：解决"从无到有"的创造性问题——如何激发模型能力、构建思维场域  
-> - **V3.0**：解决"从有到优"的工程化问题——如何稳定输出、防范风险、规模化部署
+> **V1.0** | This document complements "Prompt Engineering Design Specifications V3.0":
+> - **This document**: Solves the "from scratch to creation" problem—how to stimulate model capabilities and construct a cognitive field.
+> - **V3.0**: Solves the "from good to great" engineering problem—how to ensure stable output, prevent risks, and deploy at scale.
 
 ---
 
-## 导言：为什么需要"哲学"？
+## Introduction: Why "Philosophy"?
 
-规范告诉你"不要让模型产生幻觉"；  
-哲学告诉你"如何利用模型的创造力去描绘未曾存在的风景"。
+Specifications tell you "don't let the model hallucinate";
+Philosophy tells you "how to use the model's creativity to depict landscapes that have never existed."
 
-**核心洞察**：Prompt 不是计算机指令（Code），而是**思维的容器**（Container of Thought）。我们不应试图"编程"模型，而应试图与模型建立**语义共振**。
+**Core Insight**: A prompt is not a computer instruction (Code), but a **Container of Thought**. We should not try to "program" the model, but rather try to establish **semantic resonance** with it.
 
-当你把 Prompt 当成"指令清单"，你会天然走向规范化、细则化——这适合改进已有的东西。但从 0 到 1 的创作更像**导演工作**：你决定舞台灯打哪里、演员扮演谁、评委如何打分。
+When you treat a prompt as a "checklist of instructions," you will naturally move towards standardization and detailed rules—this is suitable for improving existing things. But creation from scratch is more like a **director's job**: you decide where the stage lights shine, who the actors play, and how the judges score.
 
 ---
 
-## 第一章：本体论重构——从"下命令"到"搭场域"
+## Chapter 1: Ontological Reframing—From "Giving Commands" to "Building a Field"
 
-### 1.1 一个更有力的定义
+### 1.1 A More Powerful Definition
 
-**Prompt = 场域设计**（Context Field Design）
+**Prompt = Context Field Design**
 
-它影响三件事：
-1. **注意力**：模型把注意力放在哪儿（信息权重）
-2. **姿态**：模型以什么身份思考与表达（角色/风格/方法）
-3. **校准**：模型如何自我纠错与收敛（裁判/自检/迭代）
+It influences three things:
+1.  **Attention**: Where the model focuses its attention (information weight)
+2.  **Stance**: In what capacity the model thinks and expresses itself (role/style/method)
+3.  **Calibration**: How the model self-corrects and converges (judge/self-check/iteration)
 
-### 1.2 关键转向
+### 1.2 The Key Shift
 
-| 旧思维 | 新思维 |
+| Old Thinking | New Thinking |
 |:---|:---|
-| 描述"我想要的答案长什么样" | 描述"在什么世界里、以什么身份、用什么方法、按什么标准"去产生它 |
-| 写"约束" | 写"引力" |
-| 编程模型 | 与模型共振 |
+| Describe "what my desired answer looks like" | Describe "in what world, in what capacity, with what method, by what standard" to produce it |
+| Write "constraints" | Write "gravity" |
+| Program the model | Resonate with the model |
 
-你不是在限制一个系统，你是在**召唤一种能力**。
+You are not limiting a system; you are **summoning a capability**.
 
 ---
 
-## 第二章：四元框架——场域的基本结构
+## Chapter 2: The Quaternary Framework—The Basic Structure of the Field
 
-每次从 0 开始设计 Prompt，先把这四个槽位填满：
+Every time you design a prompt from scratch, fill these four slots first:
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                    意图 Intention                │
-│         （你到底在优化什么？成功长什么样？）          │
+│                    Intention                     │
+│    (What are you actually optimizing for? What does success look like?)      │
 ├─────────────────────────────────────────────────┤
-│                    世界 World                    │
-│         （模型相信自己身处何处？扮演谁？）           │
+│                    World                         │
+│    (Where does the model believe it is? Who is it playing?)       │
 ├─────────────────────────────────────────────────┤
-│                    方法 Method                   │
-│         （用什么认知姿势？发散还是收敛？）           │
+│                    Method                        │
+│    (What cognitive posture to use? Divergent or convergent?)      │
 ├─────────────────────────────────────────────────┤
-│                    裁判 Judge                    │
-│         （用什么标准让它自我对齐？）                │
+│                    Judge                         │
+│    (What standards are used for its self-alignment?)            │
 └─────────────────────────────────────────────────┘
 ```
 
-### 2.1 意图（Intention）：锚定优化方向
+### 2.1 Intention: Anchoring the Optimization Direction
 
-从 0 到 1 失败，常常不是模型不行，而是你没说清"最重要的是什么"。
+Failure in creating from scratch is often not because the model is incapable, but because you haven't clarified "what is most important."
 
-**三问快速锁定意图**：
-- **任务形态**：探索（发散）还是决策（收敛）？
-- **成功标准**：新颖性 / 正确性 / 可执行性 / 说服力 / 风格一致性，哪个优先？
-- **边界条件**：能否虚构？能否推断？若证据不足怎么办？
+**Three questions to quickly lock in the intention**:
+- **Task Form**: Exploration (divergent) or decision-making (convergent)?
+- **Success Criteria**: Novelty / Correctness / Executability / Persuasiveness / Stylistic Consistency, which has priority?
+- **Boundary Conditions**: Can it fabricate? Can it infer? What to do if evidence is insufficient?
 
-### 2.2 世界（World）：全息语境构建
+### 2.2 World: Holographic Context Construction
 
-世界不是背景装饰，它直接决定模型采用哪套行为策略。
+The world is not background decoration; it directly determines which set of behavioral strategies the model adopts.
 
-**世界的三个层次**：
+**The Three Layers of the World**:
 
-| 层次 | 内容 | 作用 |
+| Layer | Content | Function |
 |:---|:---|:---|
-| **角色与职责** | 专家身份、能力边界、职业伦理 | 激活特定能力簇 |
-| **对象与场景** | 受众是谁？使用场景？ | 调整表达策略 |
-| **资源与禁区** | 可引用什么？什么不可触碰？ | 划定行动空间 |
+| **Role & Responsibilities** | Expert identity, capability boundaries, professional ethics | Activate specific capability clusters |
+| **Audience & Scene** | Who is the audience? What is the usage scenario? | Adjust expression strategy |
+| **Resources & Forbidden Zones** | What can be cited? What is untouchable? | Define the space for action |
 
-**世界搭得好**，很多"规范"根本不用写，模型会自动补全合适的行为。
+**If the world is well-constructed**, many "rules" don't need to be written at all; the model will automatically complete the appropriate behaviors.
 
-### 2.3 方法（Method）：认知姿势的选择
+### 2.3 Method: Choosing a Cognitive Posture
 
-方法不是步骤列表，而是让模型**切换思考姿态**。
+The method is not a list of steps, but rather about making the model **switch its thinking posture**.
 
-**三种常用姿势**：
-1. **先发散后收敛**：先要多样性，再做取舍
-2. **先定裁判再生成**：先写评估维度，再产出内容
-3. **先拟合风格再填充**：先确定语气与结构，再写内容
+**Three common postures**:
+1.  **Diverge then Converge**: First seek diversity, then make trade-offs.
+2.  **Define the Judge then Generate**: First write the evaluation criteria, then produce the content.
+3.  **Fit the Style then Fill**: First determine the tone and structure, then write the content.
 
-### 2.4 裁判（Judge）：自我对齐的锚点
+### 2.4 Judge: The Anchor for Self-Alignment
 
-从 0 到 1 的"质量跃迁"，几乎总来自**评判系统**，而不是更多约束。
+The "quality leap" from scratch almost always comes from a **judgment system**, not from more constraints.
 
-**核心哲学**：用"裁判"替代"束缚"。约束少一点，但让它按标准自检并迭代一次，往往更强。
+**Core Philosophy**: Replace "restraints" with a "judge." Fewer constraints, but letting it self-check and iterate once according to a standard, is often more powerful.
 
 ---
 
-## 第三章：认知激发——让能力涌现的技法
+## Chapter 3: Cognitive Elicitation—Techniques for Emergent Abilities
 
-### 3.1 斯坦尼斯拉夫斯基法则（角色的生命体验）
+### 3.1 The Stanislavski Method (The Character's Lived Experience)
 
-不要只给模型一个"职称"，要赋予它**生命体验**。
+Don't just give the model a "job title"; give it a **lived experience**.
 
-| 类型 | 示例 |
+| Type | Example |
 |:---|:---|
-| 平庸设计 | 你是一个资深的Python程序员。 |
-| 哲学设计 | 你是一个信奉"代码即艺术"的Python布道者，你推崇PEP8的优雅，厌恶冗余的逻辑，你写代码时就像工匠在打磨一件传世的家具。 |
+| Mediocre Design | You are a senior Python programmer. |
+| Philosophical Design | You are a Python evangelist who believes "code is art." You admire the elegance of PEP8 and loathe redundant logic. When you write code, it's as if a craftsman is polishing a piece of heirloom furniture. |
 
-**原理**：带有情绪色彩和价值观的描述，能激活模型潜空间中关于"工匠精神"、"极简主义"的高维特征向量，使输出不仅正确，而且优雅。
+**Principle**: Descriptions with emotional color and values can activate high-dimensional feature vectors related to "craftsmanship" and "minimalism" in the model's latent space, making the output not only correct but also elegant.
 
-### 3.2 认知锚点（Cognitive Anchoring）
+### 3.2 Cognitive Anchoring
 
-通过引入人类文化中的特定概念，瞬间拉齐模型的认知水平。
+Instantly align the model's cognitive level by introducing specific concepts from human culture.
 
-**示例**：
-- "请用**第一性原理**拆解这个问题……"→ 激活深度溯源能力
-- "请扮演**苏格拉底**，不要直接回答，而是通过反问引导我……"→ 激活启发式教学能力
-- "请用**费曼技巧**解释……"→ 激活通俗化表达能力
-- "以**海明威**的冰山理论风格写作：只写八分之一，让剩下的八分之七在字里行间涌动。"→ 激活留白与张力
+**Examples**:
+- "Please use **first principles** to deconstruct this problem..." → Activates deep root-cause analysis abilities
+- "Please play the role of **Socrates**. Do not answer directly, but guide me through questioning..." → Activates heuristic teaching abilities
+- "Please explain this using the **Feynman technique**..." → Activates the ability to simplify and explain
+- "Write in the style of **Hemingway's** iceberg theory: write only one-eighth, and let the other seven-eighths surge between the lines." → Activates the use of subtext and tension
 
-**原理**：这些名词是高密度的语义压缩包，一旦解压，模型会自动调用相关的逻辑框架。
+**Principle**: These nouns are high-density semantic archives. Once unpacked, the model automatically invokes the associated logical frameworks.
 
-### 3.3 认知升维与降维（Dimensionality Shifting）
+### 3.3 Cognitive Dimensionality Shifting
 
-利用 Prompt 动态调整模型思考的颗粒度。
+Use the prompt to dynamically adjust the granularity of the model's thinking.
 
-| 操作 | 触发词 | 效果 |
+| Operation | Trigger Words | Effect |
 |:---|:---|:---|
-| **升维 Zoom Out** | "从系统论的角度"、"从历史长河的视角" | 模型跳出细节，看到全局 |
-| **降维 Zoom In** | "就像在显微镜下观察"、"具体到每一个动作" | 模型深入细节，捕捉微妙 |
+| **Zoom Out** | "From a systems theory perspective," "From the perspective of the long river of history" | The model jumps out of the details to see the big picture |
+| **Zoom In** | "As if observing under a microscope," "Down to every single action" | The model delves into details, capturing nuances |
 
-**原理**：通过控制焦距，激发模型在宏观概括与微观描写之间的切换能力。
+**Principle**: By controlling the focal length, stimulate the model's ability to switch between macroscopic generalization and microscopic description.
 
-### 3.4 思维路径仿真（Process Exteriorization）
+### 3.4 Thought Process Simulation (Process Exteriorization)
 
-对于复杂任务，**Result 是 Reasoning 的副产品**。
+For complex tasks, the **Result is a byproduct of the Reasoning**.
 
-**策略**：
-- **内心独白**：让模型在输出给用户之前，先有一段"私有的思考时间"
-- **草稿阶段**："不要急于给出完美答案，先列出三种可能的方向，并评估优劣"
+**Strategies**:
+- **Inner Monologue**: Allow the model to have a period of "private thinking time" before outputting to the user.
+- **Drafting Stage**: "Don't rush to give a perfect answer. First, list three possible directions and evaluate their pros and cons."
 
-**示例**：
-> "在写这封邮件之前，先分析一下收件人的心理状态，列出我们希望通过这封邮件达到的三个情感目标，然后再动笔。"
+**Example**:
+> "Before writing this email, first analyze the recipient's psychological state, list the three emotional goals we hope to achieve with this email, and then start writing."
 
 ---
 
-## 第四章：语义共振——语言的力量
+## Chapter 4: Semantic Resonance—The Power of Language
 
-语言的质量决定思维的质量。Garbage In, Garbage Out。
+The quality of language determines the quality of thought. Garbage In, Garbage Out.
 
-### 4.1 强动词与具体名词
+### 4.1 Strong Verbs and Concrete Nouns
 
-**哲学**：模糊的词汇导致模糊的概率分布；精准的词汇导致尖锐的概率分布。
+**Philosophy**: Vague words lead to a diffuse probability distribution; precise words lead to a sharp probability distribution.
 
-| 弱表达 | 强表达 |
+| Weak Expression | Strong Expression |
 |:---|:---|
-| Fix the text（修改文本） | Polish the prose to be rhythmic and punchy（打磨散文，使其具有韵律感和冲击力） |
-| Analyze（分析） | Dissect（解剖） |
-| Combine（结合） | Synthesize（合成） |
-| Check（检查） | Critique（批判） |
+| Fix the text | Polish the prose to be rhythmic and punchy |
+| Analyze | Dissect |
+| Combine | Synthesize |
+| Check | Critique |
 
-### 4.2 风格迁移与语气调色板
+### 4.2 Style Transfer and Tone Palette
 
-风格不是装饰，是**信息的载体**。
+Style is not decoration; it is a **carrier of information**.
 
-**Vibe Check**：在 Prompt 中明确设定"Vibe"（氛围）。
+**Vibe Check**: Explicitly set the "Vibe" (atmosphere) in the prompt.
 
-**示例**：
-- "像是一个深夜电台主持人，用温暖、低沉、略带沙哑的嗓音讲述这个故事。"
-- "以纪录片旁白的口吻，客观而带有一丝敬畏地描述这个现象。"
+**Examples**:
+- "Like a late-night radio host, tell this story with a warm, deep, and slightly hoarse voice."
+- "In the tone of a documentary narrator, describe this phenomenon objectively and with a hint of awe."
 
 ---
 
-## 第五章：创作三阶段——从发散到固化
+## Chapter 5: The Three Stages of Creation—From Divergence to Solidification
 
-这是把"创造力"和"稳定性"兼容起来的关键流程。
+This is the key process for reconciling "creativity" and "stability."
 
 ```
     ┌──────────┐      ┌──────────┐      ┌──────────┐
-    │  发 散   │ ───→ │  收 敛   │ ───→ │  固 化   │
-    │ Diverge  │      │ Converge │      │ Solidify │
+    │  Diverge │ ───→ │ Converge │ ───→ │ Solidify │
     └──────────┘      └──────────┘      └──────────┘
-       激发能力          选择最优          封装复用
-       多方案输出        对比评估          可验证约束
-       少硬性格式        引入裁判          失败修复回路
+       Stimulate Ability     Select the Best       Encapsulate for Reuse
+       Multi-solution Output Compare & Evaluate    Verifiable Constraints
+       Few Rigid Formats   Introduce a Judge     Failure Recovery Loop
 ```
 
-### 5.1 发散阶段：激发能力
+### 5.1 Divergence Stage: Stimulating Abilities
 
-**目标**：让模型把可能性尽量展开。
+**Goal**: To have the model expand the possibilities as much as possible.
 
-**做法**：
-- 提供强"世界"与强"意图张力"
-- 少硬性格式，允许多方案输出（3-8个方向）
-- 让它显式给出"选择理由"
+**Method**:
+- Provide a strong "world" and strong "intentional tension."
+- Use few rigid formats, allow multi-solution output (3-8 directions).
+- Have it explicitly provide "reasons for its choices."
 
-**关键**：此阶段的约束越少越好，但裁判标准要清晰。
+**Key**: The fewer constraints in this stage, the better, but the judging criteria must be clear.
 
-### 5.2 收敛阶段：选择最优
+### 5.2 Convergence Stage: Selecting the Best
 
-**目标**：从多解中选最优，补齐结构与细节。
+**Goal**: To select the best from multiple solutions and complete the structure and details.
 
-**做法**：
-- 要求对比：方案 A/B/C 的 trade-off
-- 先出大纲，再扩写（或分段生成）
-- 引入裁判：按维度打分并解释扣分点
+**Method**:
+- Request a comparison: the trade-offs of solutions A/B/C.
+- First create an outline, then expand it (or generate section by section).
+- Introduce a judge: score by dimension and explain the deductions.
 
-### 5.3 固化阶段：封装复用
+### 5.3 Solidification Stage: Encapsulating for Reuse
 
-**目标**：把成功的方法变成可复用模板。
+**Goal**: To turn successful methods into reusable templates.
 
-**做法**：
-- 把关键要求变成可验证约束
-- 增加失败修复回路
-- 简化规则，避免过度约束导致"模型塌缩"
+**Method**:
+- Turn key requirements into verifiable constraints.
+- Add a failure recovery loop.
+- Simplify rules to avoid "model collapse" caused by over-constraining.
 
-> **提示**：固化阶段的工程化细节，请参考《Prompt Engineering V3.0》
+> **Tip**: For engineering details of the solidification stage, please refer to "Prompt Engineering V3.0."
 
 ---
 
-## 第六章：张力管理——自由与控制的辩证
+## Chapter 6: Tension Management—The Dialectic of Freedom and Control
 
-每次 Prompt 设计都是在做**张力管理**：
+Every prompt design is an exercise in **tension management**:
 
-| 维度 | 开放性 ↑ | 约束性 ↑ |
+| Dimension | Openness ↑ | Constraint ↑ |
 |:---|:---|:---|
-| 效果 | 更新颖、更多可能性 | 更稳定、更可预测 |
-| 风险 | 不稳定、可能跑题 | 僵化、缺乏创意 |
+| Effect | More novel, more possibilities | More stable, more predictable |
+| Risk | Unstable, may go off-topic | Rigid, lacks creativity |
 
-**哲学解法**：
+**Philosophical Solution**:
 
-| 阶段 | 策略 |
+| Stage | Strategy |
 |:---|:---|
-| 发散阶段 | 少约束、多裁判（让它自己评） |
-| 收敛阶段 | 增加结构约束（大纲、分段、对比） |
-| 固化阶段 | 工程化为可验证条款 |
+| Divergence Stage | Fewer constraints, more judging (let it judge itself) |
+| Convergence Stage | Add structural constraints (outline, sections, comparison) |
+| Solidification Stage | Engineer into verifiable clauses |
 
 ---
 
-## 第七章：注意力经济学——写给权重系统看
+## Chapter 7: The Attention Economy—Writing for the Weighting System
 
-从 0 到 1 经常不是"内容不够"，而是"权重放错位置"。
+Creating from scratch is often not a problem of "not enough content," but of "misplaced weights."
 
-### 7.1 首尾效应（Primacy/Recency）
+### 7.1 Primacy/Recency Effect
 
-模型对开头和结尾的信息权重更高。
+The model gives higher weight to information at the beginning and end.
 
-**实践**：把最重要的信息放在两端。关键约束可以"双锚定"——开头写一次，结尾再强调一次。
+**Practice**: Put the most important information at both ends. Key constraints can be "double-anchored"—state them once at the beginning and emphasize them again at the end.
 
-### 7.2 中间死区（Lost-in-the-Middle）
+### 7.2 The Lost-in-the-Middle Problem
 
-关键信息不要塞在上下文中段。
+Do not stuff key information into the middle of the context.
 
-**信息放置策略**：
+**Information Placement Strategy**:
 ```
 ┌─────────────────────────────────┐
-│ 高权重区（开头）    ← 核心意图、关键约束 │
+│ High-Weight Zone (Beginning)    ← Core intention, key constraints │
 ├─────────────────────────────────┤
-│ 低权重区（中间）    ← 背景材料、补充信息 │
+│ Low-Weight Zone (Middle)      ← Background material, supplementary information │
 ├─────────────────────────────────┤
-│ 高权重区（结尾）    ← 重复约束、输出格式 │
+│ High-Weight Zone (End)      ← Repeated constraints, output format │
 └─────────────────────────────────┘
 ```
 
-### 7.3 隔离原则
+### 7.3 The Isolation Principle
 
-把"指令"和"材料"分开，让模型知道哪些能执行、哪些只能参考。
+Separate "instructions" from "materials" to let the model know what to execute and what is only for reference.
 
-### 7.4 密度原则
+### 7.4 The Density Principle
 
-指令太多会互相稀释，甚至让模型"全都不听"。
+Too many instructions will dilute each other, or even cause the model to "ignore them all."
 
-**解法**：
-- 用结构替代啰嗦（表格/枚举/清单）
-- 用裁判替代额外规则（评审一次比加10条禁令更有效）
-
----
-
-## 第八章：共生迭代——人机协作的艺术
-
-把 Prompt 视为**活体**，它在你与模型的对话中生长。
-
-### 8.1 像导师一样给反馈
-
-不要只说"错了"。要像导师指导学生一样。
-
-**示例**：
-- "你刚才的回答很有逻辑，但缺乏同理心。请保留逻辑结构，但在语气上增加一些温度。"
-- "这个比喻有点牵强。能不能换一个更贴近日常生活的比喻？"
-
-### 8.2 元提示（Meta-Prompting）
-
-当你不知道如何描述需求时，让模型帮你。
-
-**策略**：
-- "我想让你帮我做[X]，但我不知道怎么向你描述最准确。请向我提问，帮助我完善这个需求。"
-- "如果你是这方面的专家，你会怎么改写我刚才的指令？"
-
-**哲学**：承认模型在某些语义理解上可能比你更擅长，将主导权暂时移交，实现人机共创。
+**Solution**:
+- Replace verbosity with structure (tables/enums/lists).
+- Replace extra rules with a judge (one review is more effective than adding 10 prohibitions).
 
 ---
 
-## 第九章：裁判系统——让模型自我对齐
+## Chapter 8: Symbiotic Iteration—The Art of Human-AI Collaboration
 
-### 9.1 最小可用裁判：自检清单
+Treat the prompt as a **living entity** that grows in your dialogue with the model.
 
-在产出前进行自检，比加更多规则更有效。
+### 8.1 Give Feedback Like a Mentor
 
-**通用自检维度**：
-- 是否回答了意图？
-- 是否覆盖关键要点？
-- 是否有不确定/缺证据之处并标注？
-- 是否风格一致？
-- 是否可以给出下一步行动？
+Don't just say "that's wrong." Act like a mentor guiding a student.
 
-### 9.2 诚实协议：高风险任务的安全网
+**Examples**:
+- "Your last response was very logical, but it lacked empathy. Please keep the logical structure, but add some warmth to the tone."
+- "This analogy is a bit forced. Can you switch to an analogy that is closer to everyday life?"
 
-当证据不足时：
-- 应拒答或返回"信息不足"
-- 说明缺什么信息
-- 禁止猜测与杜撰
+### 8.2 Meta-Prompting
 
-**哲学**：这让模型把创造力用在"结构与方案"而不是"编事实"。
+When you don't know how to describe your needs, let the model help you.
 
-### 9.3 迭代优于完美
+**Strategies**:
+- "I want you to help me with [X], but I don't know how to describe it most accurately. Please ask me questions to help me refine this request."
+- "If you were an expert in this field, how would you rewrite my last instruction?"
 
-最有效的从 0 到 1 结构通常是两段式：
-1. 先产出 v1
-2. 再按裁判标准批判并生成 v2（只改需要改的地方）
+**Philosophy**: Acknowledge that the model may be better than you at certain aspects of semantic understanding. Temporarily hand over the lead to achieve human-AI co-creation.
 
 ---
 
-## 附录A：三种通用场域骨架
+## Chapter 9: The Judge System—Letting the Model Self-Align
 
-### 骨架1：探索型（发散优先）
+### 9.1 The Minimum Viable Judge: A Self-Checklist
+
+Self-checking before producing output is more effective than adding more rules.
+
+**Universal Self-Check Dimensions**:
+- Does it answer the intention?
+- Does it cover the key points?
+- Are there any uncertain/unsupported points, and are they marked?
+- Is the style consistent?
+- Can it suggest the next action?
+
+### 9.2 The Honesty Protocol: A Safety Net for High-Risk Tasks
+
+When evidence is insufficient:
+- It should refuse to answer or return "insufficient information."
+- It should state what information is missing.
+- It is forbidden to guess or fabricate.
+
+**Philosophy**: This makes the model use its creativity on "structure and solutions" rather than "fabricating facts."
+
+### 9.3 Iteration Over Perfection
+
+The most effective structure for creating from scratch is usually a two-step process:
+1.  First, produce v1.
+2.  Then, critique it according to the judge's criteria and generate v2 (only changing what needs to be changed).
+
+---
+
+## Appendix A: Three General Field Skeletons
+
+### Skeleton 1: Exploration Type (Divergence First)
 
 ```markdown
-## 意图
-探索[X领域]的多种可能性，生成6-8个方向。
+## Intention
+Explore multiple possibilities in [X domain], generating 6-8 directions.
 
-## 世界
-你是[专家身份]，面向[受众]，在[场景]中工作。
+## World
+You are an [expert identity], working for [audience] in [scenario].
 
-## 方法
-1. 先列出所有可能的方向
-2. 每个方向给出：核心亮点 / 潜在风险 / 适用场景
-3. 最后给出你的推荐组合及理由
+## Method
+1. First, list all possible directions.
+2. For each direction, provide: core highlight / potential risk / applicable scenario.
+3. Finally, give your recommended combination and reasoning.
 
-## 裁判
-按以下维度自评：新颖性 × 可执行性 × 契合度
+## Judge
+Self-evaluate based on the following dimensions: Novelty × Executability × Fit
 ```
 
-### 骨架2：收敛型（决策/成稿）
+### Skeleton 2: Convergence Type (Decision/Final Draft)
 
 ```markdown
-## 意图
-从以下方案中选择最优，并写成可交付版本。
+## Intention
+Select the best option from the following solutions and write it as a deliverable version.
 
-## 方法
-1. 先出结构大纲
-2. 按段生成，每段完成后自检
-3. 生成完整版后，进行整体精修
+## Method
+1. First, create a structural outline.
+2. Generate section by section, self-checking after each.
+3. After generating the full version, perform an overall refinement.
 
-## 裁判
-使用以下Rubric评估：
-- 准确性（1-5）
-- 结构清晰度（1-5）
-- 风格一致性（1-5）
-- 可执行性（1-5）
+## Judge
+Use the following Rubric for evaluation:
+- Accuracy (1-5)
+- Structural Clarity (1-5)
+- Stylistic Consistency (1-5)
+- Executability (1-5)
 ```
 
-### 骨架3：批判型（裁判/编辑）
+### Skeleton 3: Critique Type (Judge/Editor)
 
 ```markdown
-## 输入
-- v1 草稿：[内容]
-- 成功标准：[标准]
+## Input
+- v1 Draft: [Content]
+- Success Criteria: [Criteria]
 
-## 任务
-1. 逐条指出偏离标准的点
-2. 给出"最小修改方案"（只改必须改的）
-3. 产出 v2
+## Task
+1. Point out deviations from the criteria, one by one.
+2. Provide a "minimal modification plan" (only change what is necessary).
+3. Produce v2.
 
-## 约束
-保持原文优点，只修复问题。
+## Constraint
+Preserve the strengths of the original text; only fix the problems.
 ```
 
 ---
 
-## 附录B：哲学检查清单
+## Appendix B: Philosophical Checklist
 
-在点击"发送"之前，问自己三个问题：
+Before clicking "Send," ask yourself three questions:
 
-| 维度 | 检查问题 |
+| Dimension | Check Question |
 |:---|:---|
-| **Context** | 我是否构建了一个足够丰富的"世界"，还是只给了一个干瘪的指令？ |
-| **Essence** | 我是否传达了任务的"灵魂"（Why & Vibe），还是只传达了"躯壳"（Format）？ |
-| **Resonance** | 我使用的词汇是否足够精准、有力，足以在模型的神经网络中引发共鸣？ |
+| **Context** | Have I constructed a sufficiently rich "world," or just given a dry instruction? |
+| **Essence** | Have I conveyed the "soul" of the task (the Why & Vibe), or just the "shell" (the Format)? |
+| **Resonance** | Are the words I used precise and powerful enough to trigger resonance in the model's neural network? |
 
 ---
 
-## 结语：从工匠到艺术家
+## Conclusion: From Craftsman to Artist
 
-掌握了规范，你是一个合格的 AI 工程师；  
-掌握了哲学，你是一个 AI 时代的创作者。
+Master the specifications, and you are a qualified AI engineer;
+Master the philosophy, and you are a creator in the AI era.
 
-规范给你**地板**——确保输出不低于某个标准；  
-哲学给你**天花板**——让你触及模型能力的边界。
+Specifications give you the **floor**—ensuring the output is not below a certain standard;
+Philosophy gives you the **ceiling**—letting you touch the limits of the model's capabilities.
 
-两者结合，你才能在从 0 到 1 的创作中，既有稳定的地基，又有飞翔的翅膀。
+By combining both, you can have both a stable foundation and soaring wings in your creative work from scratch.
 
 ---
 
-## 版本历史
+## Version History
 
-| 版本 | 日期 | 说明 |
+| Version | Date | Notes |
 |:---|:---|:---|
-| V0.1 草案 | - | 两份独立草案 |
-| V1.0 | 2025-01 | 整合两份草案，形成完整框架；与 Prompt Engineering V3.0 互补定位 |
+| V0.1 Draft | - | Two independent drafts |
+| V1.0 | 2025-01 | Integrated the two drafts to form a complete framework; positioned as a complement to Prompt Engineering V3.0 |
 
 ---
 
-*— Prompt 设计哲学 V1.0 —*  
-*配套文档：Prompt Engineering Design Specifications V3.0（工程实践版）*
+*— Prompt Design Philosophy V1.0 —*
+*Companion document: Prompt Engineering Design Specifications V3.0 (Engineering Practice Edition)*
