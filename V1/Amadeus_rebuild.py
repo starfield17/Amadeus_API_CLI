@@ -29,7 +29,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 # Original system prompt
 class PromptManager:
-    def __init__(self, filename="prompt_v5.md"):
+    def __init__(self, filename="prompt_v3.md"):
         self.script_dir = Path(__file__).parent
         self.filename = Path("prompts") / filename
         self._cached_prompt = None
