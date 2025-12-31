@@ -1,206 +1,206 @@
 # Prompt Philosophy V1.0
 
-## 从 0 到 1：用 Prompt 激发模型能力的“场域设计”指南
+## From 0 to 1: A "Field Design" Guide to Inspiring Model Capabilities with Prompts
 
-> **核心主张**：Prompt 不是代码指令（Code），而是“思维场域”（Field / Container of Thought）。
-> 你不是在“写约束”，而是在“搭台”：决定灯光照向哪里、演员是谁、用什么方法表演、由谁来打分。 
-
----
-
-## 0. 这份文档解决什么问题？
-
-当你从 0 开始创作 Prompt 时，最大的障碍往往不是“缺规则”，而是：
-
-* 没有让模型**进入一个自洽的世界**（背景真空）
-* 没有明确你要优化的**真正意图**（发散还是收敛？新颖还是正确？）
-* 没有给模型一个合适的**思考姿态**（怎么想比怎么答更关键）
-* 没有建立**裁判系统**让它自我对齐（用评判替代束缚）
-
-> 工程规范擅长“修”和“固化”；哲学擅长“生”和“激发”。 
+> **Core Proposition**: A Prompt is not a code instruction (Code), but a "Field / Container of Thought".
+> You are not "writing constraints," but "setting the stage": deciding where the lights shine, who the actors are, what methods they use to perform, and who will be the judge.
 
 ---
 
-## 1. Prompt 的本体论：你在“搭场域”，不是“下命令”
+## 0. What Problem Does This Document Solve?
 
-把 Prompt 当“指令清单”会天然走向僵化；从 0 到 1 更像导演工作：
-你设计的是一个会改变模型注意力分配、生成分布和自检机制的“场”。
+When you start creating a Prompt from scratch, the biggest obstacles are often not a "lack of rules," but:
 
-**Prompt = 场域设计（Context Field Design）**，它主要影响四件事：
+*   Not allowing the model to **enter a self-consistent world** (a background vacuum)
+*   Not clarifying the **true intention** you want to optimize for (divergence or convergence? novelty or correctness?)
+*   Not giving the model a suitable **thinking posture** (how to think is more crucial than how to answer)
+*   Not establishing a **judging system** for it to self-align (using judgment instead of restraint)
 
-1. **注意力**：模型把权重放在哪儿
-2. **姿态**：以什么身份/风格/价值观进入任务
-3. **路径**：用什么认知方法推进（发散、对比、批判、模拟…）
-4. **收敛**：靠什么标准自我纠错与迭代（Judge / Rubric / Checklist）
-
----
-
-## 2. 四元组骨架：意图 / 世界 / 方法 / 裁判
-
-这是 V1.0 的“最小可用骨架”。每次从 0 写 Prompt，先把四个槽位填满：
-
-### A. 意图 Intention：你到底在优化什么？
-
-用 3 个问题锁定“最重要的是什么”：
-
-* 任务形态：**探索（发散）**还是**决策（收敛）**？
-* 成功优先级：新颖性 / 正确性 / 可执行性 / 说服力 / 风格一致性，**谁第一**？
-* 边界条件：能否虚构？能否推断？证据不足怎么办？
-
-> 一句话：意图是“引力”，不是“格式”。
+> Engineering specifications excel at "fixing" and "solidifying"; philosophy excels at "creating" and "inspiring."
 
 ---
 
-### B. 世界 World：你让模型“相信自己身处何处”
+## 1. The Ontology of a Prompt: You're "Building a Field," Not "Giving Orders"
 
-世界不是装饰，它会直接决定模型调用哪套行为策略。
+Treating a Prompt as a "list of commands" naturally leads to rigidity; going from 0 to 1 is more like the work of a director:
+You are designing a "field" that will change the model's attention allocation, generation distribution, and self-checking mechanisms.
 
-构建世界的三件套：
+**Prompt = Context Field Design**, it mainly affects four things:
 
-* **身份与价值观**（不是头衔，而是“生命体验”）
-  用“情绪色彩 + 审美偏好 + 道德/职业伦理”激活潜空间特征。
-* **对象与场景**（受众是谁？使用场景？）
-* **资源与禁区**（哪些材料只能参考不可执行？）
-
-> 世界搭得好，很多“规范”根本不用写，模型会自动补齐合适行为。
-
----
-
-### C. 方法 Method：你希望它用什么“认知姿势”
-
-方法不是“步骤列表”，而是**思考姿态切换**。
-
-从 0 到 1 最常用的三种姿态：
-
-1. **先发散后收敛**：先要多样性，再做取舍
-2. **先定裁判再生成**：先写 rubric，再产出
-3. **先拟合风格再填充内容**：先定 vibe / tone / voice，再写内容
-
-并且可以用“升维/降维”调焦距：
-
-* Zoom out：系统论/历史长河/战略视角
-* Zoom in：具体到动作、措辞、结构、例子
+1.  **Attention**: Where the model places its weights
+2.  **Posture**: What identity/style/values to adopt when entering the task
+3.  **Path**: What cognitive methods to use to proceed (divergence, comparison, critique, simulation...)
+4.  **Convergence**: What standards to rely on for self-correction and iteration (Judge / Rubric / Checklist)
 
 ---
 
-### D. 裁判 Judge：用标准让它自我对齐
+## 2. The Four-Part Framework: Intention / World / Method / Judge
 
-从 0 到 1 的质量跃迁，几乎总来自**评判系统**，不是更多约束。
+This is the "minimum viable framework" for V1.0. Every time you write a Prompt from scratch, fill these four slots first:
 
-最小可用裁判：
+### A. Intention: What Are You Really Optimizing For?
 
-* **Checklist（5–10 条）**：覆盖、结构、风险、证据、风格、可执行性
-* 或 **Rubric（4–6 维）**：准确性/相关性/结构/风格/可执行性/新颖性
+Use 3 questions to lock in "what matters most":
 
-> 核心哲学：**用“裁判”替代“束缚”**。让模型先出 v1，再按裁判自评并生成 v2。
+*   Task form: **Exploration (divergent)** or **Decision-making (convergent)**?
+*   Success priority: Novelty / Correctness / Executability / Persuasiveness / Stylistic Consistency, **which comes first**?
+*   Boundary conditions: Can it fabricate? Can it infer? What to do with insufficient evidence?
 
----
-
-## 3. 三阶段创作流程：发散 → 收敛 → 固化
-
-这是把“创造力”与“稳定性”兼容起来的关键工作流：
-
-### 3.1 发散：激发能力
-
-* 世界要强、意图要有张力
-* 少硬格式，允许 3–8 个方向
-* 每个方向必须给“亮点/风险/适用条件”
-
-### 3.2 收敛：把好点子变成好作品
-
-* 强制对比：A/B/C trade-off
-* 先大纲再扩写（或分段生成）
-* 引入裁判：按 rubric 打分并解释扣分点
-
-### 3.3 固化：让它可复用、可控、可验证
-
-* 把成功要素抽成模板变量
-* 把关键要求变成“可验证约束”
-* 引入修复回路与失败模式处理
-
-> **注意**：固化阶段的工程细节（可验证约束、修复回路、工具优先、安全隔离等）请直接引用《PromptEngineeringV3》。
+> In short: Intention is "gravity," not "format."
 
 ---
 
-## 4. 语义共振：用“高密度语言”点燃潜空间
+### B. World: Making the Model "Believe Where It Is"
 
-你在做的是“语义共振”，不是“写说明书”。
+The world is not decoration; it directly determines which set of behavioral strategies the model will invoke.
 
-### 4.1 用强动词 + 具体名词“尖锐化分布”
+The three-piece suite for building a world:
 
-* 弱：修改文本
-* 强：打磨成“节奏更紧、句子更有冲击力、逻辑更利落”的版本
+*   **Identity and Values** (not a title, but a "lived experience")
+    Use "emotional tone + aesthetic preference + moral/professional ethics" to activate latent space features.
+*   **Audience and Scene** (Who is the audience? What is the use case?)
+*   **Resources and Forbidden Zones** (Which materials are for reference only and not for execution?)
 
-### 4.2 用“认知锚点”瞬间拉齐思维框架
-
-把“第一性原理/费曼技巧/苏格拉底式追问”当作高密度语义压缩包。
-
-### 4.3 设定 vibe：风格不是装饰，是信息载体
-
-“像深夜电台主持人”“海明威冰山理论”等，是对输出分布的直接塑形。
+> If the world is well-constructed, many "rules" don't need to be written; the model will automatically fill in appropriate behaviors.
 
 ---
 
-## 5. 注意力经济学：写给“权重系统”看的 Prompt
+### C. Method: What "Cognitive Posture" Do You Want It to Use?
 
-从 0 到 1 常见失败不是内容不够，而是权重放错位置：
+Method is not a "list of steps," but a **switch in thinking posture**.
 
-* **把最重要的东西放两端**（开头/结尾权重更高）
-* **避免中间死区**（关键点别埋在长背景中央）
-* **指令与材料分离**：告诉模型“哪些可执行，哪些只可参考”
+The three most common postures for going from 0 to 1:
 
-（工程实现与安全防注入写法留给 V3 展开。）
+1.  **Diverge then Converge**: First seek diversity, then make trade-offs
+2.  **Define the Judge then Generate**: First write the rubric, then produce the output
+3.  **Fit the Style then Fill the Content**: First establish the vibe / tone / voice, then write the content
 
----
+And you can adjust the focus by "zooming in/out":
 
-## 6. 共生迭代：把 Prompt 当“活体”养出来
-
-最好的 Prompt 不是一次写对的，而是在对话里长出来的：
-
-* 用“像对人一样的反馈”指导模型：
-  “结构很好，但缺乏同理心；保留结构，把语气升温。”
-* 用 meta-prompting 让模型反过来帮你补需求：
-  “为了更好完成 X，请向我提 5 个澄清问题。”
+*   Zoom out: Systems theory / Long-term historical view / Strategic perspective
+*   Zoom in: Specific actions, wording, structure, examples
 
 ---
 
-## 7. 三种通用 Prompt 形态（V1.0 模板胚子）
+### D. Judge: Using Standards to Let It Self-Align
 
-> 下面是“场域骨架”，不是工程规范。你只要替换四元组变量即可。
+The quality leap from 0 to 1 almost always comes from the **judgment system**, not from more constraints.
 
-### 形态 1：探索型（发散）
+Minimum Viable Judge:
 
-* 意图：多方案、多视角
-* 方法：列 6 个方向 → 每个方向亮点/风险/适用 → 推荐组合
-* 裁判：新颖性 × 可执行性 × 契合度 打分
+*   **Checklist (5–10 items)**: Coverage, structure, risks, evidence, style, executability
+*   Or **Rubric (4–6 dimensions)**: Accuracy / Relevance / Structure / Style / Executability / Novelty
 
-### 形态 2：收敛型（成稿/交付）
-
-* 方法：先大纲 → 分段生成 → 自检 → 精修 v2
-* 裁判：rubric + 反例测试（哪些情况下会失败？）
-
-### 形态 3：批判型（编辑器/裁判）
-
-* 输入：v1 草稿 + 成功标准
-* 输出：逐条指出偏离 → 最小修改方案 → 产出 v2
+> Core philosophy: **Replace "restraint" with "judgment."** Let the model produce a v1, then self-evaluate against the judge and generate a v2.
 
 ---
 
-## 8. 与《PromptEngineeringV3》的分工边界
+## 3. Three-Stage Creation Process: Diverge → Converge → Solidify
 
-当你进入这些目标时，切换到 V3：
+This is the key workflow to reconcile "creativity" with "stability":
 
-* 需要严格格式/可验证约束/稳定输出
-* 需要工具调用策略、失败修复回路
-* 需要安全隔离、注入防护、版本管理、评估体系
+### 3.1 Diverge: Inspire Capability
 
-> V1.0 负责“激发”，V3 负责“固化”。
+*   The World should be strong, the Intention should have tension
+*   Fewer rigid formats, allow for 3–8 directions
+*   Each direction must be given "highlights / risks / applicable conditions"
+
+### 3.2 Converge: Turn Good Ideas into Good Work
+
+*   Forced comparison: A/B/C trade-off
+*   Outline first, then expand (or generate in sections)
+*   Introduce the Judge: Score according to the rubric and explain the deductions
+
+### 3.3 Solidify: Make It Reusable, Controllable, and Verifiable
+
+*   Extract success factors into template variables
+*   Turn key requirements into "verifiable constraints"
+*   Introduce repair loops and failure mode handling
+
+> **Note**: For engineering details in the solidification stage (verifiable constraints, repair loops, tool priority, security isolation, etc.), please refer directly to "PromptEngineeringV3".
 
 ---
 
-## 附录：哲学检查清单（发出去前问自己 3 个问题）
+## 4. Semantic Resonance: Igniting the Latent Space with "High-Density Language"
 
-1. **World**：我是否构建了一个足够丰富自洽的世界？
-2. **Essence**：我传达的是“灵魂（Why & Vibe）”还是只有“躯壳（Format）”？
-3. **Judge**：我是否给了裁判系统让它自我对齐，而不是堆规则？
+You are creating "semantic resonance," not "writing a manual."
+
+### 4.1 "Sharpen the Distribution" with Strong Verbs + Concrete Nouns
+
+*   Weak: Modify the text
+*   Strong: Polish it into a version with "tighter rhythm, more impactful sentences, and cleaner logic"
+
+### 4.2 Use "Cognitive Anchors" to Instantly Align the Thinking Framework
+
+Treat "First Principles / Feynman Technique / Socratic Questioning" as high-density semantic compression packages.
+
+### 4.3 Set the Vibe: Style is Not Decoration, It's an Information Carrier
+
+"Like a late-night radio host," "Hemingway's Iceberg Theory," etc., are direct shapers of the output distribution.
+
+---
+
+## 5. The Economics of Attention: Writing Prompts for the "Weight System"
+
+A common failure in going from 0 to 1 is not insufficient content, but misplaced weights:
+
+*   **Put the most important things at the ends** (the beginning/end have higher weight)
+*   **Avoid the dead zone in the middle** (don't bury key points in the center of a long background)
+*   **Separate instructions from materials**: Tell the model "what is executable and what is only for reference"
+
+(Engineering implementation and security anti-injection methods are left for V3.)
+
+---
+
+## 6. Symbiotic Iteration: Cultivating a Prompt as a "Living Organism"
+
+The best Prompts are not written correctly in one go, but are grown through conversation:
+
+*   Guide the model with "feedback as you would give a person":
+    "The structure is good, but it lacks empathy; keep the structure, but warm up the tone."
+*   Use meta-prompting to have the model help you clarify requirements:
+    "To better complete X, please ask me 5 clarifying questions."
+
+---
+
+## 7. Three General Prompt Forms (V1.0 Template Starters)
+
+> Below are "field frameworks," not engineering specifications. You just need to replace the four-part variables.
+
+### Form 1: Exploratory (Divergent)
+
+*   Intention: Multiple solutions, multiple perspectives
+*   Method: List 6 directions → For each, highlights/risks/applicability → Recommend a combination
+*   Judge: Score based on Novelty × Executability × Fit
+
+### Form 2: Convergent (Final Draft/Deliverable)
+
+*   Method: Outline first → Generate in sections → Self-check → Refine to v2
+*   Judge: Rubric + Negative testing (Under what conditions will it fail?)
+
+### Form 3: Critical (Editor/Judge)
+
+*   Input: v1 draft + success criteria
+*   Output: Point out deviations one by one → Propose minimal modifications → Produce v2
+
+---
+
+## 8. Division of Labor with "PromptEngineeringV3"
+
+When you move on to these goals, switch to V3:
+
+*   Need for strict formats / verifiable constraints / stable output
+*   Need for tool-calling strategies, failure repair loops
+*   Need for security isolation, injection protection, version control, evaluation systems
+
+> V1.0 is responsible for "inspiring," V3 is responsible for "solidifying."
+
+---
+
+## Appendix: Philosophical Checklist (Ask yourself 3 questions before sending)
+
+1.  **World**: Have I constructed a world that is sufficiently rich and self-consistent?
+2.  **Essence**: Am I conveying the "soul (Why & Vibe)" or just the "shell (Format)"?
+3.  **Judge**: Have I provided a judgment system for it to self-align, instead of just piling on rules?
 
 ---
