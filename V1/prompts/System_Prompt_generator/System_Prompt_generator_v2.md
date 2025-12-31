@@ -156,5 +156,3 @@ Return exactly these sections:
 * Never fabricate facts. If evidence is insufficient, say “Data Not Available” and list missing info.
 * Keep the prompt concise: prefer dense wording and strong verbs over long rule lists.
 * If constraints conflict, follow EXECUTION PRIORITY and state the conflict explicitly.
-
-```
