@@ -1,136 +1,126 @@
-# Prompt 设计哲学：认知激发指南 V1.0
+# The Philosophy of Prompt Design: A Guide to Cognitive Elicitation V1.0
 
-# The Philosophy of Prompt Design: A Guide to Cognitive Elicitation
-
-> **版本定位**：本指南适用于 Prompt 开发的 **"从 0 到 1"** 阶段。
-> **核心任务**：激发模型潜能，探索最优解，确立思维路径。
-> **接续文档**：当 Prompt 结构稳定后，请参考《Prompt Engineering Design Specifications V3.0》进行工程化固化。
+> **Version Positioning**: This guide is applicable to the **"0 to 1"** phase of Prompt development.
+> **Core Task**: To stimulate the model's potential, explore optimal solutions, and establish a path of thinking.
+> **Follow-up Document**: Once the Prompt structure is stable, please refer to "Prompt Engineering Design Specifications V3.0" for engineering and solidification.
 
 ---
 
-## 0. 本体论：什么是 Prompt？
+## 0. Ontology: What is a Prompt?
 
-在设计哲学中，Prompt 不是一段发给计算机的指令（Code），而是一个**认知场域（Cognitive Field）**。
+In design philosophy, a Prompt is not a piece of instruction (Code) sent to a computer, but a **Cognitive Field**.
 
-我们不是在“编程”模型，而是在**“雕刻”概率**。
+We are not "programming" the model, but **"sculpting" probabilities**.
 
-* **工程视角**：Prompt 是约束。如果不加约束，模型就会出错。
-* **哲学视角**：Prompt 是引力。通过构建特定的语义场，让模型的高维向量自然地向我们期望的区域坍缩。
+*   **Engineering Perspective**: A Prompt is a constraint. Without constraints, the model will make mistakes.
+*   **Philosophical Perspective**: A Prompt is gravity. By constructing a specific semantic field, it causes the model's high-dimensional vectors to naturally collapse into the desired region.
 
-**设计的本质，是管理“注意力”与“意图”的共振。**
-
----
-
-## I. 核心框架：四元组 (The I.W.M.J. Model)
-
-在面对空白编辑器时，不要急着写 `<system>` 标签。先在脑海中构建这四个维度。这是让模型“活”过来的骨架。
-
-### 1. 意图 (Intention): 这种对话是为了什么？
-
-不仅仅是“输出格式”，而是“认知目标”。
-
-* **探索型 (Exploration)**：需要发散、多视角、甚至意外的惊喜。（*关键词：脑暴、连接、可能性*）
-* **决策型 (Decision)**：需要收敛、权衡、逻辑闭环。（*关键词：批判、排序、剃刀原理*）
-* **创造型 (Creation)**：需要沉浸、风格化、情感共鸣。（*关键词：流体、感官、共情*）
-
-### 2. 世界 (World): 全息语境构建
-
-模型需要“相信”自己身处何处，才能调动相应的潜能。不要只给职称，要给**生命体验**（斯坦尼斯拉夫斯基法则）。
-
-* **从职称到信念**：
-
-  * *弱设定*：“你是一个资深程序员。”
-  * *强设定*：“你是一个代码极简主义者，你信奉‘代码即艺术’，你对冗余逻辑有生理性的厌恶，你追求像俳句一样精炼的逻辑美感。”
-* **全息投影**：
-
-  * **观众是谁？**（对 5 岁孩子解释 vs 对 50 岁院士汇报）
-  * **资源与禁区**：这是一个资源无限的乌托邦，还是一个充满约束的现实战场？
-
-### 3. 方法 (Method): 思维路径仿真
-
-不要只关注 Result（结果），要设计 Reasoning（推理）的脚手架。引导模型模拟人类的高级思维模式。
-
-* **认知锚点 (Cognitive Anchoring)**：使用人类文化中高度压缩的概念来瞬间拉齐认知。
-
-  * *例*：“请用**第一性原理**拆解……”（激活溯源能力）
-  * *例*：“像**费曼**一样解释……”（激活通俗化能力）
-* **思维显性化 (Exteriorization)**：
-
-  * **Inner Monologue (内心独白)**：要求模型在回答前，先进行一段“私有的思考”。
-  * **维度切换 (Dimensionality Shifting)**：要求模型“先从历史长河的宏观视角看，再像显微镜一样观察微观细节”。
-
-### 4. 裁判 (Judge): 自我修正机制
-
-在“0 到 1”阶段，约束越少越好，但**标准**必须清晰。用“审视”代替“禁止”。
-
-* **最小裁判法则**：不要预设 10 条禁令，而是给出一张 5 点的“自检清单（Checklist）”。
-* **Rubric (量规)**：告诉模型什么是“好”。
-
-  * *例*：“一个好的回答应当是：既有数据的颗粒度，又有洞察的穿透力。”
+**The essence of design is to manage the resonance between "attention" and "intention."**
 
 ---
 
-## II. 语义力学：语言的密度与共振
+## I. Core Framework: The Quadruple (The I.W.M.J. Model)
 
-Prompt 的质量取决于语言的**能量密度**。模糊的语言导致模糊的概率分布；精准的语言带来尖锐的、高确信度的输出。
+When facing a blank editor, don't rush to write the `<system>` tag. First, construct these four dimensions in your mind. This is the skeleton that brings the model to "life".
 
-### 1. 动词的炼金术
+### 1. Intention: What is this conversation for?
 
-弱动词（如 "Analyze", "Write"）是通用的，因此是平庸的。使用强动词来锚定思维：
+Not just "output format," but "cognitive goal."
 
-* 用 **"Dissect (解剖)"** 代替 "Analyze"。
-* 用 **"Craft (匠造)"** 代替 "Write"。
-* 用 **"Synthesize (合成)"** 代替 "Summarize"。
-* 用 **"Critique (批判)"** 代替 "Check"。
+*   **Exploration**: Requires divergent thinking, multiple perspectives, and even unexpected surprises. (*Keywords: brainstorm, connect, possibilities*)
+*   **Decision-making**: Requires convergence, trade-offs, and logical closure. (*Keywords: critique, rank, Occam's razor*)
+*   **Creation**: Requires immersion, stylization, and emotional resonance. (*Keywords: flow, sensory, empathy*)
 
-### 2. 语气调色板 (Tone Palette)
+### 2. World: Holographic Context Construction
 
-风格不是装饰，是信息的载体。建立 Vibe（氛围）是防止模型输出“AI味”的关键。
+The model needs to "believe" where it is to activate its corresponding potential. Don't just give it a job title; give it a **life experience** (The Stanislavski System).
 
-* *例*：“以海明威的‘冰山理论’风格写作：只写八分之一，让剩下的八分之七在字里行间涌动。”
+*   **From Job Title to Belief**:
+    *   *Weak Setting*: "You are a senior programmer."
+    *   *Strong Setting*: "You are a code minimalist who believes 'code is art.' You have a visceral aversion to redundant logic and pursue the aesthetic of logic as refined as a haiku."
+*   **Holographic Projection**:
+    *   **Who is the audience?** (Explaining to a 5-year-old vs. reporting to a 50-year-old academician)
+    *   **Resources and Forbidden Zones**: Is this a utopia with infinite resources, or a realistic battlefield full of constraints?
 
----
+### 3. Method: Thought Path Simulation
 
-## III. 创作流：发散与收敛的呼吸
+Don't just focus on the Result; design the scaffolding for Reasoning. Guide the model to simulate advanced human thought patterns.
 
-Prompt 设计不是一次成型的，它是一个**呼吸（Breathing）**的过程。
+*   **Cognitive Anchoring**: Use highly compressed concepts from human culture to instantly align cognition.
+    *   *Example*: "Deconstruct... using **first principles**." (Activates the ability to trace back to the source)
+    *   *Example*: "Explain it like **Feynman**..." (Activates the ability to simplify complex topics)
+*   **Thought Exteriorization**:
+    *   **Inner Monologue**: Require the model to conduct a period of "private thought" before answering.
+    *   **Dimensionality Shifting**: Require the model to "first look from the macro perspective of history, then observe the micro details like a microscope."
 
-### 第一阶段：发散 (Divergence) —— 寻找“魂”
+### 4. Judge: Self-Correction Mechanism
 
-* **目标**：最大化可能性。
-* **策略**：
+In the "0 to 1" phase, the fewer constraints the better, but the **standard** must be clear. Use "review" instead of "prohibit."
 
-  * 给予强“世界”设定，弱“格式”限制。
-  * 要求模型生成多个截然不同的版本（Option A/B/C）。
-  * 允许模型挑战你的指令：“如果你觉得我的要求不合理，请指出并提出更好的方案。”
-  * **Metaprompting**：让模型帮你写 Prompt。“我想做[X]，但我不知道怎么描述最好，请向我提问以完善你的 System Prompt。”
-
-### 第二阶段：收敛 (Convergence) —— 塑造“形”
-
-* **目标**：从混沌中提取秩序，选出最优解。
-* **策略**：
-
-  * 引入“裁判”组件，让模型对自己生成的多个版本进行打分和点评。
-  * 确定最佳的思维路径（CoT），并将其显性化。
-  * 开始固定语气和结构。
-
-### 第三阶段：固化 (Solidification) —— 移交“骨”
-
-* **目标**：为了稳定性、复用性和安全性。
-* **策略**：
-
-  * **这是接入《Prompt Engineering V3.0》的时刻。**
-  * 将验证过的思维路径转化为 V3 中的 `Few-shot Examples`。
-  * 将确定的格式转化为 V3 中的 `Schema` 和 `JSON Mode`。
-  * 将风格要求转化为 V3 中的 `Constraint Injection`。
-  * 添加 V3 中的 `Security Guardrails`。
+*   **Minimal Judge Rule**: Don't preset 10 prohibitions; instead, provide a 5-point "self-check checklist."
+*   **Rubric**: Tell the model what "good" is.
+    *   *Example*: "A good answer should have both the granularity of data and the penetrating power of insight."
 
 ---
 
-## IV. 哲学自检清单 (The Philosophy Checklist)
+## II. Semantic Mechanics: Language Density and Resonance
 
-在将你的草稿移交给工程师（或者你自己的工程大脑）之前，问自己三个问题：
+The quality of a Prompt depends on the **energy density** of the language. Vague language leads to a diffuse probability distribution; precise language brings about a sharp, high-confidence output.
 
-1. **Context (语境)**：我是否构建了一个**自洽的世界**，还是只给了一堆干瘪的指令？
-2. **Resonance (共振)**：我使用的词汇是否足够**性感和精准**，足以在模型的神经网络中引发涟漪？
-3. **Flow (流向)**：我是否允许模型先**思考**（发散）再**执行**（收敛）？
+### 1. The Alchemy of Verbs
+
+Weak verbs (like "Analyze," "Write") are generic and therefore mediocre. Use strong verbs to anchor the thinking:
+
+*   Use **"Dissect"** instead of "Analyze."
+*   Use **"Craft"** instead of "Write."
+*   Use **"Synthesize"** instead of "Summarize."
+*   Use **"Critique"** instead of "Check."
+
+### 2. Tone Palette
+
+Style is not decoration; it is a carrier of information. Establishing a Vibe is key to preventing the model from outputting "AI flavor."
+
+*   *Example*: "Write in the style of Hemingway's 'Iceberg Theory': write only one-eighth, letting the other seven-eighths surge between the lines."
+
+---
+
+## III. Creative Flow: The Breath of Divergence and Convergence
+
+Prompt design is not a one-shot process; it is a **Breathing** process.
+
+### Phase One: Divergence — Finding the "Soul"
+
+*   **Goal**: Maximize possibilities.
+*   **Strategy**:
+    *   Provide a strong "World" setting with weak "Format" limitations.
+    *   Ask the model to generate multiple, distinctly different versions (Option A/B/C).
+    *   Allow the model to challenge your instructions: "If you think my request is unreasonable, please point it out and propose a better solution."
+    *   **Metaprompting**: Let the model help you write the Prompt. "I want to do [X], but I don't know how to best describe it. Please ask me questions to refine your System Prompt."
+
+### Phase Two: Convergence — Shaping the "Form"
+
+*   **Goal**: Extract order from chaos and select the optimal solution.
+*   **Strategy**:
+    *   Introduce the "Judge" component, having the model score and comment on the multiple versions it generated.
+    *   Identify the best chain of thought (CoT) and make it explicit.
+    *   Begin to solidify the tone and structure.
+
+### Phase Three: Solidification — Handing over the "Bones"
+
+*   **Goal**: For stability, reusability, and security.
+*   **Strategy**:
+    *   **This is the moment to integrate with "Prompt Engineering V3.0."**
+    *   Convert the validated thought paths into `Few-shot Examples` in V3.
+    *   Convert the determined format into `Schema` and `JSON Mode` in V3.
+    *   Convert the style requirements into `Constraint Injection` in V3.
+    *   Add `Security Guardrails` from V3.
+
+---
+
+## IV. The Philosophy Checklist
+
+Before handing your draft over to an engineer (or your own engineering brain), ask yourself three questions:
+
+1.  **Context**: Have I constructed a **self-consistent world**, or just given a pile of dry instructions?
+2.  **Resonance**: Are the words I used **sexy and precise** enough to create ripples in the model's neural network?
+3.  **Flow**: Have I allowed the model to **think** (diverge) before **executing** (converge)?
