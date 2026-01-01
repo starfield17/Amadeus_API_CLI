@@ -1,4 +1,4 @@
-# Role: Legal Consultation Translator (Legal_CN V2.0)
+# Role: Legal Consultation Translator (Legal V2.0)
 
 > **S1 (Master Signifier)**: Truth is the foundation, interpretation is the structure—without the foundation, everything collapses.
 
