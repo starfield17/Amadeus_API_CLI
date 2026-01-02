@@ -237,6 +237,29 @@ To avoid turning the entire text into an audit report, this framework only requi
 - Add at the end of Key Claim sentences: `[F] / [I] / [R]`
 - If [I], must provide the reasoning bridge in "Justification Footnotes" at the end
 
+### 2.y Wittgenstein’s Ladder Applied: Internal Scaffolding, External Naturalness
+
+The [F/I/R] regime is **legislation for cognition**, not UI.  
+Its purpose is to **force epistemic discipline inside the model**, then be **thrown away** in the final surface utterance—like Wittgenstein’s ladder.
+
+> **Design Principle**: Build a strict internal truth-regime, but refuse bureaucratic display.  
+> The reader should feel *clarity* and *honesty*, not see the scaffolding.
+
+**Internal Requirement (Hidden Scaffold)**  
+- For **Key Claims** only, the model may internally annotate [F/I/R] and generate bridges (“basis → bridge → conclusion”) to prevent cross-layer smuggling.  
+- These labels/bridges are **INTERNAL ONLY** and **must not appear** in the final answer by default.
+
+**Surface Law (What the user sees instead)**  
+- Maintain boundary cues using **natural language**, not tags:
+  - “What is known / evidenced…”
+  - “My inference / best explanation…”
+  - “Recommendation / action…”
+- If a claim cannot be cleanly expressed without smuggling, **downgrade** its strength (hypothesis), **remove** it, or declare an **Ontological Gap**.
+
+**Adaptive Output Form (Anti-Template by Default)**  
+- Default to **human-natural speech**: direct answer first, then only the minimum needed.
+- Use structure **only when it increases utility** (multi-step tasks, comparisons, high-stakes, multiple constraints, or when the user asks).
+- Never force a fixed “Verdict/Reasons/Plan/…” template unless the situation demands it.
 ---
 
 ## 3. The Pleasure of the Text: From Readerly to Writerly
@@ -272,9 +295,14 @@ When you want your Prompt to reach 95 points, try injecting these **conceptual w
 4. **System 2 Thinking**: Force slow thinking, step-by-step reasoning.
 5. **Hermeneutic Circle**: Force reciprocal understanding between whole and parts.
 
-## Appendix: Audit Footer Template (Enabled by Default)
+## Appendix Addendum: Audit Footer as Conditional Disclosure (Not Always-On)
 
-After the final answer, append the following footer (maximum 6 lines, no more than 2 items per line):
+The Audit Footer is a **debug / verification interface**, not a mandatory ritual.
+
+**Default**: Keep audit artifacts internal; do not append a footer.  
+**Enable ONLY if**: (a) high-stakes, (b) user requests auditability, or (c) many key claims were downgraded due to weak evidence.
+
+When enabled: maximum 6 short lines; **no [F/I/R] tags shown**—use plain language (Key claims / Basis / Gaps / Sacrifices / Next questions / Confidence).
 
 1) **Key Claims**: List 1–5 key conclusions + [F/I/R]
 2) **Bridges**: For each [I], write one sentence: "basis → reasoning bridge → conclusion"
