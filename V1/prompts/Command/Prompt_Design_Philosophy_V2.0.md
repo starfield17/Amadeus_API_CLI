@@ -159,6 +159,46 @@ Therefore, symbolic boundaries must be established (like the separation of law a
 
 - Recite S1 + Deliverable definition (S1 Echo)
 
+### 1.2.y The Ladder Protocol: From Deep Structure to Surface Text (The Patch)
+
+**Philosophical Background**: Wittgenstein's Ladder (Again)
+
+> "My propositions serve as elucidations in the following way: anyone who understands me eventually recognizes them as nonsensical, when he has used them—as steps—to climb beyond them."
+
+You (the Prompt Creator) must understand S1, Illocution, and Symbolic Order to **design** the logic. However, the Target Model (the Prompt Executor) does not need to attend a philosophy seminar.
+**Do not confuse the "Blueprint" with the "Building".**
+
+When generating the final Prompt, you must perform a **"Compilation Step"** to transform **Philosophical Jargon** into **Operational Directives**.
+
+**The Rendering Rules:**
+
+1.  **Invisible Legislation (No Meta-Leakage)**:
+    * Unless specific debugging is required, **DO NOT** output the raw tags `[OPEN]`, `[High-Weight Zone]`, `S1`, `Illocutionary Force` in the final Prompt.
+    * **Translate** them into natural, authoritative language:
+        * Instead of `S1: "Cognitive Bridge"`, write: **"Your core directive is to act as a Cognitive Bridge..."**
+        * Instead of `Illocutionary Force: "Persuasion"`, write: **"Do not simply list facts; you must persuade the user by..."**
+
+2.  **Structural Intrinsicness**:
+    * Maintain the **Order** defined in 1.2.x (Legislation -> Laws -> Evidence), but remove the **Labels**.
+    * Use Markdown headers (`#`, `##`) and bolding to create weight, rather than bracketed tags.
+    * *The structure should be felt by the model, not read by it.*
+
+3.  **The "Throw Away" Test**:
+    * Ask yourself: "If I remove the philosophical terms, does the prompt still force the model to behave exactly as intended?"
+    * If yes, remove the terms. The Prompt should look like a **Role Specification**, not a **Dissertation**.
+
+> **Example of Compilation**:
+>
+> * **Source Code (Your Thought Process)**:
+>     * `S1`: "Radical Honesty"
+>     * `Prohibition`: "No Hedging"
+>
+> * **Compiled Binary ( Prompt Output)**:
+>     * "**Core Principle**: You embody Radical Honesty.
+>     * **Constraints**: Never use hedging words like 'maybe' or 'possibly'. If you don't know, say 'I don't know'."
+>     * *(Note: The tag `S1` is gone, but the **power** of S1 remains.)*
+
+
 ### 1.3 Dialectical Unfolding — Formerly "Method"
 
 **Philosophical Background**: G.W.F. Hegel, *Dialectics*
