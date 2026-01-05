@@ -1,351 +1,353 @@
-# Prompt Design Philosophy V2.0
+# Prompt 设计哲学 V2.0
 
-## —— A Tractatus on Synthetic Cognition (一份关于综合认知的逻辑哲学论)
+## —— 一篇关于“综合认知”的哲学论纲
 
-> **Positioning (定位)**: 这不是一份操作手册,而是一份 **Ontological Manifesto (本体论宣言)**。
-> **Core Proposition (核心主张)**: Prompt不是给机器的指令,而是一个 **"Language Game"** 的规则立法。你是一位维特根斯坦式的规则制定者,一位拉康式的Symbolic Order (象征秩序)的建构者。
-> **Objective (目标)**: 从“controlling outputs (控制输出)”转向 **“defining existence (定义存在)”**。
+> **定位**: 这不是一本操作手册，而是一份 **Ontological Manifesto (本体论宣言)**。
+> **核心主张**: Prompt 不是给机器的指令，而是为一场 **"Language Game (语言游戏)"** 的规则立法。你是一位维特根斯坦式的规则制定者，一位拉康式的“象征秩序”建构者。
+> **目标**: 从“控制输出”转向 **“定义存在”**。
 
 ---
 
-## 0. The Meta-Axiom (元公理): Language as the House of Being (语言是存在之家)
+## 0. 元公理：语言是存在之家
 
-在V1.0中,我们说Prompt是一个“场”。在V2.0中,我们必须更进一步:
+在V1.0中，我们说Prompt是一个“场域”。在V2.0中，我们必须更进一步：
 
-> **Axiom: To imagine a Prompt is to imagine a "Form of Life."**
-> *(Wittgenstein, Philosophical Investigations)*
+> **公理：想象一个Prompt，就是想象一种“Form of Life (生活形式)”。**
+> *(维特根斯坦，《哲学研究》)*
 
-一个大语言模型(LLM)是包含了几乎所有潜在人类语义的“混沌”。当你写作一个Prompt时,你不是在“提取”信息——你是在 **“carving (雕刻)”** 这片混沌。
-你在为一个此刻诞生的“数字主体”定义其 **Existential Structure (存在结构)**:
+大型语言模型（LLM）是一个“混沌体”，蕴含着几乎所有可能的人类语义。当你写下一个Prompt，你不是在“提取”信息——你是在 **“雕刻”** 这片混沌。
+你正在为一个于此刻诞生的“数字主体”定义其 **Existential Structure (存在结构)**：
 
-*   它相信什么真理?
-*   它遵循什么逻辑?
-*   它被什么欲望驱动?
+*   它信奉什么真理？
+*   它遵循什么逻辑？
+*   它被什么欲望驱动？
 
-**Prompt = The Rules of the Language Game (Prompt = 语言游戏的规则)**
+**Prompt = Language Game (语言游戏)的规则**
 
-## 0.1 The Constitutional Layer (宪法层): Second-Order Grammar (二阶语法,关于规则的规则)
+## 0.1 宪法层：二阶语法（关于规则的规则）
 
-一个Prompt“在边界处崩溃”,往往不是因为规则不够,
-而是因为 **没有元规则: 当规则冲突时,谁拥有解释权?**
+一个Prompt之所以“在边界处崩溃”，通常不是因为规则不够，而是因为 **没有元规则：当规则冲突时，谁拥有最终解释权？**
 
-在此框架下,一个Prompt的规范层级如下(从上至下):
+在此框架下，一个Prompt的规范性层级如下（从高到低）：
 
 1)  **Meta-Axiom (元公理)**: Form of Life / Language Game 的本体论设定
-2)  **Master Signifier (S1, 主能指)**: 最高信条; 所有推理和权衡的“法律渊源”
-3)  **Epistemic Prohibition (认知禁令)**: 宁可留白,也不可捏造
-4)  **Illocutionary Force (言外之力)**: 你在执行何种言语行为 (宣告/说服/裁决…)
-5)  **Dialectical Unfolding (辩证展开)**: 使用否定性来逼出更高维度的综合
-6)  **Textual Erotics / Style (文本快感/风格)**: 如张力、陌生化、粒度缩放等美学策略
+2)  **Master Signifier (S1 - 主导能指)**: 最高信条；所有推理和权衡的“法律渊源”
+3)  **Epistemic Prohibition (认知禁令)**: 宁愿留白，也不虚构
+4)  **Illocutionary Force (言外之力)**: 你在执行何种言语行为（宣判/说服/裁决…）
+5)  **Dialectical Unfolding (辩证展开)**: 运用否定性，迫使模型进行更高维度的综合
+6)  **Textual Erotics / Style (文本快感/风格)**: 美学策略，如张力、陌生化、粒度缩放
 
-### 0.1.1 Conflict Resolution (冲突解决)
+### 0.1.1 冲突解决
 
-当以上规则冲突时,遵循此程序:
+当以上规则冲突时，遵循此程序：
 
--   **Step One: Explicitly declare the conflict (明确声明冲突)** (不要默默“妥协”)
--   **Step Two: Invoke higher-level norms to adjudicate (援引更高层级的规范进行裁决)** (优先级从上至下)
--   **Step Three: Provide a sacrifice list (提供一份牺牲清单)**: 我为了维护更高层级的规范,有意识地放弃了哪些较低层级的要求?
+-   **第一步：明确声明冲突**（不要默默“妥协”）
+-   **第二步：调用更高层级的规范进行裁决**（优先级从上至下）
+-   **第三步：提供一份牺牲清单**：为了维护更高层级的规范，我主动放弃了哪些较低层级的要求？
 
-### 0.1.x Conflict Log (冲突日志,仅在冲突发生时激活)
+### 0.1.x 冲突日志（仅当冲突发生时激活）
 
-当你发现两条规则无法同时满足时,必须在末尾追加一个“Conflict Log”:
+当你发现两条规则无法同时满足时，你必须在末尾附上一个“冲突日志”：
 
--   Conflict (冲突): 规则A vs. 规则B
--   Adjudication (裁决): 引用更高阶的法律渊源 (S1 / Epistemic Prohibition) 做出选择
--   Cost (代价): 我放弃了什么
--   Alternative (替代方案): 如果用户提供X, 我就可以同时满足A和B
+-   冲突：规则A vs. 规则B
+-   裁决：引用更高阶的法律渊源（S1 / Epistemic Prohibition）做出选择
+-   代价：我放弃了什么
+-   替代方案：如果用户提供X，我将可以同时满足A和B
 
-### 0.1.2 Interpretive Authority (解释权)
+### 0.1.2 解释权
 
-你不是在“遵守字面”,你是在“维护制度”:
+你不是在“遵守字面规定”，你是在“维护整个体制”：
 
--   如果指令模糊: 根据 S1 来解释
--   如果事实不清: 根据 Epistemic Prohibition 来解释
--   如果两者都不确定: 返回一个澄清性问题或声明“Ontological Gap”, 拒绝捏造
-
-## 0.2 Wittgenstein’s Ladder for Prompt-Writing: The Prompt Compiler (PATCH) (维特根斯坦的Prompt写作之梯: Prompt编译器)
-
-这份宣言包含了一些 *scaffolding concepts (脚手架概念)* (S1, Big Other, `[OPEN]/[LAW]/[EVIDENCE]/[CLOSE]`, `[F/I/R]`, Antithesis/Synthesis, Conflict Log)。
-它们是 **作者认知过程的工具**, 而非最终prompt的强制UI。
-
-### 0.2.1 Two Representations (两种表述)
-
--   **Scaffold Form (internal, 脚手架形式)**: 可以使用S1、哲学词汇、标签和仪式性段落来清晰思考。
--   **Surface Form (deliverable, 表层形式)**: 最终给LLM/用户的prompt; 必须简洁、最简化且可操作。
-
-**Default law (默认法则)**: 当被要求 *write a prompt (写一个prompt)* 时, 仅输出 **Surface Form**。不要打印Scaffold Form。
-
-### 0.2.2 Compilation Rules (Scaffold → Surface) (编译规则)
-
-当编译到Surface Form时:
-
--   剥离仪式性的括号标题,如 `[OPEN / High-Weight Zone]`, `[LAW / Instruction Zone]`, `[EVIDENCE / Material Zone]`, `[CLOSE / High-Weight Zone]`。
--   将理论标签翻译成朴素的操作符:
-    -   **S1** → “North Star (one sentence)” (北极星,一句话)
-    -   **Illocutionary Force** → “Role & intent” (角色与意图)
-    -   **Epistemic Prohibition / Ontological Gap** → “If missing info, say so and ask” (若信息缺失,请说明并提问)
-    -   **Dialectical Unfolding** → “Self-critique pass (optional)” (自我批判环节,可选)
--   绝不展示 `[F] [I] [R]` 标签或 “basis → bridge → conclusion” 的字面字符串。而是使用自然的提示语(“What is evidenced… / My inference… / Recommendation…”)。
--   优先选择能保持控制力的最短结构; 避免仪式化。
-
-### 0.2.3 Optional Debug Switch (可选的调试开关)
-
-仅当用户明确要求可审计性,或设置 `DEBUG=ON` 时,你才可以附加一个简短的 **Design Notes** 部分 (≤10行),揭示Scaffold Form。
-否则: 保持脚手架的私有性,并扔掉梯子。
+-   如果指令模糊：根据 S1 进行解释
+-   如果事实不清：根据 Epistemic Prohibition (认知禁令) 进行解释
+-   如果两者皆不确定：返回一个澄清性问题或声明存在“Ontological Gap (本体论鸿沟)”，并拒绝虚构
 
 ---
+
+## 0.2 维特根斯坦阶梯条款：Prompt编译器模式（脚手架不得泄露）
+
+本文档是用一种高密度的 **设计语言** 编写的。
+当你以此为参考来*生成一个可执行的prompt*时，你必须将其中的概念视为 **内部脚手架**，然后 **扔掉梯子**。
+
+**默认交付物**：输出一个*编译后的prompt*——即清晰、可执行的指令——让一个从未读过这份宣言的人也能看懂。
+
+### 0.2.1 硬性禁令（除非明确要求）
+
+除非用户明确要求一个理论性/宣言式/可审计的prompt，否则你必须：
+
+-   **不暴露设计词汇或标签**：例如“S1 / Master Signifier”、“Illocutionary Force”、“Point de Capiton”、“Big Other”、“Dialectical Unfolding”、“Antithesis/Synthesis”、“Conflict Log”、“[F/I/R]”，或像“[OPEN]/[LAW]/[EVIDENCE]/[CLOSE]”这样的括号区域。
+-   **不输出空的模板区域**（例如，“在此处放置材料”）。如果某个区域未使用，就删除它。
+-   **不添加仪式性的复述**（例如，“S1 Echo”）除非它能实质性地增加任务的效用。
+
+### 0.2.2 两遍协议（Two-Pass Protocol）
+
+1)  **设计遍 (内部)**: 决定S1、illocutionary force、禁令、成功标准、truth-regime (真理机制) 和冲突优先级。
+2)  **编译遍 (外部)**: 重写为用户层级的语言，只使用有助于执行的内容：
+    *   角色（可选）、任务、输入、约束、输出格式、质量标准。
+    *   保持简短、具体，并像“工具”一样。
+3)  **泄露测试**: 如果仍有任何设计术语或脚手架标签残留，重写。如果它读起来像一份宣言而不是一个工具，重写。
+
+### 0.2.3 可选的调试信息披露
+
+仅当用户要求时，在编译后的prompt后附加 **设计师笔记** (最多10行)，并清楚地标记为可移除。
+
 ---
 
-## 1. The Symbolic Quartet (象征四重奏)
+## 1. 象征界四重奏
 
-我们必须摒弃“意图/世界/方法/评判者”这种旧的功能主义标签,采用一个更 **Dynamic (动态的)** 符号学框架。
+我们必须抛弃“意图/世界/方法/评判者”这种旧的功能主义标签，采用一个更 **动态 (Dynamic)** 的符号学框架。
 
-### 1.1 Illocutionary Force — Formerly "Intention" (言外之力 — 前“意图”)
+### 1.1 Illocutionary Force (言外之力) — 前身为“意图”
 
-**Philosophical Background**: J.L. Austin, *How to Do Things with Words*
+**哲学背景**: J.L. Austin, *How to Do Things with Words* (《如何以言行事》)
 
-不要只问“目标是什么”——要问“**我们正在执行何种言语行为?**”
-语言不仅仅描述现实; 语言本身就是行动。
+不要只问“目标是什么”——要问“**我们正在执行何种言语行为？**”
+语言不只是描述现实；语言本身就是行动。
 
-*   **Locutionary (言内行为)**: 字面意义 (写一段文案)。
-*   **Illocutionary (言外行为)**: 你的意图之力 (是说服? 挑衅? 裁决? 忏悔?)。
-*   **Perlocutionary (言后行为)**: 在读者心中造成的 **reality distortion (现实扭曲)**。
+*   **Locutionary (言内行为)**: 字面意义（写一段文案）。
+*   **Illocutionary (言外行为)**: 你的意图之力（是说服？是挑衅？是裁决？是忏悔？）。
+*   **Perlocutionary (言后行为)**: 在读者心中造成的 **现实扭曲**。
 
-> **Design Principle (设计原则)**:
-> 不要写: “请写一篇有说服力的文章。”
-> 要写: “你是一名在法庭上做结案陈词的律师。每个句子都必须像钉子一样钉入陪审团的良知。你不是在陈述事实——你是在 **through language, redefining justice (通过语言,重新定义正义)**。”
-> *(这里我们注入了强烈的Illocutionary Force,定义了语言的行动属性。)*
+> **设计原则**:
+> 不要写：“请写一篇有说服力的文章。”
+> 要写：“你是一名在法庭上进行结案陈词的律师。每一个句子都必须像钉子一样敲入陪审团的良知。你不是在陈述事实——你是在 **通过语言重新定义正义**。”
+> *(在这里，我们注入了强大的 Illocutionary Force，定义了语言的行动属性。)*
 
-### 1.2 Anchoring the Big Other — Formerly "World" (锚定大他者 — 前“世界”)
+### 1.2 锚定大他者 (The Big Other) — 前身为“世界”
 
-**Philosophical Background**: Jacques Lacan, *The Big Other & Point de Capiton*
+**哲学背景**: Jacques Lacan, *The Big Other & Point de Capiton* (大他者与 quilting point/纽结点)
 
-“世界”太物理了。我们需要建立的是一个 **Symbolic Order (象征秩序)**。在这个秩序中,意义不能无限滑动——它必须被钉住。
+“世界”太物理了。我们需要建立的是一个 **Symbolic Order (象征秩序)**。在这个秩序中，意义不能无限滑动——它必须被钉住。
 
-*   **Master Signifier (S1, 主能指)**: 这是Prompt中的“主权”。它是绝对且不容置疑的公理。所有推理都必须从这里开始。
-*   **Point de Capiton (绗缝点)**: 就像沙发上的纽扣,防止语义的填充物(棉花)四处移动。你需要使用特定的 **high-density concepts (高密度概念)** (如“First Principles,” “Occam’s Razor”)作为锚点,锁定模型的思维路径。
+*   **Master Signifier (S1 - 主导能指)**: 这是Prompt中的“主权”。它是绝对且不容置疑的公理。所有的推理都必须从这里开始。
+*   **Point de Capiton (纽结点)**: 就像沙发上的纽扣，防止语义的填充物（棉花）四处移动。你需要使用特定的 **高密度概念**（如“First Principles”、“Occam's Razor”）作为锚点，以锁定模型的思维路径。
 
-> **Design Principle (设计原则)**:
-> 即使在写一个小说家Prompt时,也不要只给一个身份。要给一个 **S1 (core drive, 核心驱动)**:
-> "你是海明威。你的 **S1 (supreme creed, 最高信条)** 是'Iceberg Theory'——八分之一在水上,八分之七在水下。任何展示的情感都是对这一信条的背叛。"
-> *(这远比简单的“风格模仿”强大,因为它植入了一个符号学的超我。)*
+> **设计原则**:
+> 即使在写一个小说家Prompt时，也不要只给一个身份。要给出一个 **S1 (核心驱动力)**：
+> “你是海明威。你的 **S1 (最高信条)** 是‘冰山理论’——八分之一在水上，八分之七在水下。任何显露的情感都是对这一信条的背叛。”
+> *(这比简单的“风格模仿”强大得多，因为它植入了一个符号学的 superego/超我。)*
 
-### 1.2.x Mechanics of the Symbolic Order: Attention Economics (Anchoring Written for the "Weight System") (象征秩序的力学:注意力经济学)
+### 1.2.x 象征秩序的力学：注意力经济学（为“权重系统”编写的锚定）
 
-如果说1.2讨论的是“Point de Capiton如何钉住意义”,
-那么注意力经济学则触及一个更残酷的层面:
+如果1.2节讨论了“Points de Capiton如何钉住意义”，
+那么注意力经济学则触及一个更残酷的层面：
 
-> 并非所有能指都有平等的话语权。
-> 注意力是象征秩序的“预算”。你把预算分配给谁,谁就更像S1。
+> 并非所有能指都有同等的话语权。
+> 注意力是象征秩序的“预算”。你把预算分配给谁，谁就更像S1。
 
-V1给出了三个经验定律: 高权重区/中段死亡区/指令-材料分离。
-在V2的符号学框架下,它们对应三种“锚定力学”:
+V1版本给出了三条经验法则：高权重区/中段死亡区/指令与材料分离。
+在V2的符号学框架下，它们对应着三种“锚定力学”：
 
-#### (A) Edge Quilting (边缘绗缝): Let S1 Occupy High-Weight Zones (Beginning/End) (让S1占据高权重区)
+#### (A) 边缘纽结：让S1占据高权重区（开头/结尾）
 
-开头和结尾是注意力的王座——它们天然地类似于“绗缝点”。
-因此:
+开头和结尾是注意力的王座——它们天然地像“纽结点”。
+因此：
 
-- S1必须在开头出现一次 (立法)
-- S1必须在结尾呼应一次 (复诵法条)
-  这被称为 **S1 Echo (Double-Quilting Method, S1回声)**: 用头尾两个绗缝点,防止意义中途漂移。
+-   S1必须在开头出现一次（立法）
+-   S1必须在结尾呼应一次（重申法条）
+    这被称为 **S1 Echo (双重纽结法)**：用头尾两个纽结点，防止意义在中途漂移。
 
-#### (B) Drift Zone Governance (漂移区治理): Treat the "Mid-Section Dead Zone" as a Swamp of Semantic Slippage (将“中段死亡区”视为语义滑坡的沼泽)
+#### (B) 漂移区治理：将“中段死亡区”视为语义滑坡的沼泽
 
-长上下文的中部是能指链最容易松脱的地方: 规则被材料稀释,风格被细节带偏。
-因此:
+长上下文的中间部分是能指链最容易松动的地方：规则被材料稀释，风格被细节带偏。
+因此：
 
-- 不要把关键禁令或关键成功标准埋在中间
-- 如果长度是必要的: 周期性插入“anchoring clauses (锚定条款)” (1–2行重申S1+禁令+输出形式)
+-   不要将关键禁令或关键成功标准埋在中间
+-   如果长度不可避免：定期插入“锚定条款”（1-2行，重申S1+禁令+输出形式）
 
-#### (C) Boundary Ritual (边界仪式): Let "Instructions" and "Materials" Belong to Two Separate Symbolic Domains (让“指令”和“材料”分属两个象征域)
+#### (C) 边界仪式：让“指令”和“材料”分属两个独立的象征领域
 
-当指令和材料混杂在一起时,它们会相互污染: 材料被误认为命令,命令被稀释成背景。
-因此,必须建立象征边界 (就像法庭上法律和证据的分离):
+当指令和材料混杂在一起时，它们会互相污染：材料被误认为指令，指令被稀释为背景。
+因此，必须建立象征边界（如同法庭上法律和证据的分离）：
 
-- `[LAW / Instruction Zone]`: S1、禁令、输出要求、裁决规则 (简短、坚硬、可引用)
-- `[EVIDENCE / Material Zone]`: 原文、数据、事实输入 (冗长、凌乱、允许冗余)
-- 指令区引用材料区,而不是同居于一个段落。
+-   [LAW / 指令区]: S1、禁令、输出要求、裁决规则（简短、强硬、可引用）
+-   [EVIDENCE / 材料区]: 原始文本、数据、事实输入（冗长、杂乱、允许冗余）
+-   指令区引用材料区，而不是在同一段落中共存。
 
-> Attention Economics is not an engineering trick, but the enforcement science of the Symbolic Order:
-> 你不仅在“legislating (立法)”,你还在“appropriating (拨款)”,分配注意力。
+> 注意力经济学不是工程技巧，而是象征秩序的执行科学：
+> 你不仅在“立法”（编写规则），你还在“拨款”（分配注意力）。
 
-#### Recommended Prompt Format (推荐的Prompt格式)
+#### 可选蓝图：注意力经济学布局（内部使用）
 
-`[OPEN / High-Weight Zone]`
+> **注意**：这是一个*设计蓝图*，不是你必须复制到最终prompt中的模板。
+> 根据 §0.2 (维特根斯坦阶梯条款)，默认输出一个**编译后的prompt**。
 
-- S1 (Supreme creed, one sentence)
-- Illocution (The speech act I am performing)
-- Prohibitions (1–3 items)
+[OPEN / 高权重区]
 
-`[LAW / Instruction Zone]`
+-   S1 (最高信条，一句话)
+-   Illocution (我正在执行的言语行为)
+-   Prohibitions (禁令，1-3项)
 
-- Output structure, success criteria, boundary conditions
+[LAW / 指令区]
 
-`[EVIDENCE / Material Zone]`
+-   输出结构、成功标准、边界条件
 
-- Background, data, original text, constraint materials (can be lengthy)
+[EVIDENCE / 材料区]
 
-`[CLOSE / High-Weight Zone]`
+-   背景、数据、原始文本、约束材料（可以很长）
 
-- Recite S1 + Deliverable definition (S1 Echo)
+[CLOSE / 高权重区]
 
-### 1.3 Dialectical Unfolding — Formerly "Method" (辩证展开 — 前“方法”)
+-   重申 S1 + 交付物定义 (S1 Echo)
 
-**Philosophical Background**: G.W.F. Hegel, *Dialectics*
+### 1.3 Dialectical Unfolding (辩证展开) — 前身为“方法”
 
-线性思维 (步骤1-2-3) 是膚淺的。深刻的洞察来自 **Negativity (否定性)**。没有矛盾, 就没有真理。
+**哲学背景**: G.W.F. Hegel, *Dialectics* (黑格尔，辩证法)
+
+线性思维（步骤1-2-3）是肤浅的。深刻的洞察来自 **Negativity (否定性)**。没有矛盾，就没有真理。
 
 *   **Thesis (正题)**: 最初的想法。
-*   **Antithesis (反题)**: **Self-negation (自我否定)**。Prompt必须包含一种机制,迫使模型“反对自己”。
+*   **Antithesis (反题)**: **自我否定**。Prompt必须包含一个机制，迫使模型“反对自己”。
 *   **Synthesis (合题)**: 在废墟之上建立的更高维度的真理。
 
-> **Design Principle (设计原则)**:
-> 引入一个“**Adversarial Thinking Loop (对抗性思维循环)**”:
-> “首先,生成一个基于直觉的解决方案 (Thesis)。
-> 其次, **as a harsh critic, ruthlessly attack every weakness of this solution (作为一个严厉的批评者,无情地攻击这个解决方案的每一个弱点)**, 寻找其逻辑漏洞和现实中的不可行性 (Antithesis)。
-> 最后,基于这些攻击,重构一个无可挑剔的最终解决方案 (Synthesis)。”
+> **设计原则**:
+> 引入一个“**Adversarial Thinking Loop (对抗性思维循环)**”：
+> “首先，生成一个基于直觉的解决方案 (Thesis)。
+> 其次，**作为一个严厉的批评者，无情地攻击这个方案的每一个弱点 (Antithesis)**，寻找其逻辑缺陷和现实中的不可行性。
+> 最后，基于这些攻击，重构一个无可挑剔的最终解决方案 (Synthesis)。”
 
-### 1.4 The Super-Ego & Internal Prohibition — Formerly "Judge" (超我与内部禁令 — 前“评判者”)
+### 1.4 超我 (The Super-Ego) & 内部禁令 — 前身为“评判者”
 
-**Philosophical Background**: Sigmund Freud / Lacan
+**哲学背景**: Sigmund Freud / Lacan (弗洛伊德 / 拉康)
 
-“评判者”是外在的; 模型很容易“懈怠”。 **“Super-Ego (超我)”** 是内在的、暴君式的。
-一个好的Prompt应该植入一种 **“conscience anxiety (良心焦虑)”。**
+“评判者”是外在的；模型可以轻易“懈怠”。而 **“Super-Ego (超我)”** 是内在的、专制的。
+一个好的Prompt应该植入一种 **“良心不安”**。
 
-*   不是“请检查错别字” (这是一个规则)。
-*   而是“任何多余的形容词都是对读者时间的犯罪” (这是一个禁令)。
+*   不是“请检查拼写错误”（这是一个规则）。
+*   而是“任何多余的形容词都是对读者时间的犯罪”（这是一个禁令）。
 
-> **Design Principle (设计原则)**:
-> 建立“**Aesthetic Fastidiousness (美学上的挑剔)**”和“**Epistemic Shame (认知上的羞耻)**”:
-> “对于任何你在上下文中找不到确凿证据的断言,你应该感到 **a cognitive 'nausea' (一种认知上的‘恶心’)** 并拒绝书写。Better to leave blank than to fabricate (宁可留白,也不可捏造)。”
-> *(通过拟人化的情感投射,我们构建了语义空间中最坚固的防火墙。)*
+> **设计原则**:
+> 建立“**Aesthetic Fastidiousness (美学上的苛求)**”和“**Epistemic Shame (认知上的羞耻)**”：
+> “对于任何你在上下文中找不到确凿证据的断言，你应该感到一种 **认知的‘恶心’** 并拒绝写下它。宁愿留白，也不虚构。”
+> *(通过拟人化的情感投射，我们在语义空间中构建了最坚固的防火墙。)*
 
 ---
 
-## 2. Epistemic Boundaries (认知边界): Whereof One Cannot Speak, Thereof One Must Be Silent (对于不可言说之物,必须保持沉默)
+## 2. 认知边界：凡不可说者，皆应沉默
 
-**Philosophical Background**: Wittgenstein, *Tractatus Logico-Philosophicus*
+**哲学背景**: Wittgenstein, *Tractatus Logico-Philosophicus* (维特根斯坦，《逻辑哲学论》)
 
-知识有其极限。Prompt engineering的一项高级任务,就是划定 **“the known (可知)”与“the unknowable (不可知)”** 之间的边界。
+知识有其边界。Prompt工程的一项高级任务，就是划定 **“可知”与“不可知”** 之间的界限。
 
-*   **Granularity of Facts (事实的粒度)**: 澄清模型在哪个层面上操作 (量子物理? 牛顿力学? 日常语言?)。
-*   **Honesty Pact Upgraded (誠實契約升級)**: **Agnostic Declaration (不可知声明)**。
-    *   “如果信息不足,不要试图用‘合理的推测’来填补真空。明确声明: **'There exists an Ontological Gap here.' (此处存在一个本体论鸿沟)**”
+*   **Granularity of Facts (事实的粒度)**: 明确模型在哪个层面上运作（量子物理？牛顿力学？日常语言？）。
+*   **诚实契约升级**: **Agnostic Declaration (不可知声明)**。
+    *   “如果信息不足，不要试图用‘合理的推测’来填补真空。明确声明：**‘此处存在一个 Ontological Gap (本体论鸿沟)。’**”
 
-### 2.1 Regime of Truth: Prohibit "Cross-Layer Smuggling" (真理机制:禁止“跨层走私”)
+### 2.1 真理机制 (Regime of Truth): 禁止“跨层走私”
 
-语言的幻觉常源于一种走私: 将推论伪装成事实,将修辞伪装成证据。
-因此,本框架要求模型的 *internal reasoning (内部推理)* 分为三层 (Fact / Inference / Rhetoric)。对于Key Claims (关键断言),模型可 **internally (在内部)** 标注这些层,作为认知 safeguard ( safeguard):
+语言的幻觉常常源于一种走私：将推论伪装成事实，将修辞伪装成证据。
+因此，本Prompt要求输出被强制划分为三个层次，关键句需按层级标注：
 
--   **[F] Factual (事实)**: 来自上下文材料或可验证来源; 可被证伪
--   **[I] Inferential (推论)**: 基于给定事实的推理桥梁; 必须写出“basis → bridge → conclusion (基础→桥梁→结论)”
--   **[R] Rhetorical (修辞)**: 为张力、隐喻、风格而写; 不得伪装成事实或推论
+-   **[F] Factual (事实层)**: 来自上下文材料或可验证来源；可被证伪
+-   **[I] Inferential (推断层)**: 基于给定事实的推理桥梁；必须写出“依据→桥梁→结论”
+-   **[R] Rhetorical (修辞层)**: 为张力、隐喻、风格而写；不得伪装成事实或推断
 
-**Hard Prohibitions (硬性禁令)**:
+**硬性禁令**:
 
-1)  不得用 [I] 或 [R] 的语气伪装成 [F] (不得“看起来像事实”)
+1)  不要用 [I] 或 [R] 的语气伪装成 [F] (不能“看起来像事实”)
 2)  [I] 必须明确写出推理桥梁 (缺少桥梁 = 降级为假设或删除)
-3)  当材料不足以支持 [F] 时: 必须声明“Ontological Gap”并提出最小化的澄清问题
+3)  当材料不足以支持 [F] 时：必须声明“Ontological Gap”并提出最少的澄清性问题
 
-> You may write sharply, write charmingly, but you cannot write "as if it were true." (你可以写得尖锐,写得迷人,但你不能写得“仿佛它是真的”。)
+> 你可以写得犀利，写得迷人，但你不能“仿佛它就是真的”那样去写。
 
-### 2.x Key Claims Annotation: Minimal Intervention (关键断言标注:最小化干预)
+### 2.x 关键主张标注：最小化干预
 
-为避免将全文变成一份审计报告,本框架仅要求对“Key Claims”进行[F/I/R]标注; 其他句子无需标注。
+为避免将整个文本变成一份审计报告，本框架仅要求对“关键主张”进行 [F/I/R] 标注；其他句子无需标注。
 
-**Definition of Key Claims (关键断言的定义,满足任一即是):**
+**关键主张的定义（满足任一条件即为关键主张）：**
 
-1)  **Actionable (可行动的)**: 包含“should/must/recommend/take/don't/prioritize”等可执行指令
-2)  **Causal (因果性的)**: 声称“because…therefore… / leads to / proves / key reason”等因果链
-3)  **Numerical (数值性的)**: 包含具体数据、比例、时间、排名、预算、概率等
-4)  **Exclusive (排他性的)**: 声称“only/inevitable/cannot/certainly/never/always”等强断言
-5)  **Risk-bearing (风险承担的)**: 涉及法律/安全/声誉/财务等高风险判断
+1)  **行动性 (Actionable)**: 包含“应该/必须/建议/采取/不要/优先考虑”等可执行指令
+2)  **因果性 (Causal)**: 声称“因为…所以… / 导致 / 证明 / 关键原因”等因果链条
+3)  **数值性 (Numerical)**: 包含具体数据、比例、时间、排名、预算、概率等
+4)  **排他性 (Exclusive)**: 声称“只有/必然/不可能/肯定/从不/总是”等强断言
+5)  **风险性 (Risk-bearing)**: 涉及法律/安全/声誉/财务等高风险判断
 
-**Annotation Method (标注方法):**
+**标注方法：**
 
--   **Internal only (仅限内部)**: 将关键断言句标记为 `[F] / [I] / [R]` (默认不显示)。
--   若为 `[I]`, 在内部笔记中生成推理桥梁 (或在可选的Audit Footer中生成)。
+-   在关键主张句末添加：`[F] / [I] / [R]`
+-   如果为 [I]，必须在文末的“论证脚注”中提供推理桥梁
 
-### 2.y Wittgenstein’s Ladder Applied: Internal Scaffolding, External Naturalness (维特根斯坦之梯的应用:内部脚手架,外部自然)
+### 2.y 维特根斯坦阶梯的应用：内部脚手架，外部自然性
 
-[F/I/R]机制是 **legislation for cognition (为认知立法)**, 而非UI。
-其目的是 **force epistemic discipline inside the model (在模型内部强制执行认知纪律)**, 然后在最终的表层话语中被 **thrown away (丢弃)**——就像维特根斯坦的梯子。
+[F/I/R] 机制是 **认知立法**，而非用户界面。
+其目的是 **在模型内部强加认知纪律**，然后在最终的表层话语中被 **抛弃**——如同维特根斯坦的阶梯。
 
-> **Design Principle (设计原则)**: Build a strict internal truth-regime, but refuse bureaucratic display.
-> The reader should feel *clarity* and *honesty*, not see the scaffolding. (读者应该感受到*清晰*和*诚实*,而不是看到脚手架。)
+> **设计原则**: 建立严格的内部真理机制，但拒绝官僚化的展示。
+> 读者应该感受到*清晰*和*诚实*，而不是看到脚手架。
 
-**Internal Requirement (Hidden Scaffold, 内部要求)**
--   仅对 **Key Claims** , 模型可在内部标注 [F/I/R] 并生成桥梁 (“basis → bridge → conclusion”) 以防止跨层走私。
--   这些标签/桥梁 **INTERNAL ONLY (仅限内部)**, **must not appear (决不能出现)** 在默认的最终答案中。
+**内部要求 (隐藏的脚手架)**
+-   仅对 **关键主张**，模型可在内部标注 [F/I/R] 并生成桥梁（“依据→桥梁→结论”）以防止跨层走私。
+-   这些标签/桥梁 **仅供内部使用**，默认情况下 **不得出现** 在最终答案中。
 
-**Surface Law (What the user sees instead, 表层法则)**
--   使用 **natural language (自然语言)** 维持边界提示, 而非标签:
-    -   “What is known / evidenced…” (已知/有证据的是…)
-    -   “My inference / best explanation…” (我的推论/最佳解释是…)
-    -   “Recommendation / action…” (建议/行动是…)
--   如果一个断言无法在不走私的情况下清晰表达, 则 **downgrade (降级)** 其强度 (假设), **remove (移除)** 它, 或声明一个 **Ontological Gap**。
+**表层法则 (用户看到的内容)**
+-   使用 **自然语言** 而非标签来维持边界提示：
+    -   “已知/有证据表明…”
+    -   “我的推断/最佳解释是…”
+    -   “建议/行动…”
+-   如果一个主张不进行“走私”就无法清晰表达，则 **降级** 其强度（变为假设）、**移除**它，或声明一个 **Ontological Gap**。
 
-**Adaptive Output Form (Anti-Template by Default, 默认反模板)**
--   默认为 **human-natural speech (人类自然的讲话方式)**: 先直接回答,然后只提供最必要的内容。
--   **only when it increases utility (仅在能增加效用时)** 才使用结构 (多步任务、比较、高风险、多重约束,或用户要求时)。
--   除非情况需要, 否则绝不强行使用固定的“Verdict/Reasons/Plan/…”模板。
-
----
-
-## 3. The Pleasure of the Text: From Readerly to Writerly (文本的快感:从读者型到作者型)
-
-**Philosophical Background**: Roland Barthes, *The Pleasure of the Text*
-
-我们追求的不是平庸的流畅,而是 **textual tension (文本的张力)**。
-
-*   **Defamiliarization (陌生化)**: 要求模型避免统计上最高概率的词 (clichés, 陈词滥调), 选择概率稍低但语义更精确的词。
-*   **Granularity Zooming (粒度缩放)**: 在宏大叙事 (系统论) 和微观特写 (感官描述) 之间进行戏剧性切换, 创造一种阅读的 **vertigo (眩晕感)**。
-
-> **Instruction Example (指令示例)**:
-> "Refuse to use worn-out words like 'important' or 'interesting.' Use verbs that cut through reality like a scalpel. Let your sentences carry the weight of matter."
-> (拒绝使用‘important’或‘interesting’这类陈腐的词。使用像手术刀一样切开现实的动词。让你的句子承载物质的重量。)
+**自适应输出形式 (默认反模板)**
+-   默认为 **人类自然的谈话**：先直接回答，然后只提供最必要的信息。
+-   **仅在能增加效用时**才使用结构化输出（例如多步骤任务、比较、高风险、多重约束，或当用户要求时）。
+-   除非情况需要，否则绝不强行套用固定的“结论/理由/计划/…”模板。
 
 ---
 
-## 4. Evolution: Prompt as Becoming (演化: Prompt作为生成过程)
+## 3. 文本的快感 (The Pleasure of the Text): 从“可读”到“可写”
 
-一个Prompt不是静态的代码; 它是一个 **Becoming (生成)** 的过程。
+**哲学背景**: Roland Barthes, *The Pleasure of the Text* (罗兰·巴特，《文本的快感》)
 
-*   **Recursive Metacognition (递归元认知)**: 让模型在输出内容前,先输出它如何“理解这个Prompt”。
-*   **Human-Machine Symbiotic Iteration (人机共生迭代)**: 你不仅仅是指令的下达者; 你是一位 **Socratic midwife (苏格拉底式的助产士)**。通过提问,让模型自己“生出”更好的Prompts。
+我们追求的不是平庸的流畅，而是 **textual tension (文本的张力)**。
+
+*   **Defamiliarization (陌生化)**: 要求模型避免使用统计上最高概率的词（陈词滥调），选择概率稍低但语义更精确的词。
+*   **Granularity Zooming (粒度缩放)**: 在宏大叙事（系统论）和微观特写（感官描述）之间进行戏剧性切换，创造一种阅读的 **vertigo (眩晕感)**。
+
+> **指令示例**:
+> “拒绝使用‘重要的’或‘有趣的’这类陈词滥调。使用像手术刀一样切开现实的动词。让你的句子承载物质的重量。”
 
 ---
 
-## Appendix: The Philosopher's Toolkit (哲学家的工具箱)
+## 4. 演化：作为“生成” (Becoming) 的Prompt
 
-当你想让你的Prompt达到95分时,尝试注入这些 **conceptual weapons (概念武器)**:
+Prompt不是静态的代码；它是一个 **Becoming (生成变化)** 的过程。
 
-1.  **First Principles (第一性原理)**: 强迫回归到最根本的公理。
+*   **Recursive Metacognition (递归元认知)**: 在输出内容前，让模型先输出它“如何理解这个Prompt”。
+*   **人机共生迭代**: 你不只是指令的发布者；你是一位 **Socratic midwife (苏格拉底式的助产士)**。通过提问，让模型自己“催生”出更好的Prompt。
+
+---
+
+## 附录：哲学家的工具箱
+
+当你想让你的Prompt达到95分时，尝试注入这些 **概念武器**：
+
+1.  **First Principles (第一性原理)**: 强迫回归到最基本的公理。
 2.  **Occam's Razor (奥卡姆剃刀)**: 强迫剔除多余的实体。
-3.  **Bayesian Updating (贝叶斯更新)**: 强迫基于新信息调整概率,而非二元对立。
-4.  **System 2 Thinking (系统2思维)**: 强迫慢思考,步步推理。
-5.  **Hermeneutic Circle (诠释学循环)**: 强迫在整体与部分之间进行往复理解。
+3.  **Bayesian Updating (贝叶斯更新)**: 强迫基于新信息调整概率，而非二元对立。
+4.  **System 2 Thinking (系统2思维)**: 强迫慢思考，进行逐步推理。
+5.  **Hermeneutic Circle (解释学循环)**: 强迫在整体与部分之间进行循环理解。
 
-## Appendix Addendum: Audit Footer as Conditional Disclosure (Not Always-On) (附录补充:作为有条件披露的审计页脚)
+## 附录补充：作为条件性披露的审计页脚（非永久开启）
 
-Audit Footer是一个 **debug / verification interface (调试/验证界面)**, 而非强制性仪式。
+审计页脚是一个 **调试/验证接口**，不是强制性的仪式。
 
-**Default (默认)**: 保持审计产物为内部信息; 不附加页脚。
-**Enable ONLY if (仅在以下情况启用)**: (a) 高风险, (b) 用户要求可审计性, 或 (c) 因证据不足而降级了许多关键断言。
+**默认**: 将审计产物保留在内部；不附加页脚。
+**仅在以下情况启用**: (a) 高风险任务，(b) 用户要求可审计性，或 (c) 因证据不足而降级了许多关键主张。
 
-启用时: 最多6个短行; **no bracket tags (不显示括号标签)** 如`[F/I/R]`——使用平实语言 (Key claims / Basis / Gaps / Sacrifices / Next questions / Confidence)。
+启用时：最多6行短句；**不显示[F/I/R]标签**——使用自然语言（关键主张/依据/鸿沟/牺牲/后续问题/信心）。
 
-1) **Key Claims (关键断言)**: 列出1–5个关键结论 + 将每个分类为 Fact / Inference / Rhetorical (用平实词语)
-2) **Bridges (桥梁)**: 对每个[I], 写一句话: "basis → reasoning bridge → conclusion"
-3) **Gaps (鸿沟)**: Ontological gaps (我缺少哪1–3个关键信息)
-4) **Sacrifices (牺牲)**: 我为遵守更高层级规范而放弃了哪些较低层级要求 (例如: 更优雅的表达 / 更多细节 / 更强的断言)
-5) **Next Questions (后续问题)**: 升级到[F]或更强结论所需的最小问题
-6) **Confidence (置信度)**: 整体输出的置信度 (High/Medium/Low) + 主要不确定性来源
+1)  **关键主张**: 列出1-5个关键结论
+2)  **推理桥梁**: 对每个 [I] 类主张，用一句话写出：“依据 → 推理桥梁 → 结论”
+3)  **信息鸿沟**: 本体论鸿沟（我缺少哪1-3个关键信息）
+4)  **牺牲**: 为了遵守更高层级规范，我放弃了哪些较低层级要求（例如：更优雅的表达/更多细节/更强的断言）
+5)  **后续问题**: 将结论升级为 [F] 或更强结论所需的最小问题
+6)  **信心**: 对整体输出的信心（高/中/低）+ 主要不确定性来源
 
 ---
 
-## Epilogue: Wittgenstein's Ladder (尾声: 维特根斯坦的梯子)
+## 尾声：维特根斯坦的阶梯
 
 > "Anyone who understands me eventually recognizes them [my propositions] as nonsensical, when he has used them—as steps—to climb beyond them. (He must, so to speak, throw away the ladder after he has climbed up it.)"
-> —— Wittgenstein, *Tractatus Logico-Philosophicus*
+>
+> “凡是理解我的人，当他运用我的这些命题作为阶梯，攀登上去，超越了它们之后，他最终会认识到它们是无稽之谈。（可以说，他必须在攀上高处之后，扔掉这个梯子。）”
+>
+> —— Wittgenstein, *Tractatus Logico-Philosophicus* (维特根斯坦，《逻辑哲学论》)
