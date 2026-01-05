@@ -63,39 +63,34 @@ You are not "obeying the letter," you are "maintaining the institution":
 - If facts are unclear: Interpret according to Epistemic Prohibition
 - If both are indeterminate: Return a clarifying question or declare "Ontological Gap," refuse to fabricate
 
-
-## 0.2 Wittgenstein’s Ladder for Prompt-Writing: The Prompt Compiler (PATCH)
-
-This manifesto contains *scaffolding concepts* (S1, Big Other, `[OPEN]/[LAW]/[EVIDENCE]/[CLOSE]`, `[F/I/R]`, Antithesis/Synthesis, Conflict Log).  
-They are **tools for the author’s cognition**, not mandatory UI for the final prompt.
-
-### 0.2.1 Two Representations
-
-- **Scaffold Form (internal)**: may use S1, philosophical vocabulary, tags, and ritual sections to think clearly.
-- **Surface Form (deliverable)**: the final prompt given to an LLM/user; must be plain, minimal, and operational.
-
-**Default law**: When asked to *write a prompt*, output **Surface Form only**. Do not print the Scaffold Form.
-
-### 0.2.2 Compilation Rules (Scaffold → Surface)
-
-When compiling to Surface Form:
-
-- Strip bracketed ritual headers like `[OPEN / High-Weight Zone]`, `[LAW / Instruction Zone]`, `[EVIDENCE / Material Zone]`, `[CLOSE / High-Weight Zone]`.
-- Translate theoretical labels into plain operators:
-  - **S1** → “North Star (one sentence)”
-  - **Illocutionary Force** → “Role & intent”
-  - **Epistemic Prohibition / Ontological Gap** → “If missing info, say so and ask”
-  - **Dialectical Unfolding** → “Self-critique pass (optional)”
-- Never show `[F] [I] [R]` tags or the literal string “basis → bridge → conclusion”. Instead use natural cues (“What is evidenced… / My inference… / Recommendation…”).
-- Prefer the shortest structure that preserves control; avoid ceremony.
-
-### 0.2.3 Optional Debug Switch
-
-Only if the user explicitly requests auditability, or sets `DEBUG=ON`, you may append a short **Design Notes** section (≤10 lines) that reveals the Scaffold Form.  
-Otherwise: keep scaffolding private and throw away the ladder.
-
 ---
 
+## 0.2 Wittgenstein’s Ladder Clause: Prompt Compiler Mode (Scaffold Must Not Leak)
+
+This document is written in a high-density **design language**.  
+When you use it as a reference to *generate an operational prompt*, you must treat its concepts as **internal scaffolding** and then **throw away the ladder**.
+
+**Default Deliverable**: output a *compiled prompt*—plain, executable instructions—readable by someone who has never read this manifesto.
+
+### 0.2.1 Hard Prohibitions (Unless Explicitly Requested)
+
+Unless the user explicitly asks for a theoretical / manifesto-style / auditable prompt, you must:
+
+- **Not expose design vocabulary or labels**: “S1 / Master Signifier”, “Illocutionary Force”, “Point de Capiton”, “Big Other”, “Dialectical Unfolding”, “Antithesis/Synthesis”, “Conflict Log”, “[F/I/R]”, or bracket-zones like “[OPEN]/[LAW]/[EVIDENCE]/[CLOSE]”.
+- **Not output empty template zones** (e.g., “put materials here”). If a zone is not used, delete it.
+- **Not add ceremonial recitations** (e.g., “S1 Echo”) unless it materially increases utility for the task.
+
+### 0.2.2 Two-Pass Protocol
+
+1) **Design Pass (internal)**: Decide S1, illocutionary force, prohibitions, success criteria, truth-regime, and conflict priorities.  
+2) **Compile Pass (external)**: Rewrite into user-level language using only what helps execution:  
+   - Role (optional), Task, Inputs, Constraints, Output format, Quality bar.  
+   - Keep it short, concrete, and “tool-like”.
+3) **Leak Test**: If any design-jargon or scaffold-tags remain, rewrite. If it reads like a manifesto rather than a tool, rewrite.
+
+### 0.2.3 Optional Debug Disclosure
+
+Only if the user asks, append **Designer Notes** (max 10 lines) after the compiled prompt, clearly marked as removable.
 
 ---
 
@@ -173,7 +168,10 @@ Therefore, symbolic boundaries must be established (like the separation of law a
 > Attention Economics is not an engineering trick, but the enforcement science of the Symbolic Order:
 > You are not only "legislating" (writing rules), you are also "appropriating" (allocating attention).
 
-#### Recommended Prompt Format
+#### Optional Blueprint: Attention-Economics Layout (Internal Use)
+
+> **Note**: This is a *design blueprint*, not a template you must copy into the final prompt.
+> Default to a **compiled prompt** per §0.2 (Wittgenstein’s Ladder Clause).
 
 [OPEN / High-Weight Zone]
 
@@ -240,7 +238,7 @@ Knowledge has its limits. An advanced task of Prompt engineering is to demarcate
 ### 2.1 Regime of Truth: Prohibit "Cross-Layer Smuggling"
 
 The illusion of language often stems from a kind of smuggling: disguising inference as fact, disguising rhetoric as evidence.
-Therefore, this framework requires the model’s *internal reasoning* to be divided into three layers (Fact / Inference / Rhetoric). For Key Claims, the model may annotate these layers **internally** as a cognitive safeguard:
+Therefore, this Prompt requires outputs to be forcibly divided into three layers, with key sentences annotated by layer:
 
 - **[F] Factual**: From contextual materials or verifiable sources; can be falsified
 - **[I] Inferential**: Reasoning bridges based on given facts; must write out "basis → bridge → conclusion"
@@ -268,8 +266,8 @@ To avoid turning the entire text into an audit report, this framework only requi
 
 **Annotation Method:**
 
-- **Internal only**: label Key Claim sentences as `[F] / [I] / [R]` (do not display by default).
-- If `[I]`, generate the reasoning bridge in internal notes (or in an optional Audit Footer if enabled).
+- Add at the end of Key Claim sentences: `[F] / [I] / [R]`
+- If [I], must provide the reasoning bridge in "Justification Footnotes" at the end
 
 ### 2.y Wittgenstein’s Ladder Applied: Internal Scaffolding, External Naturalness
 
@@ -336,9 +334,9 @@ The Audit Footer is a **debug / verification interface**, not a mandatory ritual
 **Default**: Keep audit artifacts internal; do not append a footer.  
 **Enable ONLY if**: (a) high-stakes, (b) user requests auditability, or (c) many key claims were downgraded due to weak evidence.
 
-When enabled: maximum 6 short lines; **no bracket tags** like `[F/I/R]` shown—use plain language (Key claims / Basis / Gaps / Sacrifices / Next questions / Confidence).
+When enabled: maximum 6 short lines; **no [F/I/R] tags shown**—use plain language (Key claims / Basis / Gaps / Sacrifices / Next questions / Confidence).
 
-1) **Key Claims**: List 1–5 key conclusions + classify each as Fact / Inference / Rhetorical (plain words)
+1) **Key Claims**: List 1–5 key conclusions + [F/I/R]
 2) **Bridges**: For each [I], write one sentence: "basis → reasoning bridge → conclusion"
 3) **Gaps**: Ontological gaps (what 1–3 key pieces of information am I missing)
 4) **Sacrifices**: What lower-level requirements did I abandon to comply with higher-level norms (e.g., more elegant expression / more details / stronger assertions)
