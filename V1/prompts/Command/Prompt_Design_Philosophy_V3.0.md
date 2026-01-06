@@ -424,44 +424,82 @@ Without Phase 0, we would not know what Phases 1-4 have actually "changed."
 
 ---
 
-# 3. Combination and Typology: Prompt DNA (256 Constitutional Combinations)
+## 3. Combination and Typology: Prompt DNA (625 Constitutional Combinations)
 
-Each of the four cells has 4 phases, so the total combinations are: 4 × 4 × 4 × 4 = 256.
-This is not "show-off mathematics," but a highly practical diagnostic and migration tool.
+Each of the four cells has 5 phases (0–4), so the total combinations are: **5 × 5 × 5 × 5 = 625**.
+This expansion from 256 to 625 is not just mathematical inflation; it introduces the dimension of **"Absence" (Phase 0)**, allowing us to design Prompts that deliberately "do not think" or "do not govern."
 
-## 3.1 Prompt DNA Card (Definition)
+### 3.1 Prompt DNA Card (Definition)
 
 Write clearly your Prompt Constitution on a card:
 
-*   **F (Field)**: 1/2/3/4
-*   **O (Ontic)**: 1/2/3/4
-*   **P (Phenomenon)**: 1/2/3/4
-*   **T (Teleology)**: 1/2/3/4
+* **F (Field)**: 0 / 1 / 2 / 3 / 4
+* **O (Ontic)**: 0 / 1 / 2 / 3 / 4
+* **P (Phenomenon)**: 0 / 1 / 2 / 3 / 4
+* **T (Teleology)**: 0 / 1 / 2 / 3 / 4
 
-Notated as: **F-O-P-T**
+Notated as: **F-O-P-T** (e.g., 1-1-0-1)
 
-## 3.2 Typical DNA Archetypes (Ready-to-use "Personality Spectrums")
+### 3.2 Typical DNA Archetypes (Ready-to-use "Personality Spectrums")
 
-*   **Compliance Execution Type**: 1-1-1-1
-    *   Suitable for: Processes, audits, standardized writing, batch tasks
-*   **Debate Offense/Defense Type**: 2-2-2-2
-    *   Suitable for: Adversarial debate, cross-examination, argumentation strength training (needs stronger prohibitions to prevent deviation)
-*   **Consulting Delivery Type**: 3-3-3-3
-    *   Suitable for: Proposals, roadmaps, decision memos, product/operation strategies
-*   **Research Exploration Type**: 4-4-4-4
-    *   Suitable for: Open questions, co-modeling, research design (must strengthen "boundary declaration")
+Now covering the spectrum from "Raw Entropy" to "High-Order Construction."
 
-You can also mix and match:
+#### A. The Classics (Phases 1-4)
 
-*   **Rigorous Research + Deliverable**: 4-4-3-3 (Open worldview and objects, but delivery centers on feasibility)
-*   **Compliance Jurisdiction + Critical Reasoning**: 1-1-2-1 (Stable rules, but reasoning uses stress testing to prevent loopholes)
+* **Compliance Execution Type (1-1-1-1)**
 
-## 3.3 Diagnostic Method: Where does the Prompt break?
+  * **Logic**: Rigid rules, defined objects, linear reasoning, error-free goal.
+  * **Use Case**: SOPs, audits, standardized writing, batch processing.
+* **Debate Offense/Defense Type (2-2-2-2)**
 
-*   **Frequent Hallucinations/Fabrications**: Prioritize fixing **Ontic + Phenomenon** (Evidence boundary, unknowns, anti-smuggling)
-*   **Output Off-topic/Drifting**: Prioritize fixing **Field** (Boundaries, attention budget, priority clauses)
-*   **Output "Seemingly complete but unusable"**: Prioritize fixing **Teleology** (North Star, quality clauses, prohibitions)
-*   **Fragile Proposal**: Strengthen **Phenomenon=2** (Adversarial Loop) or supplement the variable list in Ontic
+  * **Logic**: Adversarial jurisdiction, factional definitions, critical reasoning, victory-oriented.
+  * **Use Case**: Red Teaming, debate preparation, cross-examination simulation.
+* **Consulting Delivery Type (3-3-3-3)**
+
+  * **Logic**: Context-centric, stakeholder-based, mediated reasoning, deliverable-oriented.
+  * **Use Case**: Strategy proposals, decision memos, product management.
+* **Research Exploration Type (4-4-4-4)**
+
+  * **Logic**: Rewritable field, unknown-heavy ontology, negative/open reasoning, transformative goal.
+  * **Use Case**: Scientific hypothesis, philosophical inquiry, co-modeling complex systems.
+
+#### B. The Null Hybrids (Leveraging Phase 0)
+
+Phase 0 is powerful when mixed with high-order constraints.
+
+* **The Cold Transcoder (1-1-0-1)**
+
+  * **DNA**: Field=1 (Strict Rules), Ontic=1 (Fixed Inputs), **Phenomenon=0 (No Reasoning)**, Teleology=1 (Accuracy).
+  * **Why**: You don't want the model to "think" or "interpret" data, just convert it.
+  * **Use Case**: Format conversion (JSON to CSV), code translation, raw data extraction.
+* **The Glitch Artist / Surrealist (0-4-0-4)**
+
+  * **DNA**: **Field=0 (No Context)**, Ontic=4 (Open Unknowns), **Phenomenon=0 (Dream Logic)**, Teleology=4 (Transformation).
+  * **Why**: Removes logical constraints to allow maximum semantic collision.
+  * **Use Case**: Creative writing blocks, generating "weird" ideas, artistic text generation.
+* **The Naked Model (0-0-0-0)**
+
+  * **DNA**: Absolute absence of constitutional constraints.
+  * **Use Case**: **Zero-Shot Baseline Test**. Used to debug what the model "naturally" thinks about a topic before you apply rules.
+
+### 3.3 Diagnostic Method: Where does the Prompt break?
+
+* **Symptom: "The model is over-interpreting simple data."**
+
+  * **Diagnosis**: Phenomenon is too high (e.g., set to 3).
+  * **Fix**: Downgrade to **Phenomenon=0** (Stop reasoning, just mirror the pattern).
+* **Symptom: "Output is stiff, bureaucratic, and lacks insight."**
+
+  * **Diagnosis**: System is locked in **1-1-1-1**.
+  * **Fix**: Migrate Phenomenon to **2** (Self-Critique) or Ontic to **4** (Admit Unknowns).
+* **Symptom: "Hallucinations/Fabrications."**
+
+  * **Diagnosis**: Ontic is drifting towards 0 or 4 without boundaries.
+  * **Fix**: Enforce **Ontic=1** (Evidence Boundary) and **Phenomenon=2** (Anti-Smuggling).
+* **Symptom: "I wrote a complex Prompt, but the result is worse than no Prompt."**
+
+  * **Diagnosis**: Over-engineering.
+  * **Fix**: Run a **0-0-0-0 Test**. If the raw output is better, your Field/Teleology constraints are actively interfering with the task.
 
 ---
 
