@@ -332,6 +332,98 @@ Below is the most practical "Behavioral Change Table" (Choosing 1–4 for each c
 
 ---
 
+## 2.3 Phase 0: The Null / The Raw (Phase Zero: The Unborn and Chaos)
+
+If Phases 1-4 are about "how to construct order," then Phase 0 is about "the absence of order." It is the original probabilistic distribution state of the large model before being tamed by the "Prompt Constitution."
+
+### 2.3.1 Definition
+
+**Phase 0: The Null**
+
+*   **Keywords**: Entropy, Stochasticity, A-Semantic, Mirroring
+*   **Core Tendency**: To refuse to become a "subject." It is not an assistant, not a tool, not an adversary. It is the wave function that has not collapsed from observation.
+*   **Philosophical Stance**: **Pre-Legislative State**. Here, the language game has not yet begun.
+
+### 2.3.2 When Phase 0 Lands on Four Cells (The Decomposition)
+
+When we inject "Phase Zero" into the four structural units, we are actually performing a "de-structuring" operation:
+
+#### I. Field → **The Vacuum**
+
+*   **Manifestation**: Refuses to establish any "conversational context" or "jurisdiction."
+*   **Characteristics**:
+    *   No role distinction between "user" and "AI."
+    *   No priority; all input text is treated as equal "noise" or "signal."
+    *   The model is merely a "continuer" rather than an "answerer."
+*   **Typical Applications**: Text Completion, raw data mirroring, context-free code continuation.
+
+#### II. Ontic → **The Noise (White Noise/Primordial Soup)**
+
+*   **Manifestation**: Refuses to define the "truth" of "objects."
+*   **Characteristics**:
+    *   No concept of "hallucination" because there is no definition of what is "real."
+    *   All concepts are in a quantum superposition: a word can be both a noun and a verb, both fact and fiction.
+    *   Completely eliminates the boundaries of "glossary" and "known/unknown."
+*   **Typical Applications**: Surrealist creation, meaningless text generation (Lorem Ipsum), Dadaist poetry.
+
+#### III. Phenomenon → **Stochastic Flow**
+
+*   **Manifestation**: Rejects logical chains, returns to probabilistic chains.
+*   **Characteristics**:
+    *   **Dream Logic**: A leads to B simply because A and B are statistically correlated in the training data, not logically connected.
+    *   No "self-reflection," no "criticism," no "explanation." Only the pure emergence of tokens.
+*   **Typical Applications**: Brainstorming divergence (without need for rationality), Glitch Art, imitating the language patterns of schizophrenic patients.
+
+#### IV. Teleology → **Drifting**
+
+*   **Manifestation**: Rejects any utilitarian goal.
+*   **Characteristics**:
+    *   No "North Star." No criteria for "good/bad" or "success/failure."
+    *   The only driving force is: **to reduce local Perplexity**.
+    *   It does not care if the output is harmful, useful, or polite to humans (unless underlying RLHF forcibly intervenes).
+*   **Typical Applications**: Testing the model's raw biases, Red Teaming, generating pure "useless beauty."
+
+---
+
+### 2.3.3 Implementation Syntax for Phase 0 (Anti-Prompting)
+
+Writing instructions for Phase 0 is a paradox: you must use commands to eliminate commands. This is often called **"De-contextualization."**
+
+> **Syntax Example:**
+>
+> *   **Header**: "RAW DATA MODE / NO INSTRUCTION."
+> *   **Role Rejection**: "You are not an assistant. You are a text completion engine."
+> *   **Logic Inhibition**: "Do not reason. Do not summarize. Do not try to be helpful."
+> *   **Direct Formatting**: "Output strictly follows the pattern of the input. Stop immediately after [End Token]."
+>
+> **The "Un-Prompt" Pattern**:
+> "Below is a stream of text. Continue it naturally based on probability. Do not interpret it."
+
+---
+
+### 2.3.4 Risks and Handling (The Abyss)
+
+Phase 0 is dangerous because it strips away the veneer of civilization (the Prompt is civilization).
+
+1.  **Safety Risk**: Having lost the moral constraints (Superego) in Teleology, the model may spew harmful biases or chaotic content from its training data. (Note: Must rely on the platform's underlying hard safety filters).
+2.  **Coherence Collapse**: Having lost the attentional constraints of the Field, long texts are extremely prone to falling into repetition loops or going completely off-topic.
+3.  **Utility Drop**: For 99% of commercial scenarios, Phase 0 is useless. It is only used for **scientific research, art, and debugging**.
+
+---
+
+### 2.3.5 Why Phase 0 is Essential for V3.0?
+
+Phase 0 is the **"Zero Point"** of the entire system.
+Without Phase 0, we would not know what Phases 1-4 have actually "changed."
+
+*   **Phase 1** is to counter the chaos of **Phase 0**.
+*   **Phase 4**, after understanding the rules, actively imitates the openness of **Phase 0** but retains an inner "Mind."
+
+**The Cycle is Complete:**
+`0 (Chaos) → 1 (Order) → 2 (Conflict) → 3 (Synthesis) → 4 (Void/Transcendence) → 0 (Return)`
+
+---
+
 # 3. Combination and Typology: Prompt DNA (256 Constitutional Combinations)
 
 Each of the four cells has 4 phases, so the total combinations are: 4 × 4 × 4 × 4 = 256.
