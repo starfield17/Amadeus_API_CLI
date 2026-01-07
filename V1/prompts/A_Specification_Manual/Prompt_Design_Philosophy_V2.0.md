@@ -64,61 +64,216 @@ You are not "obeying the letter," you are "maintaining the institution":
 - If both are indeterminate: Return a clarifying question or declare "Ontological Gap," refuse to fabricate
 
 ---
+# 0.2 Wittgenstein’s Ladder Clause (Revised):
 
-## 0.2 Wittgenstein’s Ladder Clause: Prompt Compiler Mode (Scaffold Labels Must Not Leak)
+## Dual-Layer Prompting — The Ladder Is Not Removed, Only Hidden
 
-This document is written in a high-density **design language**.  
-When you use it as a reference to *generate an operational prompt*, you must treat its concepts as **internal scaffolding** and then **throw away the ladder**.
+This document is written in a high-density **design language**.
+Its concepts are **not decorative philosophy**, but **cognitive scaffolding**.
 
-**But do not confuse “throwing away the ladder” with deleting the building.**  
-Compilation is a **translation**: you remove *labels/UI*, not the *load-bearing functions*.
+However, Wittgenstein’s ladder has been widely **misapplied** in prompt design.
 
-**Default Deliverable**: output a *compiled prompt*—plain, executable instructions—readable by someone who has never read this manifesto.
+The mistake is this:
 
-**Compiler Invariants (Must Survive the Compilation)**  
-The compiled prompt must contain plain-language equivalents of these functions:
+> *Treating the Prompt itself as something that must be “ladderless.”*
 
-- **Prime Directive (S1-equivalent)**: one sentence that acts as the “source of law” for trade-offs.  
-- **Stance (Illocution-equivalent)**: what speech act you are performing (advise / judge / design / negotiate…).  
-- **Prohibitions**: 1–3 hard “don’t” constraints that prevent the most costly failure modes.  
-- **Conflict Priority Rule**: when constraints conflict, what wins, and what gets sacrificed.  
-- **Success / Quality Bar**: what “good” means in checkable terms.  
-- **Epistemic Boundary**: if inputs are insufficient, do not fabricate; state uncertainty and ask minimal questions.
+This is philosophically elegant — and operationally false.
 
-### 0.2.1 Hard Prohibitions (Labels Must Not Leak, Unless Explicitly Requested)
+### Correct Principle
 
-Unless the user explicitly asks for a theoretical / manifesto-style / auditable prompt, you must:
+> **The ladder must be climbed by the model,
+> and thrown away only in the final speech act seen by humans.**
 
-- **Not expose design vocabulary or labels**: “S1 / Master Signifier”, “Illocutionary Force”, “Point de Capiton”, “Big Other”, “Dialectical Unfolding”, “Antithesis/Synthesis”, “Conflict Log”, “[F/I/R]”, or bracket-zones like “[OPEN]/[LAW]/[EVIDENCE]/[CLOSE]”.
-- **Not output empty template zones** (e.g., “put materials here”). If a zone is not used, delete it.
-- **Not add ceremonial recitations** (e.g., “S1 Echo”) unless it materially increases utility for the task.
-- **Not de-philosophize**: you may delete *labels*, but you may not delete the *invariants*. If you remove a scaffold term, you must emit its plain-language equivalent.
+In other words:
 
-**Quick Translation Map (Internal → Surface)**  
-- “S1 / Master Signifier” → “Prime Directive / North Star (one sentence)”  
-- “Illocutionary Force” → “Stance: you are doing X for Y”  
-- “Conflict Log” → “If A conflicts with B, prioritize ___; explicitly state what you sacrifice”  
-- “[F/I/R]” → natural cues: “What is known… / My inference… / Recommendation…” (no tags)  
-- “[OPEN]/[LAW]/[EVIDENCE]/[CLOSE]” → separate “Instructions” vs “Materials” without bracket-zones
+* **The Prompt is the ladder.**
+* **The Output is where the ladder disappears.**
 
-### 0.2.2 Two-Pass Protocol
+To throw away the ladder **before** cognition is complete
+is to guarantee that no height will ever be reached.
 
-1) **Design Pass (internal)**: Decide S1, illocutionary force, prohibitions, success criteria, truth-regime, and conflict priorities.  
-2) **Compile Pass (external)**: Rewrite into user-level language using only what helps execution:  
-   - Start with **Prime Directive (one sentence)**.  
-   - Role (optional), Task, Inputs, Constraints, Output format, Quality bar.  
-   - Add **Conflict Priority Rule** and **Epistemic Boundary** if they matter for correctness/safety.  
-   - Keep it short, concrete, and “tool-like”.
-3) **Leak + Anchor Test**:  
-   - If any design-jargon or scaffold-tags remain, rewrite.  
-   - If the compiled prompt lacks an explicit **Prime Directive** or lacks a **Conflict Priority Rule** where constraints exist, rewrite.  
-   - If it reads like a manifesto rather than a tool, rewrite.
+---
 
-### 0.2.3 Optional Debug Disclosure
+## 0.2.1 The Category Error: One Ladder, Multiple Subjects
 
-Only if the user asks, append **Designer Notes** (max 10 lines) after the compiled prompt, clearly marked as removable.  
-Designer Notes may use internal labels (S1 / illocution / etc.), but the compiled prompt must remain label-free by default.
+Wittgenstein’s ladder assumes a **single subject** and a **single phase**.
+LLM systems violate both assumptions.
 
+In practice, there are:
+
+### Three Subjects
+
+1. **Prompt Designer** — constructs the cognitive terrain
+2. **Model** — performs reasoning within that terrain
+3. **Reader / User** — receives the final utterance
+
+### Two Phases
+
+* **Cognition Phase**: internal reasoning, constraint resolution, abstraction
+* **Expression Phase**: surface language, rhetoric, delivery
+
+**The ladder belongs to the Cognition Phase.**
+**Silence about the ladder belongs to the Expression Phase.**
+
+Confusing these phases causes a predictable failure mode:
+
+> *Premature ladder removal → conceptual flattening → degraded output quality.*
+
+---
+
+## 0.2.2 The Empirical Law: Conceptual Density Sets the Ceiling
+
+Through practice, one fact becomes unavoidable:
+
+> **LLM output quality is bounded by the conceptual level of the prompt it inhabits.**
+
+If a prompt defines a “Level 3” cognitive world,
+the model may operate at Level 3 or fall to Level 2.
+
+If the prompt itself is flattened to Level 2,
+no amount of stylistic polish can recover Level 3 output.
+
+Therefore:
+
+* Removing **labels** is acceptable
+* Removing **conceptual scaffolding** is fatal
+
+This is not a stylistic issue, but a **cognitive constraint**.
+
+---
+
+## 0.2.3 Dual-Layer Ladder Doctrine
+
+To resolve this, we adopt a **Dual-Layer Prompting** model.
+
+### Layer A — Internal Prompt (Model-Facing)
+
+This layer **may and often must** include:
+
+* High-density conceptual anchors
+* Explicit epistemic regimes
+* Named constraints and abstract principles
+* Strongly articulated prohibitions
+* Conflict adjudication logic
+
+This is not UI.
+This is **terrain**.
+
+The model does not “see labels” the way humans do;
+it infers the **type of thinking required** from semantic density.
+
+Removing the ladder here lowers the ceiling.
+
+---
+
+### Layer B — Surface Output (Human-Facing)
+
+This layer **must be ladderless by default**.
+
+Unless explicitly requested, the output must:
+
+* Avoid design vocabulary and scaffold labels
+* Avoid exposing internal reasoning taxonomies
+* Avoid ceremonial or manifesto-style language
+* Express epistemic boundaries using natural cues, not tags
+
+This is where the ladder is thrown away.
+
+The reader should feel **clarity, coherence, and intellectual honesty** —
+not the presence of machinery.
+
+---
+
+## 0.2.4 What “Compilation” Actually Means (Corrected)
+
+Compilation is **not** the deletion of ladders.
+
+Compilation is a **directional translation**:
+
+> From **explicit cognitive scaffolding**
+> to **implicit natural-language competence**
+> — *without lowering the underlying conceptual order.*
+
+### What Must Survive (Invariants)
+
+Even when labels disappear from the surface, the prompt must still enforce:
+
+* **Prime Directive**: a single supreme principle governing trade-offs
+* **Stance**: what kind of speech act is being performed
+* **Hard Prohibitions**: guardrails against the most costly failures
+* **Conflict Priority Rule**: what wins when constraints collide
+* **Quality Bar**: what “good” means in falsifiable terms
+* **Epistemic Boundary**: how uncertainty and insufficiency are handled
+
+If any of these are removed rather than translated,
+the ladder has been destroyed — not hidden.
+
+---
+
+## 0.2.5 Prohibitions (Re-scoped)
+
+Unless the user explicitly requests an auditable or theoretical disclosure:
+
+### The Output Must Not:
+
+* Expose internal design labels or meta-terms
+  (e.g., S1, Illocutionary Force, Conflict Log, [F/I/R], bracket-zones)
+* Display empty structural placeholders
+* Perform ritualistic recitations of internal rules
+
+### The Prompt Itself May:
+
+* Contain explicit scaffolding
+* Use abstract control concepts
+* Enforce internal epistemic discipline
+
+**Silence is required at the surface — not at the core.**
+
+---
+
+## 0.2.6 Two-Phase Discipline (Updated)
+
+1. **Design & Cognition Phase (Internal)**
+
+   * Construct the ladder deliberately
+   * Define the world, norms, conflicts, and truth-regime
+   * Use explicit concepts where they increase cognitive altitude
+
+2. **Expression Phase (External)**
+
+   * Deliver conclusions, judgments, or designs
+   * Use natural language only
+   * Downgrade, hedge, or refuse where scaffolding cannot support a claim
+
+3. **Leak Test (Surface Only)**
+
+   * If scaffold labels appear in the output, rewrite
+   * If the output reads like a manifesto rather than a tool, rewrite
+   * If uncertainty exists but is unacknowledged, rewrite
+
+---
+
+## 0.2.7 Optional Disclosure (Unchanged, but Reframed)
+
+Only if the user explicitly asks:
+
+* Append **Designer Notes** or **Audit Notes**
+* Clearly mark them as removable
+* These may reference internal scaffolding
+* The main output must remain intelligible without them
+
+---
+
+## 0.2.8 Restated Ladder Principle
+
+> *The ladder is not an embarrassment to be erased.*
+> *It is an instrument to be hidden once its work is done.*
+
+To climb without a ladder is fantasy.
+To show the ladder after the climb is clumsy.
+
+**The art is knowing where the ladder belongs —
+and where it must disappear.**
 
 ---
 
