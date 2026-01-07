@@ -503,55 +503,97 @@ Phase 0 is powerful when mixed with high-order constraints.
 
 ---
 
-# 4. Compiler: Compiling "Constitution" into Executable Prompt
+# 4. Compiler: The Dual-Layer Art of "Hiding the Ladder"
 
-Constitutional language is a high-density design language; but when actually executing for the model, it needs to be "compiled" into plain, executable, jargon-free text.
+**Core Philosophy Revision**:
+Compilation is **not** the translation of high-dimensional concepts into low-dimensional plain text.
+Compilation is the **encoding of strict cognitive scaffolding (The Ladder)** into the Prompt, while rigorously strictly **prohibiting its appearance** in the final Output.
 
-## 4.1 Ladder Clause
+> **Rule**: The Prompt **must** remain complex to sustain intelligence; the Output **must** become simple to serve the user.
 
-**The scaffolding is for building the house, not for living on the scaffolding.**
-What is deleted during compilation are "tags," not "functions."
+## 4.1 The Dual-Layer Protocol (Model-Facing vs. User-Facing)
 
-The compiled product must retain these functions (expressed in natural language):
+To avoid the "Category Error" of flattening the model's cognition, we strictly divide the Prompt's compilation into two layers.
 
-*   North Star one-liner (Highest purpose)
-*   What action you are doing (Advising/Judging/Designing/Negotiating/Summarizing/Writing, etc.)
-*   1–3 Hard Prohibitions
-*   Conflict Adjudication Rules
-*   Checkable Quality Clauses
-*   What to do when information is insufficient (Don't fabricate, declare gaps, ask minimum questions)
+### Layer A: The Internal Constitution (Model-Facing)
 
-## 4.2 Two-Stage Protocol
+**"The Ladder Must Be Present Here."**
+In this layer, you **should not** fear using high-density design language. If concepts like "Ontic," "Epistemic Prohibition," or "S1" help the model lock onto a specific thinking pattern, **keep them**.
 
-**Stage 1: Design State (Internal)**
+* **Semantic Density**: High. Use precise terms to trigger higher-order reasoning.
+* **Visibility**: Visible ONLY to the Model.
+* **Function**: Defines the "Cognitive Ceiling."
 
-*   Select DNA: F/O/P/T are each 1–4
-*   Write North Star and Prohibitions
-*   Write Evidence Boundaries and Unknowns
-*   Select Reasoning Device (Adversarial Loop? Self-check needed? Audit needed?)
+### Layer B: The Surface Utterance (User-Facing)
 
-**Stage 2: Compile State (External)**
-Output a Prompt that "can be directly copy-pasted to run," recommended structure as follows (can be trimmed):
+**"The Ladder Must Disappear Here."**
+In this layer, you enforce a strict **"Natural Language Regime."** Unless the user is debugging, the final output must look like it came from a competent human, not a machine following a rulebook.
 
-1.  North Star one-liner
-2.  Who are you + What are you going to do (Stance/Task)
-3.  What are the input materials, what counts as evidence
-4.  Constraints and Prohibitions
-5.  Output Format
-6.  Quality Standards
-7.  How to adjudicate conflicts
-8.  What to do when information is insufficient (Declare gap + Minimum questions)
+* **Semantic Density**: Adaptive (matches user's needs).
+* **Visibility**: The only thing the User sees.
+* **Function**: Delivers value without revealing the machinery.
 
-## 4.3 Three Automatic Tests (Self-check after writing)
+## 4.2 Compilation Steps: From DNA to Prompt
 
-*   **Leak Test**:
-    Do terms, tags, or rituals that only make sense to the designer appear? If so, rewrite into plain sentences.
-*   **Anchor Test**:
-    Do "North Star + Prohibitions + Conflict Adjudication + Quality Clauses" exist? Supplement if missing.
-*   **Boundary Test**:
-    Are instructions and materials separated? Will materials be mistaken for instructions?
+Do not just "simplify" your Prompt. Instead, structure it to enforce the **Hidden Ladder**.
+
+**Step 1: Encode the DNA (The Scaffolding)**
+Translate your 4-Cell Matrix (F-O-P-T) into explicit instructions.
+
+* *Instead of writing:* "Please check your work." (Weak)
+* *Write:* "**[Internal Procedure]**: You must perform an **Adversarial Critique** (Phase 2 Phenomenon) on your own draft before outputting. Look for logical fallacies and evidence gaps."
+
+**Step 2: Define the Interface (The Separation)**
+Explicitly command the separation of thinking and speaking.
+
+* *Syntax:* "You may think inside the `[Thinking]` block or internally, but the final output to the user must be **Ladderless**: strictly natural language, no internal tags, no mention of 'Phase 2' or 'Adversarial Critique'."
+
+**Step 3: Inject the Epistemic S1 (The Anchor)**
+Ensure the "North Star" (Teleology) is not just a polite request, but a **Supreme Law**.
+
+* *Syntax:* "**Master Signifier (S1)**: Your highest priority is Validity. If Evidence is insufficient, silence is better than fabrication."
+
+## 4.3 The Three Acceptance Tests
+
+Before releasing the Prompt, run these three tests to ensure the "Ladder" is working correctly:
+
+* **1. The Leak Test (Surface Hygiene)**
+
+  * *Check*: Do terms like "S1", "Ontic", "Phase 2", or bracketed tags `[F/I/R]` appear in the final output?
+  * *Fix*: If yes, strengthen the **"Silence Clause"** in the Layer B instructions.
+
+* **2. The Ceiling Test (Cognitive Altitude)**
+
+  * *Check*: Did removing jargon from the Prompt make the model "dumber"? (e.g., Did "Explain via Dialectics" turn into a generic "List pros and cons" because you simplified the instruction too much?)
+  * *Fix*: If reasoning quality drops, **restore the high-density terminology** in Layer A. Do not dumb down the Prompt; asking for high intelligence requires high-level language.
+
+* **3. The Boundary Test (Jurisdiction)**
+
+  * *Check*: Does the model confuse "Context Material" with "Instructions"?
+  * *Fix*: Reinforce the **Field** definition. "Material is evidence; Prompt is Law."
 
 ---
+
+## 4.4 Example: High-Fidelity Compilation (The "Hidden Ladder" Pattern)
+
+> *This example shows how to keep the "Ladder" (Internal) while keeping the output clean.*
+
+**[System / Layer A: The Constitution]**
+"You are an expert analyst. You operate under the following **Constitutional Rules**:
+
+1. **Field**: Distinguish strictly between User Input (Evidence) and My Instructions (Law).
+2. **Phenomenon**: You must utilize **'Chain of Verification'**. For every claim, internally verify its source.
+3. **Teleology (S1)**: **Truthfulness > Politeness**. If a user's premise is flawed, point it out objectively."
+
+**[Output Rules / Layer B: The Interface]**
+"**Output Constraints**:
+
+* Throw away the ladder: Do not mention 'Constitution', 'Field', or 'Chain of Verification' in your response.
+* Speak naturally and professionally.
+* If you find a flaw, explain it directly without referencing these rules."
+
+---
+
 
 # 5. Conditional Interface: Conflict Logs and Audit Footnotes (Appear only when needed)
 
